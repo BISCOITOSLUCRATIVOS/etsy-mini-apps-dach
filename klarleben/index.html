@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KlarLeben – Der All-in-One Lebensplaner</title>
+<style>
+  :root{
+    --cream:#FFFDF9;
+    --beige:#F5EFE8;
+    --sage:#DCE8D9;
+    --forest:#526B59;
+    --rose:#F2D8D7;
+    --warmgray:#6D6A67;
+    --text:#292B29;
+    --white:#FFFFFF;
+    --danger:#C65B4E;
+    --radius-s:8px;
+    --radius-m:14px;
+    --radius-l:20px;
+    --shadow:0 2px 10px rgba(41,43,41,0.06);
+    --shadow-lift:0 6px 20px rgba(41,43,41,0.10);
+    --sidebar-w:240px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--beige);
+    color:var(--text);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-weight:700;margin:0 0 4px 0;letter-spacing:-0.01em;}
+  p{margin:0 0 8px 0;line-height:1.5;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;font-size:14px;}
+
+  /* ---------- Layout ---------- */
+  #app{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:var(--sidebar-w);
+    background:var(--white);
+    border-right:1px solid rgba(82,107,89,0.12);
+    display:flex;
+    flex-direction:column;
+    flex-shrink:0;
+    padding:20px 14px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 20px 10px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--sage),var(--forest));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:15px;}
+  .brand-name{font-size:17px;font-weight:700;}
+  .brand-sub{font-size:11px;color:var(--warmgray);}
+
+  .nav-group{margin-bottom:6px;}
+  .nav-group-title{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--warmgray);padding:14px 10px 6px;}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border-radius:var(--radius-s);
+    color:var(--text);text-decoration:none;font-size:14px;
+    cursor:pointer;border:none;background:none;width:100%;text-align:left;
+  }
+  .nav-item:hover{background:var(--beige);}
+  .nav-item.active{background:var(--sage);color:var(--forest);font-weight:600;}
+  .nav-icon{width:18px;text-align:center;flex-shrink:0;}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{
+    display:none;
+    align-items:center;justify-content:space-between;
+    padding:14px 16px;background:var(--white);
+    border-bottom:1px solid rgba(82,107,89,0.12);
+    position:sticky;top:0;z-index:20;
+  }
+  .hamburger{background:none;border:none;font-size:20px;padding:6px 8px;border-radius:var(--radius-s);}
+  .hamburger:hover{background:var(--beige);}
+
+  .content{flex:1;padding:28px 32px 100px;max-width:1100px;width:100%;margin:0 auto;}
+  .page-header{margin-bottom:22px;}
+  .page-header h1{font-size:24px;}
+  .page-header .sub{color:var(--warmgray);font-size:14px;}
+
+  /* ---------- Cards / components ---------- */
+  .card{background:var(--white);border-radius:var(--radius-m);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .card-title{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+  .grid{display:grid;gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+  .stat-tile{background:var(--white);border-radius:var(--radius-m);padding:16px 18px;box-shadow:var(--shadow);}
+  .stat-tile .num{font-size:26px;font-weight:700;color:var(--forest);}
+  .stat-tile .label{font-size:12.5px;color:var(--warmgray);margin-top:2px;}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:9px 16px;border-radius:999px;border:none;
+    font-size:13.5px;font-weight:600;
+    background:var(--forest);color:var(--white);
+    transition:opacity .15s;
+  }
+  .btn:hover{opacity:.9;}
+  .btn.secondary{background:var(--beige);color:var(--text);}
+  .btn.ghost{background:transparent;color:var(--forest);padding:9px 10px;}
+  .btn.danger{background:var(--danger);color:var(--white);}
+  .btn.small{padding:6px 12px;font-size:12.5px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .icon-btn{background:none;border:none;color:var(--warmgray);padding:6px;border-radius:var(--radius-s);font-size:14px;}
+  .icon-btn:hover{background:var(--beige);color:var(--text);}
+
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--warmgray);margin-bottom:5px;}
+  .field input[type=text],.field input[type=date],.field input[type=time],.field input[type=number],
+  .field select,.field textarea{
+    width:100%;padding:9px 11px;border-radius:var(--radius-s);
+    border:1px solid rgba(82,107,89,0.2);background:var(--cream);color:var(--text);
+  }
+  .field textarea{resize:vertical;min-height:70px;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--sage);border-color:var(--forest);}
+  .field-row{display:flex;gap:10px;}
+  .field-row > .field{flex:1;}
+
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;}
+  .pill.open{background:var(--rose);color:#8a3f36;}
+  .pill.progress{background:#FCE9C8;color:#8a6a1e;}
+  .pill.done{background:var(--sage);color:var(--forest);}
+  .pill.deferred{background:var(--beige);color:var(--warmgray);}
+  .pill.prio-hoch{background:#F6D2CE;color:#9c3b2d;}
+  .pill.prio-mittel{background:#FCE9C8;color:#8a6a1e;}
+  .pill.prio-niedrig{background:var(--sage);color:var(--forest);}
+
+  .list-row{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:12px 4px;border-bottom:1px solid var(--beige);
+  }
+  .list-row:last-child{border-bottom:none;}
+  .list-row .main-col{flex:1;min-width:0;}
+  .list-row .row-title{font-weight:600;font-size:14.5px;}
+  .list-row .row-title.done{text-decoration:line-through;color:var(--warmgray);}
+  .list-row .row-meta{font-size:12px;color:var(--warmgray);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .list-row .row-actions{display:flex;gap:4px;flex-shrink:0;}
+
+  .checkbox{
+    width:20px;height:20px;border-radius:6px;border:2px solid var(--sage);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+    background:var(--cream);margin-top:1px;
+  }
+  .checkbox.checked{background:var(--forest);border-color:var(--forest);color:var(--white);font-size:12px;}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--warmgray);}
+  .empty-state .icon{font-size:32px;margin-bottom:10px;}
+  .empty-state p{max-width:360px;margin:0 auto 14px;font-size:13.5px;}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+  .toolbar select, .toolbar input[type=text]{
+    padding:8px 10px;border-radius:var(--radius-s);border:1px solid rgba(82,107,89,0.2);background:var(--white);font-size:13px;
+  }
+  .search-box{flex:1;min-width:160px;}
+
+  .progress-bar{height:8px;border-radius:99px;background:var(--beige);overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--forest);border-radius:99px;transition:width .3s;}
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(41,43,41,0.45);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:16px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--white);border-radius:var(--radius-l);padding:24px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lift);}
+  .modal h2{font-size:18px;margin-bottom:14px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--text);color:var(--cream);padding:10px 18px;border-radius:999px;
+    font-size:13.5px;opacity:0;pointer-events:none;transition:all .25s;z-index:200;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* Week grid */
+  .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+  @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
+  .week-day{background:var(--white);border-radius:var(--radius-m);padding:12px;box-shadow:var(--shadow);min-height:120px;}
+  .week-day.today{outline:2px solid var(--forest);}
+  .week-day h4{font-size:12.5px;color:var(--warmgray);text-transform:uppercase;letter-spacing:.04em;}
+  .week-day .date-num{font-size:16px;font-weight:700;margin-bottom:8px;}
+  .week-task{font-size:12.5px;background:var(--beige);border-radius:6px;padding:5px 7px;margin-bottom:5px;}
+  .week-task.done{opacity:.5;text-decoration:line-through;}
+
+  .habit-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--beige);}
+  .habit-row:last-child{border-bottom:none;}
+  .habit-check{
+    width:30px;height:30px;border-radius:50%;border:2px solid var(--sage);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;background:var(--cream);
+  }
+  .habit-check.checked{background:var(--forest);border-color:var(--forest);color:var(--white);}
+  .streak{font-size:11.5px;color:var(--forest);background:var(--sage);padding:2px 8px;border-radius:99px;}
+
+  /* Onboarding */
+  .onboarding-overlay{position:fixed;inset:0;background:var(--beige);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .onboard-card{background:var(--white);border-radius:var(--radius-l);padding:34px;max-width:460px;width:100%;box-shadow:var(--shadow-lift);text-align:center;}
+  .onboard-card h1{font-size:22px;margin-bottom:8px;}
+  .onboard-card p{color:var(--warmgray);font-size:14px;}
+  .onboard-step{display:none;}
+  .onboard-step.active{display:block;}
+  .area-check{display:flex;align-items:center;gap:8px;text-align:left;padding:8px 10px;border-radius:var(--radius-s);border:1px solid rgba(82,107,89,0.15);margin-bottom:8px;cursor:pointer;}
+  .area-check input{margin:0;}
+
+  /* Mobile nav */
+  .mobile-nav{display:none;}
+  @media (max-width:860px){
+    .sidebar{display:none;}
+    .topbar{display:flex;}
+    .content{padding:18px 16px 90px;}
+    .sidebar.open{
+      display:flex;position:fixed;top:0;left:0;bottom:0;z-index:50;
+      box-shadow:var(--shadow-lift);
+    }
+    .sidebar-backdrop{display:none;}
+    .sidebar-backdrop.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:40;}
+  }
+
+  .help-text{font-size:12.5px;color:var(--warmgray);}
+  .divider{height:1px;background:var(--beige);margin:14px 0;}
+  .inline-warn{background:var(--rose);color:#8a3f36;padding:10px 12px;border-radius:var(--radius-s);font-size:13px;margin-bottom:12px;}
+  a{color:var(--forest);}
+</style>
+</head>
+<body>
+
+<div id="onboarding" class="onboarding-overlay" style="display:none;">
+  <div class="onboard-card">
+    <div id="ob-step-1" class="onboard-step active">
+      <h1>Willkommen bei KlarLeben 🌿</h1>
+      <p>Dein ruhiger All-in-One Lebensplaner. Alle Daten bleiben nur auf diesem Gerät, in deinem Browser.</p>
+      <div class="field" style="text-align:left;margin-top:18px;">
+        <label for="ob-name">Wie dürfen wir dich nennen? (optional)</label>
+        <input type="text" id="ob-name" placeholder="z. B. Mira">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+        <button class="btn secondary" onclick="skipOnboarding()">Überspringen</button>
+        <button class="btn" onclick="obGoto(2)">Weiter</button>
+      </div>
+    </div>
+    <div id="ob-step-2" class="onboard-step">
+      <h1>Womit möchtest du starten?</h1>
+      <p>Du kannst jederzeit in den Einstellungen weitere Bereiche aktivieren.</p>
+      <div style="text-align:left;margin-top:16px;max-height:260px;overflow-y:auto;">
+        <label class="area-check"><input type="checkbox" value="dashboard" checked disabled> Übersicht (immer aktiv)</label>
+        <label class="area-check"><input type="checkbox" value="today" checked> Mein Tag</label>
+        <label class="area-check"><input type="checkbox" value="tasks" checked> Aufgaben</label>
+        <label class="area-check"><input type="checkbox" value="week" checked> Wochenplaner</label>
+        <label class="area-check"><input type="checkbox" value="habits" checked> Gewohnheiten</label>
+        <label class="area-check"><input type="checkbox" value="notes" checked> Notizen</label>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
+        <button class="btn secondary" onclick="obGoto(1)">Zurück</button>
+        <button class="btn" onclick="finishOnboarding()">Los geht's</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">KL</div>
+      <div>
+        <div class="brand-name">KlarLeben</div>
+        <div class="brand-sub">Lebensplaner</div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <button class="nav-item" data-section="dashboard" onclick="navigate('dashboard')"><span class="nav-icon">🏠</span> Übersicht</button>
+    </div>
+    <div class="nav-group" data-area="today">
+      <div class="nav-group-title">Alltag</div>
+      <button class="nav-item" data-section="today" onclick="navigate('today')"><span class="nav-icon">☀️</span> Mein Tag</button>
+    </div>
+    <div class="nav-group" data-area="tasks">
+      <button class="nav-item" data-section="tasks" onclick="navigate('tasks')"><span class="nav-icon">✅</span> Aufgaben</button>
+    </div>
+    <div class="nav-group" data-area="week">
+      <div class="nav-group-title">Planung</div>
+      <button class="nav-item" data-section="week" onclick="navigate('week')"><span class="nav-icon">📅</span> Wochenplaner</button>
+    </div>
+    <div class="nav-group" data-area="habits">
+      <div class="nav-group-title">Persönliches</div>
+      <button class="nav-item" data-section="habits" onclick="navigate('habits')"><span class="nav-icon">🌱</span> Gewohnheiten</button>
+    </div>
+    <div class="nav-group" data-area="notes">
+      <button class="nav-item" data-section="notes" onclick="navigate('notes')"><span class="nav-icon">📝</span> Notizen</button>
+    </div>
+    <div class="nav-group" style="margin-top:auto;">
+      <div class="nav-group-title">System</div>
+      <button class="nav-item" data-section="stats" onclick="navigate('stats')"><span class="nav-icon">📊</span> Auswertungen</button>
+      <button class="nav-item" data-section="settings" onclick="navigate('settings')"><span class="nav-icon">⚙️</span> Einstellungen</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="toggleSidebar(true)">☰</button>
+      <div class="brand-name" style="font-size:15px;">KlarLeben</div>
+      <div style="width:32px;"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================================
+   KLARLEBEN – Datenmodell & Speicherarchitektur (Phase 1)
+   ====================================================================== */
+const STORAGE_KEY = 'klarleben_data_v1';
+
+function defaultData(){
+  return {
+    profile: { name: '', onboarded: false, visibleAreas: ['dashboard','today','tasks','week','habits','notes'] },
+    settings: { theme: 'light', currency: 'EUR', weekStart: 'monday' },
+    tasks: [],      // {id,title,description,dueDate,priority,category,status,createdAt}
+    habits: [],     // {id,title,frequency,category,createdAt,completions:{date:true}}
+    notes: [],      // {id,title,content,category,date,updatedAt}
+    dailyGoals: {},  // {dateKey: text}
+    weekGoals: {},   // {weekKey: [text,...]}
+    weekReviews: {}  // {weekKey: text}
+  };
+}
+
+let DATA = loadData();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultData();
+    const parsed = JSON.parse(raw);
+    // merge with defaults to tolerate older/partial structures
+    const base = defaultData();
+    return Object.assign(base, parsed, {
+      profile: Object.assign(base.profile, parsed.profile||{}),
+      settings: Object.assign(base.settings, parsed.settings||{})
+    });
+  }catch(e){
+    console.error('KlarLeben: Fehler beim Laden der Daten', e);
+    return defaultData();
+  }
+}
+
+let saveTimer = null;
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+    flashSaveStatus(true);
+  }catch(e){
+    console.error('KlarLeben: Fehler beim Speichern', e);
+    flashSaveStatus(false);
+  }
+}
+function flashSaveStatus(ok){
+  // lightweight, non-intrusive save confirmation via toast only on explicit actions (handled by caller)
+}
+
+function uid(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
+
+/* ---------------- Date helpers (deutsches Format, Montag als Wochenstart) ---------------- */
+function pad2(n){ return n.toString().padStart(2,'0'); }
+function dateKey(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function todayKey(){ return dateKey(new Date()); }
+function formatDateDE(d){
+  if(typeof d === 'string'){ d = parseDateKey(d); }
+  if(!d || isNaN(d)) return '–';
+  return pad2(d.getDate())+'.'+pad2(d.getMonth()+1)+'.'+d.getFullYear();
+}
+function parseDateKey(key){
+  if(!key) return null;
+  const [y,m,day] = key.split('-').map(Number);
+  if(!y||!m||!day) return null;
+  return new Date(y, m-1, day);
+}
+const WEEKDAYS_DE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+function startOfWeek(d){
+  const date = new Date(d);
+  const day = date.getDay(); // 0=So
+  const diff = (day === 0 ? -6 : 1) - day; // Montag als Start
+  date.setDate(date.getDate()+diff);
+  date.setHours(0,0,0,0);
+  return date;
+}
+function weekKeyOf(d){ return dateKey(startOfWeek(d)); }
+let currentWeekAnchor = new Date();
+
+function currencySymbol(){
+  return DATA.settings.currency === 'CHF' ? 'CHF' : '€';
+}
+function formatMoney(n){
+  const num = Number(n)||0;
+  const formatted = num.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return DATA.settings.currency === 'CHF' ? (formatted+' CHF') : (formatted+' €');
+}
+
+/* ======================================================================
+   UI-Hilfsfunktionen
+   ====================================================================== */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function openModal(html){
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+  document.getElementById('modalBody').innerHTML = '';
+}
+document.getElementById('modalOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'modalOverlay') closeModal();
+});
+function confirmAction(message, onConfirm){
+  openModal(`
+    <h2>Bitte bestätigen</h2>
+    <p>${escapeHtml(message)}</p>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn danger" id="confirmBtn">Bestätigen</button>
+    </div>
+  `);
+  document.getElementById('confirmBtn').onclick = ()=>{ closeModal(); onConfirm(); };
+}
+function escapeHtml(str){
+  if(str===undefined||str===null) return '';
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function toggleSidebar(open){
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('sidebarBackdrop').classList.toggle('show', open);
+}
+
+/* ======================================================================
+   Onboarding
+   ====================================================================== */
+function initOnboarding(){
+  if(!DATA.profile.onboarded){
+    document.getElementById('onboarding').style.display = 'flex';
+  }else{
+    document.getElementById('app').style.display = 'flex';
+  }
+}
+function obGoto(step){
+  document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob-step-'+step).classList.add('active');
+  if(step===2){
+    DATA.profile.name = document.getElementById('ob-name').value.trim();
+  }
+}
+function finishOnboarding(){
+  const checks = document.querySelectorAll('#ob-step-2 .area-check input[type=checkbox]');
+  const areas = ['dashboard'];
+  checks.forEach(c=>{ if(c.checked && c.value!=='dashboard') areas.push(c.value); });
+  DATA.profile.visibleAreas = areas;
+  DATA.profile.onboarded = true;
+  saveData();
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  applyVisibleAreas();
+  navigate('dashboard');
+}
+function skipOnboarding(){
+  DATA.profile.name = document.getElementById('ob-name').value.trim();
+  DATA.profile.visibleAreas = ['dashboard','today','tasks','week','habits','notes'];
+  DATA.profile.onboarded = true;
+  saveData();
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  applyVisibleAreas();
+  navigate('dashboard');
+}
+function applyVisibleAreas(){
+  document.querySelectorAll('.nav-group[data-area]').forEach(g=>{
+    const area = g.getAttribute('data-area');
+    g.style.display = DATA.profile.visibleAreas.includes(area) ? '' : 'none';
+  });
+}
+
+/* ======================================================================
+   Navigation / Router
+   ====================================================================== */
+let currentSection = 'dashboard';
+const RENDERERS = {}; // filled below per section
+
+function navigate(section){
+  currentSection = section;
+  document.querySelectorAll('.nav-item[data-section]').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-section')===section);
+  });
+  toggleSidebar(false);
+  const fn = RENDERERS[section] || renderNotFound;
+  document.getElementById('content').innerHTML = fn();
+  afterRender(section);
+  window.scrollTo(0,0);
+}
+function renderNotFound(){ return `<div class="empty-state"><div class="icon">🙈</div><p>Dieser Bereich ist noch nicht verfügbar.</p></div>`; }
+function afterRender(section){
+  if(AFTER_RENDER[section]) AFTER_RENDER[section]();
+}
+const AFTER_RENDER = {};
+
+/* ======================================================================
+   DASHBOARD
+   ====================================================================== */
+RENDERERS.dashboard = function(){
+  const tk = todayKey();
+  const todayTasks = DATA.tasks.filter(t=>t.dueDate===tk && t.status!=='Erledigt');
+  const overdue = DATA.tasks.filter(t=>t.dueDate && t.dueDate<tk && t.status!=='Erledigt');
+  const doneTodayCount = DATA.tasks.filter(t=>t.dueDate===tk && t.status==='Erledigt').length;
+  const totalTodayCount = DATA.tasks.filter(t=>t.dueDate===tk).length;
+  const progressPct = totalTodayCount ? Math.round((doneTodayCount/totalTodayCount)*100) : 0;
+
+  const habitsToday = DATA.habits.filter(h=>h.frequency==='daily');
+  const habitsDone = habitsToday.filter(h=>h.completions && h.completions[tk]);
+
+  const greetName = DATA.profile.name ? `, ${escapeHtml(DATA.profile.name)}` : '';
+  const dateStr = new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date());
+
+  return `
+    <div class="page-header">
+      <h1>Hallo${greetName} 👋</h1>
+      <div class="sub">${dateStr}</div>
+    </div>
+
+    <div class="grid grid-3" style="margin-bottom:18px;">
+      <div class="stat-tile"><div class="num">${todayTasks.length}</div><div class="label">Aufgaben heute</div></div>
+      <div class="stat-tile"><div class="num">${overdue.length}</div><div class="label">Überfällig</div></div>
+      <div class="stat-tile"><div class="num">${habitsDone.length}/${habitsToday.length}</div><div class="label">Gewohnheiten heute</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tagesfortschritt<span class="help-text">${doneTodayCount}/${totalTodayCount||0} erledigt</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:${progressPct}%;"></div></div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Heutige Aufgaben
+          <button class="btn small" onclick="navigate('today')">Mein Tag öffnen</button>
+        </div>
+        ${todayTasks.length ? todayTasks.slice(0,5).map(t=>`
+          <div class="list-row">
+            <div class="checkbox ${t.status==='Erledigt'?'checked':''}" onclick="toggleTaskDone('${t.id}')">${t.status==='Erledigt'?'✓':''}</div>
+            <div class="main-col">
+              <div class="row-title">${escapeHtml(t.title)}</div>
+              <div class="row-meta"><span class="pill prio-${(t.priority||'mittel')}">${t.priority||'mittel'}</span></div>
+            </div>
+          </div>
+        `).join('') : emptyRow('Keine Aufgaben für heute. Genieß den Freiraum oder füge eine neue Aufgabe hinzu.')}
+      </div>
+
+      <div class="card">
+        <div class="card-title">Überfällige Aufgaben
+          <button class="btn small secondary" onclick="navigate('tasks')">Alle Aufgaben</button>
+        </div>
+        ${overdue.length ? overdue.slice(0,5).map(t=>`
+          <div class="list-row">
+            <div class="checkbox" onclick="toggleTaskDone('${t.id}')"></div>
+            <div class="main-col">
+              <div class="row-title">${escapeHtml(t.title)}</div>
+              <div class="row-meta">Fällig: ${formatDateDE(t.dueDate)}</div>
+            </div>
+          </div>
+        `).join('') : emptyRow('Keine überfälligen Aufgaben. Alles im grünen Bereich.')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Schnellzugriff</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn" onclick="openTaskModal()">+ Neue Aufgabe</button>
+        <button class="btn secondary" onclick="navigate('week')">Wochenplaner</button>
+        <button class="btn secondary" onclick="navigate('habits')">Gewohnheiten</button>
+        <button class="btn secondary" onclick="openNoteModal()">+ Notiz</button>
+      </div>
+    </div>
+  `;
+};
+function emptyRow(text){
+  return `<div class="empty-state" style="padding:20px 10px;"><p>${escapeHtml(text)}</p></div>`;
+}
+
+/* ======================================================================
+   MEIN TAG
+   ====================================================================== */
+RENDERERS.today = function(){
+  const tk = todayKey();
+  const tasks = DATA.tasks.filter(t=>t.dueDate===tk).sort((a,b)=>(a.status==='Erledigt')-(b.status==='Erledigt'));
+  const goal = DATA.dailyGoals[tk] || '';
+  const done = tasks.filter(t=>t.status==='Erledigt').length;
+  const pct = tasks.length ? Math.round(done/tasks.length*100):0;
+
+  return `
+    <div class="page-header">
+      <h1>Mein Tag</h1>
+      <div class="sub">${formatDateDE(tk)}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tagesziel</div>
+      <div class="field" style="margin-bottom:0;">
+        <input type="text" id="dailyGoalInput" placeholder="Was ist heute das Wichtigste?" value="${escapeHtml(goal)}" onchange="setDailyGoal(this.value)">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Fortschritt<span class="help-text">${done}/${tasks.length} erledigt</span></div>
+      <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Aufgaben für heute
+        <button class="btn small" onclick="openTaskModal(null,'${tk}')">+ Aufgabe</button>
+      </div>
+      ${tasks.length ? tasks.map(taskRow).join('') : emptyRow('Noch keine Aufgaben für heute vorhanden. Füge deine erste Aufgabe hinzu und teile sie bei Bedarf in kleinere Schritte auf.')}
+    </div>
+  `;
+};
+function setDailyGoal(val){
+  DATA.dailyGoals[todayKey()] = val;
+  saveData();
+  showToast('Tagesziel gespeichert');
+}
+
+/* ======================================================================
+   AUFGABENMANAGER
+   ====================================================================== */
+let taskFilterStatus = 'alle';
+let taskSort = 'datum';
+let taskSearch = '';
+
+RENDERERS.tasks = function(){
+  let list = DATA.tasks.slice();
+  if(taskFilterStatus !== 'alle') list = list.filter(t=>t.status===taskFilterStatus);
+  if(taskSearch.trim()) list = list.filter(t=>t.title.toLowerCase().includes(taskSearch.toLowerCase()));
+  if(taskSort==='datum') list.sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+  if(taskSort==='prioritaet'){
+    const order={hoch:0,mittel:1,niedrig:2};
+    list.sort((a,b)=>(order[a.priority]??1)-(order[b.priority]??1));
+  }
+
+  return `
+    <div class="page-header">
+      <h1>Aufgabenmanager</h1>
+      <div class="sub">${DATA.tasks.length} Aufgabe(n) insgesamt</div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" class="search-box" placeholder="Aufgaben durchsuchen…" value="${escapeHtml(taskSearch)}" oninput="taskSearch=this.value; navigate('tasks');">
+      <select onchange="taskFilterStatus=this.value; navigate('tasks');">
+        <option value="alle" ${taskFilterStatus==='alle'?'selected':''}>Alle Status</option>
+        <option value="Offen" ${taskFilterStatus==='Offen'?'selected':''}>Offen</option>
+        <option value="In Bearbeitung" ${taskFilterStatus==='In Bearbeitung'?'selected':''}>In Bearbeitung</option>
+        <option value="Erledigt" ${taskFilterStatus==='Erledigt'?'selected':''}>Erledigt</option>
+        <option value="Zurückgestellt" ${taskFilterStatus==='Zurückgestellt'?'selected':''}>Zurückgestellt</option>
+      </select>
+      <select onchange="taskSort=this.value; navigate('tasks');">
+        <option value="datum" ${taskSort==='datum'?'selected':''}>Nach Datum</option>
+        <option value="prioritaet" ${taskSort==='prioritaet'?'selected':''}>Nach Priorität</option>
+      </select>
+      <button class="btn" onclick="openTaskModal()">+ Neue Aufgabe</button>
+    </div>
+
+    <div class="card">
+      ${list.length ? list.map(taskRow).join('') : emptyRow('Keine Aufgaben gefunden. Lege deine erste Aufgabe an.')}
+    </div>
+  `;
+};
+
+function taskRow(t){
+  const overdue = t.dueDate && t.dueDate<todayKey() && t.status!=='Erledigt';
+  return `
+    <div class="list-row">
+      <div class="checkbox ${t.status==='Erledigt'?'checked':''}" onclick="toggleTaskDone('${t.id}')">${t.status==='Erledigt'?'✓':''}</div>
+      <div class="main-col">
+        <div class="row-title ${t.status==='Erledigt'?'done':''}">${escapeHtml(t.title)}</div>
+        <div class="row-meta">
+          ${t.dueDate ? `<span style="${overdue?'color:#C65B4E;font-weight:600;':''}">📅 ${formatDateDE(t.dueDate)}</span>` : ''}
+          <span class="pill prio-${t.priority||'mittel'}">${t.priority||'mittel'}</span>
+          <span class="pill ${statusPillClass(t.status)}">${t.status}</span>
+          ${t.category ? `<span>${escapeHtml(t.category)}</span>` : ''}
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openTaskModal('${t.id}')" title="Bearbeiten">✏️</button>
+        <button class="icon-btn" onclick="deleteTask('${t.id}')" title="Löschen">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+function statusPillClass(status){
+  return {Offen:'open','In Bearbeitung':'progress',Erledigt:'done','Zurückgestellt':'deferred'}[status] || 'open';
+}
+
+function toggleTaskDone(id){
+  const t = DATA.tasks.find(x=>x.id===id);
+  if(!t) return;
+  t.status = t.status==='Erledigt' ? 'Offen' : 'Erledigt';
+  saveData();
+  navigate(currentSection);
+}
+function deleteTask(id){
+  confirmAction('Diese Aufgabe wirklich löschen?', ()=>{
+    DATA.tasks = DATA.tasks.filter(t=>t.id!==id);
+    saveData();
+    navigate(currentSection);
+    showToast('Aufgabe gelöscht');
+  });
+}
+function openTaskModal(id, presetDate){
+  const existing = id ? DATA.tasks.find(t=>t.id===id) : null;
+  openModal(`
+    <h2>${existing ? 'Aufgabe bearbeiten' : 'Neue Aufgabe'}</h2>
+    <div class="field"><label>Titel *</label><input type="text" id="tf-title" value="${escapeHtml(existing?.title||'')}" placeholder="z. B. Steuerunterlagen sortieren"></div>
+    <div class="field"><label>Beschreibung</label><textarea id="tf-desc">${escapeHtml(existing?.description||'')}</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Fälligkeitsdatum</label><input type="date" id="tf-date" value="${existing?.dueDate||presetDate||''}"></div>
+      <div class="field"><label>Priorität</label>
+        <select id="tf-prio">
+          <option value="niedrig" ${existing?.priority==='niedrig'?'selected':''}>Niedrig</option>
+          <option value="mittel" ${(!existing||existing?.priority==='mittel')?'selected':''}>Mittel</option>
+          <option value="hoch" ${existing?.priority==='hoch'?'selected':''}>Hoch</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Kategorie</label><input type="text" id="tf-cat" value="${escapeHtml(existing?.category||'')}" placeholder="z. B. Arbeit, Haushalt"></div>
+      <div class="field"><label>Status</label>
+        <select id="tf-status">
+          ${['Offen','In Bearbeitung','Erledigt','Zurückgestellt'].map(s=>`<option value="${s}" ${existing?.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div id="tf-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn" onclick="saveTaskForm('${existing?.id||''}')">Speichern</button>
+    </div>
+  `);
+}
+function saveTaskForm(id){
+  const title = document.getElementById('tf-title').value.trim();
+  const err = document.getElementById('tf-error');
+  if(!title){ err.textContent = 'Bitte gib einen Titel ein.'; err.style.display='block'; return; }
+  const dueDate = document.getElementById('tf-date').value;
+  const payload = {
+    title,
+    description: document.getElementById('tf-desc').value.trim(),
+    dueDate: dueDate || '',
+    priority: document.getElementById('tf-prio').value,
+    category: document.getElementById('tf-cat').value.trim(),
+    status: document.getElementById('tf-status').value
+  };
+  if(id){
+    const t = DATA.tasks.find(x=>x.id===id);
+    Object.assign(t, payload);
+  }else{
+    payload.id = uid();
+    payload.createdAt = new Date().toISOString();
+    DATA.tasks.push(payload);
+  }
+  saveData();
+  closeModal();
+  navigate(currentSection);
+  showToast('Aufgabe gespeichert');
+}
+
+/* ======================================================================
+   WOCHENPLANER
+   ====================================================================== */
+RENDERERS.week = function(){
+  const start = startOfWeek(currentWeekAnchor);
+  const days = [...Array(7)].map((_,i)=>{
+    const d = new Date(start); d.setDate(start.getDate()+i); return d;
+  });
+  const wk = weekKeyOf(currentWeekAnchor);
+  const goals = DATA.weekGoals[wk] || [];
+  const review = DATA.weekReviews[wk] || '';
+  const tk = todayKey();
+  const endLabel = formatDateDE(dateKey(days[6]));
+
+  return `
+    <div class="page-header">
+      <h1>Wochenplaner</h1>
+      <div class="sub">${formatDateDE(dateKey(days[0]))} – ${endLabel}</div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn secondary small" onclick="shiftWeek(-1)">← Vorherige Woche</button>
+      <button class="btn secondary small" onclick="currentWeekAnchor=new Date(); navigate('week');">Diese Woche</button>
+      <button class="btn secondary small" onclick="shiftWeek(1)">Nächste Woche →</button>
+      <button class="btn small" style="margin-left:auto;" onclick="openTaskModal()">+ Aufgabe</button>
+    </div>
+
+    <div class="week-grid">
+      ${days.map(d=>{
+        const dk = dateKey(d);
+        const dayTasks = DATA.tasks.filter(t=>t.dueDate===dk);
+        return `
+          <div class="week-day ${dk===tk?'today':''}">
+            <h4>${WEEKDAYS_DE[(d.getDay()+6)%7]}</h4>
+            <div class="date-num">${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.</div>
+            ${dayTasks.length ? dayTasks.map(t=>`
+              <div class="week-task ${t.status==='Erledigt'?'done':''}" onclick="openTaskModal('${t.id}')">${escapeHtml(t.title)}</div>
+            `).join('') : `<div class="help-text">Keine Aufgaben</div>`}
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title">Wochenziele
+          <button class="btn small" onclick="addWeekGoal('${wk}')">+ Ziel</button>
+        </div>
+        ${goals.length ? goals.map((g,i)=>`
+          <div class="list-row">
+            <div class="main-col"><div class="row-title">${escapeHtml(g)}</div></div>
+            <div class="row-actions"><button class="icon-btn" onclick="removeWeekGoal('${wk}',${i})">🗑️</button></div>
+          </div>
+        `).join('') : emptyRow('Noch keine Wochenziele gesetzt.')}
+      </div>
+      <div class="card">
+        <div class="card-title">Wochenrückblick</div>
+        <textarea id="week-review" placeholder="Wie lief die Woche? Was hat gut funktioniert?" onchange="saveWeekReview('${wk}',this.value)">${escapeHtml(review)}</textarea>
+      </div>
+    </div>
+  `;
+};
+function shiftWeek(delta){
+  currentWeekAnchor.setDate(currentWeekAnchor.getDate() + delta*7);
+  navigate('week');
+}
+function addWeekGoal(wk){
+  openModal(`
+    <h2>Neues Wochenziel</h2>
+    <div class="field"><label>Ziel</label><input type="text" id="wg-text" placeholder="z. B. Keller aufräumen"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn" onclick="confirmAddWeekGoal('${wk}')">Speichern</button>
+    </div>
+  `);
+}
+function confirmAddWeekGoal(wk){
+  const val = document.getElementById('wg-text').value.trim();
+  if(!val) return;
+  if(!DATA.weekGoals[wk]) DATA.weekGoals[wk]=[];
+  DATA.weekGoals[wk].push(val);
+  saveData();
+  closeModal();
+  navigate('week');
+}
+function removeWeekGoal(wk,i){
+  DATA.weekGoals[wk].splice(i,1);
+  saveData();
+  navigate('week');
+}
+function saveWeekReview(wk,val){
+  DATA.weekReviews[wk]=val;
+  saveData();
+  showToast('Wochenrückblick gespeichert');
+}
+
+/* ======================================================================
+   GEWOHNHEITSTRACKER
+   ====================================================================== */
+RENDERERS.habits = function(){
+  const tk = todayKey();
+  return `
+    <div class="page-header">
+      <h1>Gewohnheiten</h1>
+      <div class="sub">${DATA.habits.length} Gewohnheit(en)</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Heute
+        <button class="btn small" onclick="openHabitModal()">+ Neue Gewohnheit</button>
+      </div>
+      ${DATA.habits.length ? DATA.habits.map(h=>habitRow(h,tk)).join('') : emptyRow('Noch keine Gewohnheiten vorhanden. Füge deine erste Gewohnheit hinzu – klein anfangen reicht völlig.')}
+    </div>
+  `;
+};
+function habitRow(h, tk){
+  const checked = h.completions && h.completions[tk];
+  const streak = computeStreak(h);
+  return `
+    <div class="habit-row">
+      <div class="habit-check ${checked?'checked':''}" onclick="toggleHabit('${h.id}')">${checked?'✓':''}</div>
+      <div class="main-col">
+        <div class="row-title">${escapeHtml(h.title)}</div>
+        <div class="row-meta">
+          <span>${h.frequency==='daily'?'Täglich':'Wöchentlich'}</span>
+          ${h.category?`<span>${escapeHtml(h.category)}</span>`:''}
+          ${streak>0?`<span class="streak">🔥 ${streak} Tage Serie</span>`:''}
+        </div>
+      </div>
+      <div class="row-actions">
+        <button class="icon-btn" onclick="openHabitModal('${h.id}')">✏️</button>
+        <button class="icon-btn" onclick="deleteHabit('${h.id}')">🗑️</button>
+      </div>
+    </div>
+  `;
+}
+function computeStreak(h){
+  if(!h.completions) return 0;
+  let streak = 0;
+  let d = new Date();
+  while(true){
+    const dk = dateKey(d);
+    if(h.completions[dk]){ streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+function toggleHabit(id){
+  const h = DATA.habits.find(x=>x.id===id);
+  if(!h) return;
+  if(!h.completions) h.completions = {};
+  const tk = todayKey();
+  if(h.completions[tk]) delete h.completions[tk];
+  else h.completions[tk] = true;
+  saveData();
+  navigate('habits');
+}
+function openHabitModal(id){
+  const existing = id ? DATA.habits.find(h=>h.id===id) : null;
+  openModal(`
+    <h2>${existing?'Gewohnheit bearbeiten':'Neue Gewohnheit'}</h2>
+    <div class="field"><label>Titel *</label><input type="text" id="hf-title" value="${escapeHtml(existing?.title||'')}" placeholder="z. B. 10 Minuten lesen"></div>
+    <div class="field-row">
+      <div class="field"><label>Häufigkeit</label>
+        <select id="hf-freq">
+          <option value="daily" ${(!existing||existing.frequency==='daily')?'selected':''}>Täglich</option>
+          <option value="weekly" ${existing?.frequency==='weekly'?'selected':''}>Wöchentlich</option>
+        </select>
+      </div>
+      <div class="field"><label>Kategorie</label><input type="text" id="hf-cat" value="${escapeHtml(existing?.category||'')}" placeholder="z. B. Gesundheit"></div>
+    </div>
+    <div id="hf-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn" onclick="saveHabitForm('${existing?.id||''}')">Speichern</button>
+    </div>
+  `);
+}
+function saveHabitForm(id){
+  const title = document.getElementById('hf-title').value.trim();
+  const err = document.getElementById('hf-error');
+  if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
+  const payload = { title, frequency: document.getElementById('hf-freq').value, category: document.getElementById('hf-cat').value.trim() };
+  if(id){
+    Object.assign(DATA.habits.find(h=>h.id===id), payload);
+  }else{
+    payload.id = uid(); payload.createdAt = new Date().toISOString(); payload.completions = {};
+    DATA.habits.push(payload);
+  }
+  saveData();
+  closeModal();
+  navigate('habits');
+  showToast('Gewohnheit gespeichert');
+}
+function deleteHabit(id){
+  confirmAction('Diese Gewohnheit wirklich löschen? Der gesamte Verlauf geht verloren.', ()=>{
+    DATA.habits = DATA.habits.filter(h=>h.id!==id);
+    saveData();
+    navigate('habits');
+    showToast('Gewohnheit gelöscht');
+  });
+}
+
+/* ======================================================================
+   NOTIZEN
+   ====================================================================== */
+let noteSearch = '';
+RENDERERS.notes = function(){
+  let list = DATA.notes.slice().sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  if(noteSearch.trim()){
+    const q = noteSearch.toLowerCase();
+    list = list.filter(n=>n.title.toLowerCase().includes(q) || (n.content||'').toLowerCase().includes(q));
+  }
+  return `
+    <div class="page-header">
+      <h1>Notizen</h1>
+      <div class="sub">${DATA.notes.length} Notiz(en)</div>
+    </div>
+    <div class="toolbar">
+      <input type="text" class="search-box" placeholder="Notizen durchsuchen…" value="${escapeHtml(noteSearch)}" oninput="noteSearch=this.value; navigate('notes');">
+      <button class="btn" onclick="openNoteModal()">+ Neue Notiz</button>
+    </div>
+    <div class="grid grid-2">
+      ${list.length ? list.map(n=>`
+        <div class="card">
+          <div class="card-title">${escapeHtml(n.title)}
+            <span>
+              <button class="icon-btn" onclick="openNoteModal('${n.id}')">✏️</button>
+              <button class="icon-btn" onclick="deleteNote('${n.id}')">🗑️</button>
+            </span>
+          </div>
+          <p style="white-space:pre-wrap;font-size:13.5px;color:var(--warmgray);">${escapeHtml((n.content||'').slice(0,220))}${(n.content||'').length>220?'…':''}</p>
+          <div class="row-meta">${n.category?`<span class="pill deferred">${escapeHtml(n.category)}</span>`:''}<span>${formatDateDE(n.date)}</span></div>
+        </div>
+      `).join('') : `<div class="card">${emptyRow('Noch keine Notizen vorhanden. Halte deine erste Idee fest.')}</div>`}
+    </div>
+  `;
+};
+function openNoteModal(id){
+  const existing = id ? DATA.notes.find(n=>n.id===id) : null;
+  openModal(`
+    <h2>${existing?'Notiz bearbeiten':'Neue Notiz'}</h2>
+    <div class="field"><label>Titel *</label><input type="text" id="nf-title" value="${escapeHtml(existing?.title||'')}" placeholder="z. B. Ideen für den Garten"></div>
+    <div class="field"><label>Inhalt</label><textarea id="nf-content" style="min-height:120px;">${escapeHtml(existing?.content||'')}</textarea></div>
+    <div class="field"><label>Kategorie</label><input type="text" id="nf-cat" value="${escapeHtml(existing?.category||'')}" placeholder="optional"></div>
+    <div id="nf-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn" onclick="saveNoteForm('${existing?.id||''}')">Speichern</button>
+    </div>
+  `);
+}
+function saveNoteForm(id){
+  const title = document.getElementById('nf-title').value.trim();
+  const err = document.getElementById('nf-error');
+  if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
+  const payload = {
+    title,
+    content: document.getElementById('nf-content').value,
+    category: document.getElementById('nf-cat').value.trim(),
+    updatedAt: new Date().toISOString()
+  };
+  if(id){
+    Object.assign(DATA.notes.find(n=>n.id===id), payload);
+  }else{
+    payload.id = uid(); payload.date = todayKey(); payload.createdAt = new Date().toISOString();
+    DATA.notes.push(payload);
+  }
+  saveData();
+  closeModal();
+  navigate('notes');
+  showToast('Notiz gespeichert');
+}
+function deleteNote(id){
+  confirmAction('Diese Notiz wirklich löschen?', ()=>{
+    DATA.notes = DATA.notes.filter(n=>n.id!==id);
+    saveData();
+    navigate('notes');
+    showToast('Notiz gelöscht');
+  });
+}
+
+/* ======================================================================
+   AUSWERTUNGEN (einfache Statistiken)
+   ====================================================================== */
+RENDERERS.stats = function(){
+  const doneCount = DATA.tasks.filter(t=>t.status==='Erledigt').length;
+  const openCount = DATA.tasks.filter(t=>t.status!=='Erledigt').length;
+  const habitStreaks = DATA.habits.map(h=>({title:h.title, streak:computeStreak(h)}));
+  const bestStreak = habitStreaks.sort((a,b)=>b.streak-a.streak)[0];
+
+  if(!DATA.tasks.length && !DATA.habits.length && !DATA.notes.length){
+    return `
+      <div class="page-header"><h1>Auswertungen</h1></div>
+      <div class="card">${emptyRow('Noch keine Daten vorhanden. Sobald du Aufgaben, Gewohnheiten oder Notizen anlegst, erscheinen hier deine Auswertungen.')}</div>
+    `;
+  }
+
+  return `
+    <div class="page-header"><h1>Auswertungen</h1></div>
+    <div class="grid grid-3">
+      <div class="stat-tile"><div class="num">${doneCount}</div><div class="label">Erledigte Aufgaben</div></div>
+      <div class="stat-tile"><div class="num">${openCount}</div><div class="label">Offene Aufgaben</div></div>
+      <div class="stat-tile"><div class="num">${DATA.notes.length}</div><div class="label">Notizen gesamt</div></div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Gewohnheiten-Serien</div>
+      ${habitStreaks.length ? habitStreaks.map(h=>`
+        <div class="list-row"><div class="main-col"><div class="row-title">${escapeHtml(h.title)}</div></div><div class="streak">🔥 ${h.streak} Tage</div></div>
+      `).join('') : emptyRow('Noch keine Gewohnheiten angelegt.')}
+    </div>
+  `;
+};
+
+/* ======================================================================
+   EINSTELLUNGEN
+   ====================================================================== */
+const ALL_AREAS = [
+  {key:'today', label:'Mein Tag'},
+  {key:'tasks', label:'Aufgaben'},
+  {key:'week', label:'Wochenplaner'},
+  {key:'habits', label:'Gewohnheiten'},
+  {key:'notes', label:'Notizen'}
+];
+RENDERERS.settings = function(){
+  return `
+    <div class="page-header"><h1>Einstellungen</h1></div>
+
+    <div class="card">
+      <div class="card-title">Persönlich</div>
+      <div class="field"><label>Name / Begrüßung</label><input type="text" id="set-name" value="${escapeHtml(DATA.profile.name)}" onchange="DATA.profile.name=this.value; saveData(); showToast('Gespeichert');"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Allgemein</div>
+      <div class="field-row">
+        <div class="field"><label>Währung</label>
+          <select onchange="DATA.settings.currency=this.value; saveData(); showToast('Gespeichert');">
+            <option value="EUR" ${DATA.settings.currency==='EUR'?'selected':''}>Euro (€)</option>
+            <option value="CHF" ${DATA.settings.currency==='CHF'?'selected':''}>Schweizer Franken (CHF)</option>
+          </select>
+        </div>
+        <div class="field"><label>Wochenbeginn</label>
+          <select disabled><option selected>Montag</option></select>
+          <div class="help-text">Aktuell fest auf Montag eingestellt.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sichtbare Bereiche</div>
+      <p class="help-text">Bereiche, die du ausblendest, bleiben samt ihrer Daten erhalten – du kannst sie jederzeit wieder einblenden.</p>
+      ${ALL_AREAS.map(a=>`
+        <label class="area-check" style="margin-top:8px;">
+          <input type="checkbox" ${DATA.profile.visibleAreas.includes(a.key)?'checked':''} onchange="toggleArea('${a.key}', this.checked)">
+          ${a.label}
+        </label>
+      `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Daten</div>
+      <p class="help-text">Alle Daten werden ausschließlich lokal in deinem Browser gespeichert (localStorage). Beim Löschen der Browserdaten, einem Gerätewechsel oder Problemen mit dem Browser können diese Daten verloren gehen. Erstelle daher regelmäßig ein Backup über den Export.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+        <button class="btn secondary" onclick="exportData()">⬇️ Daten exportieren (JSON)</button>
+        <label class="btn secondary" style="position:relative;">
+          ⬆️ Daten importieren
+          <input type="file" accept="application/json" onchange="importData(this.files[0])" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+        </label>
+        <button class="btn danger" onclick="resetAllData()">🗑️ Alle Daten löschen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Über KlarLeben</div>
+      <p class="help-text">KlarLeben ist ein eigenständiges Organisationswerkzeug. Es behandelt, diagnostiziert oder verbessert kein ADHS und ersetzt keine medizinische oder psychologische Betreuung. Alle Einträge – insbesondere zu Gesundheit, Finanzen und Kontakten – werden ausschließlich lokal gespeichert.</p>
+    </div>
+  `;
+};
+function toggleArea(key, checked){
+  if(checked){
+    if(!DATA.profile.visibleAreas.includes(key)) DATA.profile.visibleAreas.push(key);
+  }else{
+    DATA.profile.visibleAreas = DATA.profile.visibleAreas.filter(a=>a!==key);
+  }
+  saveData();
+  applyVisibleAreas();
+  showToast('Gespeichert');
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'klarleben-backup-' + todayKey() + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Export erstellt');
+}
+function importData(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(typeof parsed !== 'object' || parsed===null) throw new Error('Ungültiges Format');
+      openModal(`
+        <h2>Daten importieren</h2>
+        <p>Dadurch werden deine aktuellen Daten in diesem Browser überschrieben. Dieser Vorgang kann nicht rückgängig gemacht werden.</p>
+        <div class="modal-actions">
+          <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+          <button class="btn danger" id="doImportBtn">Jetzt überschreiben</button>
+        </div>
+      `);
+      document.getElementById('doImportBtn').onclick = ()=>{
+        const base = defaultData();
+        DATA = Object.assign(base, parsed, {
+          profile: Object.assign(base.profile, parsed.profile||{}),
+          settings: Object.assign(base.settings, parsed.settings||{})
+        });
+        saveData();
+        closeModal();
+        applyVisibleAreas();
+        navigate('settings');
+        showToast('Daten importiert');
+      };
+    }catch(err){
+      openModal(`<h2>Import fehlgeschlagen</h2><p>Die Datei konnte nicht gelesen werden. Bitte stelle sicher, dass es sich um eine gültige KlarLeben-Exportdatei (JSON) handelt.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">OK</button></div>`);
+    }
+  };
+  reader.readAsText(file);
+}
+function resetAllData(){
+  confirmAction('Wirklich ALLE Daten unwiderruflich löschen? Erstelle vorher am besten ein Backup.', ()=>{
+    DATA = defaultData();
+    DATA.profile.onboarded = false;
+    saveData();
+    location.reload();
+  });
+}
+
+/* ======================================================================
+   INIT
+   ====================================================================== */
+function initNav(){
+  applyVisibleAreas();
+}
+initOnboarding();
+initNav();
+if(DATA.profile.onboarded){
+  navigate('dashboard');
+}
+</script>
+</body>
+</html>
