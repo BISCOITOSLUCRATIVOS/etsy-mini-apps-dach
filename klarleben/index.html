@@ -20,8 +20,20 @@
     --radius-l:20px;
     --shadow:0 2px 10px rgba(41,43,41,0.06);
     --shadow-lift:0 6px 20px rgba(41,43,41,0.10);
-    --sidebar-w:240px;
+    --sidebar-w:250px;
   }
+  html[data-theme="dark"]{
+    --cream:#1E211E;
+    --beige:#262A26;
+    --sage:#3A4A3E;
+    --forest:#8FB89A;
+    --rose:#4A3230;
+    --warmgray:#A3A19C;
+    --text:#EDEDE8;
+    --white:#24271F;
+    --danger:#E08A7C;
+  }
+  html[data-theme="dark"] body{background:var(--beige);}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
@@ -30,6 +42,7 @@
     color:var(--text);
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
+    transition:background .2s,color .2s;
   }
   h1,h2,h3,h4{font-weight:700;margin:0 0 4px 0;letter-spacing:-0.01em;}
   p{margin:0 0 8px 0;line-height:1.5;}
@@ -47,18 +60,19 @@
     flex-direction:column;
     flex-shrink:0;
     padding:20px 14px;
+    overflow-y:auto;
   }
   .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 20px 10px;}
-  .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--sage),var(--forest));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:15px;}
+  .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--sage),var(--forest));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:15px;flex-shrink:0;}
   .brand-name{font-size:17px;font-weight:700;}
   .brand-sub{font-size:11px;color:var(--warmgray);}
 
-  .nav-group{margin-bottom:6px;}
+  .nav-group{margin-bottom:2px;}
   .nav-group-title{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--warmgray);padding:14px 10px 6px;}
   .nav-item{
     display:flex;align-items:center;gap:10px;
     padding:9px 10px;border-radius:var(--radius-s);
-    color:var(--text);text-decoration:none;font-size:14px;
+    color:var(--text);text-decoration:none;font-size:13.5px;
     cursor:pointer;border:none;background:none;width:100%;text-align:left;
   }
   .nav-item:hover{background:var(--beige);}
@@ -76,29 +90,32 @@
   .hamburger{background:none;border:none;font-size:20px;padding:6px 8px;border-radius:var(--radius-s);}
   .hamburger:hover{background:var(--beige);}
 
-  .content{flex:1;padding:28px 32px 100px;max-width:1100px;width:100%;margin:0 auto;}
-  .page-header{margin-bottom:22px;}
+  .content{flex:1;padding:28px 32px 100px;max-width:1150px;width:100%;margin:0 auto;}
+  .page-header{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .page-header h1{font-size:24px;}
   .page-header .sub{color:var(--warmgray);font-size:14px;}
 
   /* ---------- Cards / components ---------- */
   .card{background:var(--white);border-radius:var(--radius-m);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;}
-  .card-title{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+  .card-title{font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .grid{display:grid;gap:16px;}
   .grid-2{grid-template-columns:repeat(2,1fr);}
   .grid-3{grid-template-columns:repeat(3,1fr);}
-  @media (max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
 
-  .stat-tile{background:var(--white);border-radius:var(--radius-m);padding:16px 18px;box-shadow:var(--shadow);}
-  .stat-tile .num{font-size:26px;font-weight:700;color:var(--forest);}
-  .stat-tile .label{font-size:12.5px;color:var(--warmgray);margin-top:2px;}
+  .stat-tile{background:var(--white);border-radius:var(--radius-m);padding:14px 16px;box-shadow:var(--shadow);}
+  .stat-tile .num{font-size:24px;font-weight:700;color:var(--forest);}
+  .stat-tile .num.warn{color:var(--danger);}
+  .stat-tile .label{font-size:12px;color:var(--warmgray);margin-top:2px;}
 
   .btn{
     display:inline-flex;align-items:center;gap:6px;
     padding:9px 16px;border-radius:999px;border:none;
     font-size:13.5px;font-weight:600;
     background:var(--forest);color:var(--white);
-    transition:opacity .15s;
+    transition:opacity .15s;white-space:nowrap;
   }
   .btn:hover{opacity:.9;}
   .btn.secondary{background:var(--beige);color:var(--text);}
@@ -119,8 +136,9 @@
   }
   .field textarea{resize:vertical;min-height:70px;}
   .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--sage);border-color:var(--forest);}
-  .field-row{display:flex;gap:10px;}
-  .field-row > .field{flex:1;}
+  .field-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .field-row > .field{flex:1;min-width:140px;}
+  .field input[type=range]{width:100%;}
 
   .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;}
   .pill.open{background:var(--rose);color:#8a3f36;}
@@ -130,6 +148,7 @@
   .pill.prio-hoch{background:#F6D2CE;color:#9c3b2d;}
   .pill.prio-mittel{background:#FCE9C8;color:#8a6a1e;}
   .pill.prio-niedrig{background:var(--sage);color:var(--forest);}
+  .pill.lowstock{background:#F6D2CE;color:#9c3b2d;}
 
   .list-row{
     display:flex;align-items:flex-start;gap:12px;
@@ -155,12 +174,18 @@
 
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
   .toolbar select, .toolbar input[type=text]{
-    padding:8px 10px;border-radius:var(--radius-s);border:1px solid rgba(82,107,89,0.2);background:var(--white);font-size:13px;
+    padding:8px 10px;border-radius:var(--radius-s);border:1px solid rgba(82,107,89,0.2);background:var(--white);font-size:13px;color:var(--text);
   }
   .search-box{flex:1;min-width:160px;}
 
   .progress-bar{height:8px;border-radius:99px;background:var(--beige);overflow:hidden;}
   .progress-bar-fill{height:100%;background:var(--forest);border-radius:99px;transition:width .3s;}
+  .progress-bar-fill.warn{background:var(--danger);}
+
+  /* Tabs */
+  .tab-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+  .tab-btn{padding:8px 14px;border-radius:999px;border:1px solid rgba(82,107,89,0.2);background:var(--white);font-size:13px;font-weight:600;color:var(--text);}
+  .tab-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
 
   /* Modal */
   .modal-overlay{
@@ -168,9 +193,9 @@
     display:none;align-items:center;justify-content:center;z-index:100;padding:16px;
   }
   .modal-overlay.show{display:flex;}
-  .modal{background:var(--white);border-radius:var(--radius-l);padding:24px;max-width:480px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lift);}
+  .modal{background:var(--white);border-radius:var(--radius-l);padding:24px;max-width:500px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lift);}
   .modal h2{font-size:18px;margin-bottom:14px;}
-  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap;}
 
   .toast{
     position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -184,9 +209,9 @@
   @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
   .week-day{background:var(--white);border-radius:var(--radius-m);padding:12px;box-shadow:var(--shadow);min-height:120px;}
   .week-day.today{outline:2px solid var(--forest);}
-  .week-day h4{font-size:12.5px;color:var(--warmgray);text-transform:uppercase;letter-spacing:.04em;}
+  .week-day h4{font-size:12.5px;color:var(--warmgray);text-transform:uppercase;letter-spacing:.04em;margin:0;}
   .week-day .date-num{font-size:16px;font-weight:700;margin-bottom:8px;}
-  .week-task{font-size:12.5px;background:var(--beige);border-radius:6px;padding:5px 7px;margin-bottom:5px;}
+  .week-task{font-size:12.5px;background:var(--beige);border-radius:6px;padding:5px 7px;margin-bottom:5px;cursor:pointer;}
   .week-task.done{opacity:.5;text-decoration:line-through;}
 
   .habit-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--beige);}
@@ -196,7 +221,17 @@
     display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;background:var(--cream);
   }
   .habit-check.checked{background:var(--forest);border-color:var(--forest);color:var(--white);}
-  .streak{font-size:11.5px;color:var(--forest);background:var(--sage);padding:2px 8px;border-radius:99px;}
+  .streak{font-size:11.5px;color:var(--forest);background:var(--sage);padding:2px 8px;border-radius:99px;white-space:nowrap;}
+  .mini-week{display:flex;gap:4px;margin-top:6px;}
+  .mini-day{width:18px;height:18px;border-radius:5px;background:var(--beige);font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--warmgray);}
+  .mini-day.on{background:var(--forest);color:var(--white);}
+
+  /* Meal grid */
+  .meal-grid{display:grid;grid-template-columns:120px repeat(7,1fr);gap:6px;font-size:12.5px;}
+  .meal-grid .mh{font-weight:700;text-align:center;padding:6px 2px;color:var(--warmgray);font-size:11.5px;text-transform:uppercase;}
+  .meal-cell{background:var(--white);border-radius:8px;padding:6px;min-height:44px;box-shadow:var(--shadow);cursor:pointer;}
+  .meal-cell .rlabel{font-weight:600;color:var(--warmgray);padding:10px 4px;}
+  @media (max-width:900px){.meal-grid{grid-template-columns:1fr;} .meal-grid .mh{display:none;}}
 
   /* Onboarding */
   .onboarding-overlay{position:fixed;inset:0;background:var(--beige);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -208,8 +243,12 @@
   .area-check{display:flex;align-items:center;gap:8px;text-align:left;padding:8px 10px;border-radius:var(--radius-s);border:1px solid rgba(82,107,89,0.15);margin-bottom:8px;cursor:pointer;}
   .area-check input{margin:0;}
 
+  /* SOS */
+  .sos-btn{background:var(--danger);color:#fff;border-radius:var(--radius-l);padding:18px 22px;font-size:15px;font-weight:700;width:100%;text-align:center;box-shadow:var(--shadow-lift);}
+  .sos-step{background:var(--white);border-radius:var(--radius-m);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;}
+  .sos-num{width:26px;height:26px;border-radius:50%;background:var(--sage);color:var(--forest);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
   /* Mobile nav */
-  .mobile-nav{display:none;}
   @media (max-width:860px){
     .sidebar{display:none;}
     .topbar{display:flex;}
@@ -218,14 +257,15 @@
       display:flex;position:fixed;top:0;left:0;bottom:0;z-index:50;
       box-shadow:var(--shadow-lift);
     }
-    .sidebar-backdrop{display:none;}
     .sidebar-backdrop.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:40;}
   }
+  .sidebar-backdrop{display:none;}
 
   .help-text{font-size:12.5px;color:var(--warmgray);}
   .divider{height:1px;background:var(--beige);margin:14px 0;}
   .inline-warn{background:var(--rose);color:#8a3f36;padding:10px 12px;border-radius:var(--radius-s);font-size:13px;margin-bottom:12px;}
   a{color:var(--forest);}
+  .theme-toggle{background:var(--beige);border:none;border-radius:999px;padding:7px 12px;font-size:13px;}
 </style>
 </head>
 <body>
@@ -246,14 +286,16 @@
     </div>
     <div id="ob-step-2" class="onboard-step">
       <h1>Womit möchtest du starten?</h1>
-      <p>Du kannst jederzeit in den Einstellungen weitere Bereiche aktivieren.</p>
+      <p>Du kannst jederzeit in den Einstellungen weitere Bereiche aktivieren oder ausblenden.</p>
       <div style="text-align:left;margin-top:16px;max-height:260px;overflow-y:auto;">
         <label class="area-check"><input type="checkbox" value="dashboard" checked disabled> Übersicht (immer aktiv)</label>
-        <label class="area-check"><input type="checkbox" value="today" checked> Mein Tag</label>
-        <label class="area-check"><input type="checkbox" value="tasks" checked> Aufgaben</label>
+        <label class="area-check"><input type="checkbox" value="today" checked> Mein Tag &amp; Aufgaben</label>
         <label class="area-check"><input type="checkbox" value="week" checked> Wochenplaner</label>
-        <label class="area-check"><input type="checkbox" value="habits" checked> Gewohnheiten</label>
-        <label class="area-check"><input type="checkbox" value="notes" checked> Notizen</label>
+        <label class="area-check"><input type="checkbox" value="habits" checked> Gewohnheiten &amp; Journal</label>
+        <label class="area-check"><input type="checkbox" value="finance" checked> Finanzen</label>
+        <label class="area-check"><input type="checkbox" value="health" checked> Gesundheit</label>
+        <label class="area-check"><input type="checkbox" value="household" checked> Haushalt &amp; Mahlzeiten</label>
+        <label class="area-check"><input type="checkbox" value="school" checked> Arbeit &amp; Lernen</label>
       </div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
         <button class="btn secondary" onclick="obGoto(1)">Zurück</button>
@@ -280,20 +322,35 @@
     <div class="nav-group" data-area="today">
       <div class="nav-group-title">Alltag</div>
       <button class="nav-item" data-section="today" onclick="navigate('today')"><span class="nav-icon">☀️</span> Mein Tag</button>
-    </div>
-    <div class="nav-group" data-area="tasks">
       <button class="nav-item" data-section="tasks" onclick="navigate('tasks')"><span class="nav-icon">✅</span> Aufgaben</button>
+      <button class="nav-item" data-section="sos" onclick="navigate('sos')"><span class="nav-icon">🆘</span> Überforderungs-SOS</button>
     </div>
     <div class="nav-group" data-area="week">
       <div class="nav-group-title">Planung</div>
       <button class="nav-item" data-section="week" onclick="navigate('week')"><span class="nav-icon">📅</span> Wochenplaner</button>
     </div>
+    <div class="nav-group" data-area="school">
+      <div class="nav-group-title">Arbeit &amp; Lernen</div>
+      <button class="nav-item" data-section="school" onclick="navigate('school')"><span class="nav-icon">🎓</span> Aufgaben &amp; Abgaben</button>
+    </div>
+    <div class="nav-group" data-area="health">
+      <div class="nav-group-title">Gesundheit</div>
+      <button class="nav-item" data-section="health" onclick="navigate('health')"><span class="nav-icon">🩺</span> Gesundheit</button>
+    </div>
     <div class="nav-group" data-area="habits">
       <div class="nav-group-title">Persönliches</div>
       <button class="nav-item" data-section="habits" onclick="navigate('habits')"><span class="nav-icon">🌱</span> Gewohnheiten</button>
-    </div>
-    <div class="nav-group" data-area="notes">
+      <button class="nav-item" data-section="journal" onclick="navigate('journal')"><span class="nav-icon">📖</span> Journal</button>
       <button class="nav-item" data-section="notes" onclick="navigate('notes')"><span class="nav-icon">📝</span> Notizen</button>
+    </div>
+    <div class="nav-group" data-area="household">
+      <div class="nav-group-title">Haushalt &amp; Mahlzeiten</div>
+      <button class="nav-item" data-section="household" onclick="navigate('household')"><span class="nav-icon">🧹</span> Reinigungsplan</button>
+      <button class="nav-item" data-section="meals" onclick="navigate('meals')"><span class="nav-icon">🍽️</span> Essensplanung</button>
+    </div>
+    <div class="nav-group" data-area="finance">
+      <div class="nav-group-title">Finanzen</div>
+      <button class="nav-item" data-section="finance" onclick="navigate('finance')"><span class="nav-icon">💰</span> Finanzen</button>
     </div>
     <div class="nav-group" style="margin-top:auto;">
       <div class="nav-group-title">System</div>
@@ -306,7 +363,7 @@
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar(true)">☰</button>
       <div class="brand-name" style="font-size:15px;">KlarLeben</div>
-      <div style="width:32px;"></div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleMobile">🌙</button>
     </div>
     <div class="content" id="content"></div>
   </div>
@@ -322,18 +379,41 @@
 /* ======================================================================
    KLARLEBEN – Datenmodell & Speicherarchitektur (Phase 1)
    ====================================================================== */
-const STORAGE_KEY = 'klarleben_data_v1';
+const STORAGE_KEY = 'klarleben_data_v2';
 
 function defaultData(){
   return {
-    profile: { name: '', onboarded: false, visibleAreas: ['dashboard','today','tasks','week','habits','notes'] },
+    profile: { name: '', onboarded: false, visibleAreas: ['today','week','habits','finance','health','household','school'] },
     settings: { theme: 'light', currency: 'EUR', weekStart: 'monday' },
-    tasks: [],      // {id,title,description,dueDate,priority,category,status,createdAt}
-    habits: [],     // {id,title,frequency,category,createdAt,completions:{date:true}}
-    notes: [],      // {id,title,content,category,date,updatedAt}
-    dailyGoals: {},  // {dateKey: text}
-    weekGoals: {},   // {weekKey: [text,...]}
-    weekReviews: {}  // {weekKey: text}
+    tasks: [],
+    habits: [],
+    notes: [],
+    dailyGoals: {},
+    weekGoals: {},
+    weekReviews: {},
+    journal: [],          // {id,date,mood,energy,gratitude:[],freeText,highlight,hard,tomorrow}
+    assignments: [],      // {id,title,subject,type,dueDate,priority,status,notes,gradeWeight}
+    cleaning: [],         // {id,task,room,frequency,lastDone}
+    health: {
+      sleep: [],           // {id,date,bedTime,wakeTime,quality,notes}
+      movement: [],        // {id,date,activity,duration,category}
+      meds: []             // {id,name,dose,type,logs:[{date,time,notes}]}
+    },
+    meals: {
+      plan: {},            // {weekKey: {mon:{fruehstueck,mittag,abend}, ...}}
+      recipes: [],          // {id,title,ingredients,steps,time,servings,category}
+      pantry: [],            // {id,name,qty,unit,category,minStock}
+      freezer: [],            // {id,name,qty,frozenDate,category,notes}
+      grocery: []               // {id,name,qty,category,checked}
+    },
+    finance: {
+      income: 0,
+      bills: [],             // {id,name,amount,dueDay,category,autopay,paid}
+      budgetCategories: [],  // {id,name,planned,group:'bedarf'|'wunsch'|'sparen'}
+      expenses: [],           // {id,date,amount,category,description}
+      debts: [],                // {id,name,type,balance,originalBalance,interestRate,minPayment,payments:[]}
+      savingsGoals: []           // {id,name,target,current,deposits:[]}
+    }
   };
 }
 
@@ -344,30 +424,28 @@ function loadData(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return defaultData();
     const parsed = JSON.parse(raw);
-    // merge with defaults to tolerate older/partial structures
     const base = defaultData();
-    return Object.assign(base, parsed, {
+    const merged = Object.assign(base, parsed, {
       profile: Object.assign(base.profile, parsed.profile||{}),
-      settings: Object.assign(base.settings, parsed.settings||{})
+      settings: Object.assign(base.settings, parsed.settings||{}),
+      health: Object.assign(base.health, parsed.health||{}),
+      meals: Object.assign(base.meals, parsed.meals||{}),
+      finance: Object.assign(base.finance, parsed.finance||{})
     });
+    return merged;
   }catch(e){
     console.error('KlarLeben: Fehler beim Laden der Daten', e);
     return defaultData();
   }
 }
 
-let saveTimer = null;
 function saveData(){
   try{
     localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
-    flashSaveStatus(true);
   }catch(e){
     console.error('KlarLeben: Fehler beim Speichern', e);
-    flashSaveStatus(false);
+    showToast('Fehler beim Speichern – Speicher evtl. voll.');
   }
-}
-function flashSaveStatus(ok){
-  // lightweight, non-intrusive save confirmation via toast only on explicit actions (handled by caller)
 }
 
 function uid(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8); }
@@ -376,6 +454,7 @@ function uid(){ return 'id_' + Date.now().toString(36) + '_' + Math.random().toS
 function pad2(n){ return n.toString().padStart(2,'0'); }
 function dateKey(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
 function todayKey(){ return dateKey(new Date()); }
+function monthKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
 function formatDateDE(d){
   if(typeof d === 'string'){ d = parseDateKey(d); }
   if(!d || isNaN(d)) return '–';
@@ -387,11 +466,18 @@ function parseDateKey(key){
   if(!y||!m||!day) return null;
   return new Date(y, m-1, day);
 }
+function daysUntil(dueKey){
+  if(!dueKey) return null;
+  const d = parseDateKey(dueKey);
+  const t = parseDateKey(todayKey());
+  return Math.round((d-t)/86400000);
+}
 const WEEKDAYS_DE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+const WEEKDAYS_SHORT_DE = ['Mo','Di','Mi','Do','Fr','Sa','So'];
 function startOfWeek(d){
   const date = new Date(d);
-  const day = date.getDay(); // 0=So
-  const diff = (day === 0 ? -6 : 1) - day; // Montag als Start
+  const day = date.getDay();
+  const diff = (day === 0 ? -6 : 1) - day;
   date.setDate(date.getDate()+diff);
   date.setHours(0,0,0,0);
   return date;
@@ -399,9 +485,6 @@ function startOfWeek(d){
 function weekKeyOf(d){ return dateKey(startOfWeek(d)); }
 let currentWeekAnchor = new Date();
 
-function currencySymbol(){
-  return DATA.settings.currency === 'CHF' ? 'CHF' : '€';
-}
 function formatMoney(n){
   const num = Number(n)||0;
   const formatted = num.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -444,10 +527,31 @@ function escapeHtml(str){
   if(str===undefined||str===null) return '';
   return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 function toggleSidebar(open){
   document.getElementById('sidebar').classList.toggle('open', open);
   document.getElementById('sidebarBackdrop').classList.toggle('show', open);
+}
+function emptyRow(text){
+  return `<div class="empty-state" style="padding:20px 10px;"><p>${escapeHtml(text)}</p></div>`;
+}
+function tabBar(tabs, activeKey, onclickFnName){
+  return `<div class="tab-bar">${tabs.map(t=>`
+    <button class="tab-btn ${t.key===activeKey?'active':''}" onclick="${onclickFnName}('${t.key}')">${escapeHtml(t.label)}</button>
+  `).join('')}</div>`;
+}
+
+/* ---------------- Dark Mode ---------------- */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', DATA.settings.theme==='dark'?'dark':'light');
+  const icon = DATA.settings.theme==='dark' ? '☀️' : '🌙';
+  const btn = document.getElementById('themeToggleMobile');
+  if(btn) btn.textContent = icon;
+}
+function toggleTheme(){
+  DATA.settings.theme = DATA.settings.theme==='dark' ? 'light' : 'dark';
+  saveData();
+  applyTheme();
+  if(document.getElementById('app').style.display!=='none') navigate(currentSection);
 }
 
 /* ======================================================================
@@ -469,7 +573,7 @@ function obGoto(step){
 }
 function finishOnboarding(){
   const checks = document.querySelectorAll('#ob-step-2 .area-check input[type=checkbox]');
-  const areas = ['dashboard'];
+  const areas = [];
   checks.forEach(c=>{ if(c.checked && c.value!=='dashboard') areas.push(c.value); });
   DATA.profile.visibleAreas = areas;
   DATA.profile.onboarded = true;
@@ -481,7 +585,6 @@ function finishOnboarding(){
 }
 function skipOnboarding(){
   DATA.profile.name = document.getElementById('ob-name').value.trim();
-  DATA.profile.visibleAreas = ['dashboard','today','tasks','week','habits','notes'];
   DATA.profile.onboarded = true;
   saveData();
   document.getElementById('onboarding').style.display = 'none';
@@ -500,7 +603,7 @@ function applyVisibleAreas(){
    Navigation / Router
    ====================================================================== */
 let currentSection = 'dashboard';
-const RENDERERS = {}; // filled below per section
+const RENDERERS = {};
 
 function navigate(section){
   currentSection = section;
@@ -510,14 +613,9 @@ function navigate(section){
   toggleSidebar(false);
   const fn = RENDERERS[section] || renderNotFound;
   document.getElementById('content').innerHTML = fn();
-  afterRender(section);
   window.scrollTo(0,0);
 }
 function renderNotFound(){ return `<div class="empty-state"><div class="icon">🙈</div><p>Dieser Bereich ist noch nicht verfügbar.</p></div>`; }
-function afterRender(section){
-  if(AFTER_RENDER[section]) AFTER_RENDER[section]();
-}
-const AFTER_RENDER = {};
 
 /* ======================================================================
    DASHBOARD
@@ -538,13 +636,16 @@ RENDERERS.dashboard = function(){
 
   return `
     <div class="page-header">
-      <h1>Hallo${greetName} 👋</h1>
-      <div class="sub">${dateStr}</div>
+      <div>
+        <h1>Hallo${greetName} 👋</h1>
+        <div class="sub">${dateStr}</div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">${DATA.settings.theme==='dark'?'☀️ Hell':'🌙 Dunkel'}</button>
     </div>
 
     <div class="grid grid-3" style="margin-bottom:18px;">
       <div class="stat-tile"><div class="num">${todayTasks.length}</div><div class="label">Aufgaben heute</div></div>
-      <div class="stat-tile"><div class="num">${overdue.length}</div><div class="label">Überfällig</div></div>
+      <div class="stat-tile"><div class="num ${overdue.length?'warn':''}">${overdue.length}</div><div class="label">Überfällig</div></div>
       <div class="stat-tile"><div class="num">${habitsDone.length}/${habitsToday.length}</div><div class="label">Gewohnheiten heute</div></div>
     </div>
 
@@ -592,13 +693,11 @@ RENDERERS.dashboard = function(){
         <button class="btn secondary" onclick="navigate('week')">Wochenplaner</button>
         <button class="btn secondary" onclick="navigate('habits')">Gewohnheiten</button>
         <button class="btn secondary" onclick="openNoteModal()">+ Notiz</button>
+        <button class="btn secondary" onclick="navigate('sos')">🆘 Überforderungs-SOS</button>
       </div>
     </div>
   `;
 };
-function emptyRow(text){
-  return `<div class="empty-state" style="padding:20px 10px;"><p>${escapeHtml(text)}</p></div>`;
-}
 
 /* ======================================================================
    MEIN TAG
@@ -612,8 +711,7 @@ RENDERERS.today = function(){
 
   return `
     <div class="page-header">
-      <h1>Mein Tag</h1>
-      <div class="sub">${formatDateDE(tk)}</div>
+      <div><h1>Mein Tag</h1><div class="sub">${formatDateDE(tk)}</div></div>
     </div>
 
     <div class="card">
@@ -649,6 +747,17 @@ let taskFilterStatus = 'alle';
 let taskSort = 'datum';
 let taskSearch = '';
 
+function taskCompletionStreak(){
+  let streak = 0;
+  let d = new Date();
+  while(true){
+    const dk = dateKey(d);
+    const doneThatDay = DATA.tasks.some(t=>t.completedAt && t.completedAt.slice(0,10)===dk);
+    if(doneThatDay){ streak++; d.setDate(d.getDate()-1); } else break;
+  }
+  return streak;
+}
+
 RENDERERS.tasks = function(){
   let list = DATA.tasks.slice();
   if(taskFilterStatus !== 'alle') list = list.filter(t=>t.status===taskFilterStatus);
@@ -658,11 +767,22 @@ RENDERERS.tasks = function(){
     const order={hoch:0,mittel:1,niedrig:2};
     list.sort((a,b)=>(order[a.priority]??1)-(order[b.priority]??1));
   }
+  const tk = todayKey();
+  const overdueCount = DATA.tasks.filter(t=>t.dueDate && t.dueDate<tk && t.status!=='Erledigt').length;
+  const dueTodayCount = DATA.tasks.filter(t=>t.dueDate===tk && t.status!=='Erledigt').length;
+  const doneTodayCount = DATA.tasks.filter(t=>t.completedAt && t.completedAt.slice(0,10)===tk).length;
+  const streak = taskCompletionStreak();
 
   return `
     <div class="page-header">
-      <h1>Aufgabenmanager</h1>
-      <div class="sub">${DATA.tasks.length} Aufgabe(n) insgesamt</div>
+      <div><h1>Aufgabenmanager</h1><div class="sub">${DATA.tasks.length} Aufgabe(n) insgesamt</div></div>
+    </div>
+
+    <div class="grid grid-4" style="margin-bottom:16px;">
+      <div class="stat-tile"><div class="num ${overdueCount?'warn':''}">${overdueCount}</div><div class="label">Überfällig</div></div>
+      <div class="stat-tile"><div class="num">${dueTodayCount}</div><div class="label">Fällig heute</div></div>
+      <div class="stat-tile"><div class="num">${doneTodayCount}</div><div class="label">Erledigt heute</div></div>
+      <div class="stat-tile"><div class="num">🔥 ${streak}</div><div class="label">Tage-Serie</div></div>
     </div>
 
     <div class="toolbar">
@@ -678,6 +798,7 @@ RENDERERS.tasks = function(){
         <option value="datum" ${taskSort==='datum'?'selected':''}>Nach Datum</option>
         <option value="prioritaet" ${taskSort==='prioritaet'?'selected':''}>Nach Priorität</option>
       </select>
+      <button class="btn secondary" onclick="pickTaskForMe()">🎲 Aufgabe für mich auswählen</button>
       <button class="btn" onclick="openTaskModal()">+ Neue Aufgabe</button>
     </div>
 
@@ -686,6 +807,21 @@ RENDERERS.tasks = function(){
     </div>
   `;
 };
+
+function pickTaskForMe(){
+  const open = DATA.tasks.filter(t=>t.status==='Offen' || t.status==='In Bearbeitung');
+  if(!open.length){ showToast('Keine offenen Aufgaben vorhanden'); return; }
+  const pick = open[Math.floor(Math.random()*open.length)];
+  openModal(`
+    <h2>Deine nächste Aufgabe</h2>
+    <p style="font-size:17px;font-weight:600;">${escapeHtml(pick.title)}</p>
+    ${pick.description?`<p class="help-text">${escapeHtml(pick.description)}</p>`:''}
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Schließen</button>
+      <button class="btn" onclick="toggleTaskDone('${pick.id}'); closeModal(); navigate('tasks');">Als erledigt markieren</button>
+    </div>
+  `);
+}
 
 function taskRow(t){
   const overdue = t.dueDate && t.dueDate<todayKey() && t.status!=='Erledigt';
@@ -711,11 +847,11 @@ function taskRow(t){
 function statusPillClass(status){
   return {Offen:'open','In Bearbeitung':'progress',Erledigt:'done','Zurückgestellt':'deferred'}[status] || 'open';
 }
-
 function toggleTaskDone(id){
   const t = DATA.tasks.find(x=>x.id===id);
   if(!t) return;
-  t.status = t.status==='Erledigt' ? 'Offen' : 'Erledigt';
+  if(t.status==='Erledigt'){ t.status='Offen'; t.completedAt=null; }
+  else { t.status='Erledigt'; t.completedAt=new Date().toISOString(); }
   saveData();
   navigate(currentSection);
 }
@@ -763,20 +899,24 @@ function saveTaskForm(id){
   const err = document.getElementById('tf-error');
   if(!title){ err.textContent = 'Bitte gib einen Titel ein.'; err.style.display='block'; return; }
   const dueDate = document.getElementById('tf-date').value;
+  const status = document.getElementById('tf-status').value;
   const payload = {
     title,
     description: document.getElementById('tf-desc').value.trim(),
     dueDate: dueDate || '',
     priority: document.getElementById('tf-prio').value,
     category: document.getElementById('tf-cat').value.trim(),
-    status: document.getElementById('tf-status').value
+    status
   };
   if(id){
     const t = DATA.tasks.find(x=>x.id===id);
+    if(status==='Erledigt' && t.status!=='Erledigt') payload.completedAt = new Date().toISOString();
+    if(status!=='Erledigt') payload.completedAt = null;
     Object.assign(t, payload);
   }else{
     payload.id = uid();
     payload.createdAt = new Date().toISOString();
+    payload.completedAt = status==='Erledigt' ? new Date().toISOString() : null;
     DATA.tasks.push(payload);
   }
   saveData();
@@ -786,13 +926,32 @@ function saveTaskForm(id){
 }
 
 /* ======================================================================
+   ÜBERFORDERUNGS-SOS
+   ====================================================================== */
+RENDERERS.sos = function(){
+  return `
+    <div class="page-header"><div><h1>Überforderungs-SOS</h1><div class="sub">Für Momente, in denen alles zu viel wird</div></div></div>
+    <div class="card" style="text-align:center;">
+      <p>Du bist nicht kaputt – dein Gehirn ist gerade überlastet. Das geht vorbei. Gehe diese Schritte der Reihe nach durch.</p>
+    </div>
+    <div class="sos-step"><div class="sos-num">1</div><div><strong>Stopp.</strong> Lege beide Hände flach auf eine Oberfläche. Spüre die Textur und Temperatur – einfach nur wahrnehmen.</div></div>
+    <div class="sos-step"><div class="sos-num">2</div><div><strong>Atme (4-4-6).</strong> 4 Sekunden einatmen, 4 Sekunden halten, 6 Sekunden ausatmen. Wiederhole das vier Mal.</div></div>
+    <div class="sos-step"><div class="sos-num">3</div><div><strong>Nenne 5 Dinge</strong>, die du gerade siehst. Sprich sie laut aus – das aktiviert den präfrontalen Kortex.</div></div>
+    <div class="sos-step"><div class="sos-num">4</div><div><strong>Wähle EINE Mikro-Aufgabe</strong> (unter 5 Minuten). Nicht das große Ganze – nur eine winzige Sache.</div></div>
+    <div class="card" style="text-align:center;">
+      <button class="btn" onclick="pickTaskForMe()">Entscheide für mich – eine Aufgabe auswählen</button>
+      <p class="help-text" style="margin-top:10px;">Du schaffst das. Jeder kleine Schritt zählt bereits als Erfolg.</p>
+    </div>
+    <div class="inline-warn" style="background:var(--sage);color:var(--forest);">Hinweis: KlarLeben ist ein Organisationswerkzeug und kein Ersatz für professionelle Hilfe. Wenn du dich in einer akuten Krise befindest, wende dich bitte an eine Vertrauensperson oder eine Krisenanlaufstelle in deiner Nähe.</div>
+  `;
+};
+
+/* ======================================================================
    WOCHENPLANER
    ====================================================================== */
 RENDERERS.week = function(){
   const start = startOfWeek(currentWeekAnchor);
-  const days = [...Array(7)].map((_,i)=>{
-    const d = new Date(start); d.setDate(start.getDate()+i); return d;
-  });
+  const days = [...Array(7)].map((_,i)=>{ const d = new Date(start); d.setDate(start.getDate()+i); return d; });
   const wk = weekKeyOf(currentWeekAnchor);
   const goals = DATA.weekGoals[wk] || [];
   const review = DATA.weekReviews[wk] || '';
@@ -800,10 +959,7 @@ RENDERERS.week = function(){
   const endLabel = formatDateDE(dateKey(days[6]));
 
   return `
-    <div class="page-header">
-      <h1>Wochenplaner</h1>
-      <div class="sub">${formatDateDE(dateKey(days[0]))} – ${endLabel}</div>
-    </div>
+    <div class="page-header"><div><h1>Wochenplaner</h1><div class="sub">${formatDateDE(dateKey(days[0]))} – ${endLabel}</div></div></div>
 
     <div class="toolbar">
       <button class="btn secondary small" onclick="shiftWeek(-1)">← Vorherige Woche</button>
@@ -847,10 +1003,7 @@ RENDERERS.week = function(){
     </div>
   `;
 };
-function shiftWeek(delta){
-  currentWeekAnchor.setDate(currentWeekAnchor.getDate() + delta*7);
-  navigate('week');
-}
+function shiftWeek(delta){ currentWeekAnchor.setDate(currentWeekAnchor.getDate() + delta*7); navigate('week'); }
 function addWeekGoal(wk){
   openModal(`
     <h2>Neues Wochenziel</h2>
@@ -866,19 +1019,286 @@ function confirmAddWeekGoal(wk){
   if(!val) return;
   if(!DATA.weekGoals[wk]) DATA.weekGoals[wk]=[];
   DATA.weekGoals[wk].push(val);
-  saveData();
-  closeModal();
-  navigate('week');
+  saveData(); closeModal(); navigate('week');
 }
-function removeWeekGoal(wk,i){
-  DATA.weekGoals[wk].splice(i,1);
-  saveData();
-  navigate('week');
+function removeWeekGoal(wk,i){ DATA.weekGoals[wk].splice(i,1); saveData(); navigate('week'); }
+function saveWeekReview(wk,val){ DATA.weekReviews[wk]=val; saveData(); showToast('Wochenrückblick gespeichert'); }
+
+/* ======================================================================
+   ARBEIT & LERNEN — Aufgaben & Abgaben
+   ====================================================================== */
+RENDERERS.school = function(){
+  const tk = todayKey();
+  const list = DATA.assignments.slice().sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));
+  const overdue = DATA.assignments.filter(a=>a.dueDate && a.dueDate<tk && a.status!=='Erledigt').length;
+  const in7 = DATA.assignments.filter(a=>{ const d=daysUntil(a.dueDate); return d!==null && d>=0 && d<=7 && a.status!=='Erledigt'; }).length;
+  const done = DATA.assignments.filter(a=>a.status==='Erledigt').length;
+  const pending = DATA.assignments.length - done;
+
+  return `
+    <div class="page-header"><div><h1>Aufgaben &amp; Abgaben</h1><div class="sub">Arbeit, Studium und Ausbildung an einem Ort</div></div>
+      <button class="btn" onclick="openAssignmentModal()">+ Neue Abgabe</button>
+    </div>
+    <div class="grid grid-4" style="margin-bottom:16px;">
+      <div class="stat-tile"><div class="num ${overdue?'warn':''}">${overdue}</div><div class="label">Überfällig</div></div>
+      <div class="stat-tile"><div class="num">${in7}</div><div class="label">Fällig in 7 Tagen</div></div>
+      <div class="stat-tile"><div class="num">${done}</div><div class="label">Erledigt</div></div>
+      <div class="stat-tile"><div class="num">${pending}</div><div class="label">Ausstehend</div></div>
+    </div>
+    <div class="card">
+      ${list.length ? list.map(a=>{
+        const d = daysUntil(a.dueDate);
+        let countdown = '';
+        if(d!==null){
+          if(d<0) countdown = `<span style="color:var(--danger);font-weight:600;">${Math.abs(d)} Tag(e) überfällig</span>`;
+          else if(d===0) countdown = `<span style="color:var(--danger);font-weight:600;">Heute fällig</span>`;
+          else countdown = `<span>in ${d} Tag(en)</span>`;
+        }
+        return `
+        <div class="list-row">
+          <div class="checkbox ${a.status==='Erledigt'?'checked':''}" onclick="toggleAssignmentDone('${a.id}')">${a.status==='Erledigt'?'✓':''}</div>
+          <div class="main-col">
+            <div class="row-title ${a.status==='Erledigt'?'done':''}">${escapeHtml(a.title)}</div>
+            <div class="row-meta">
+              ${a.subject?`<span>${escapeHtml(a.subject)}</span>`:''}
+              <span class="pill deferred">${escapeHtml(a.type||'Aufgabe')}</span>
+              ${a.dueDate?`<span>📅 ${formatDateDE(a.dueDate)}</span>`:''}
+              ${countdown}
+              ${a.gradeWeight?`<span>Gewichtung: ${escapeHtml(String(a.gradeWeight))}%</span>`:''}
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="icon-btn" onclick="openAssignmentModal('${a.id}')">✏️</button>
+            <button class="icon-btn" onclick="deleteAssignment('${a.id}')">🗑️</button>
+          </div>
+        </div>
+      `;}).join('') : emptyRow('Noch keine Aufgaben oder Abgaben erfasst.')}
+    </div>
+  `;
+};
+function toggleAssignmentDone(id){
+  const a = DATA.assignments.find(x=>x.id===id);
+  a.status = a.status==='Erledigt' ? 'Offen' : 'Erledigt';
+  saveData(); navigate('school');
 }
-function saveWeekReview(wk,val){
-  DATA.weekReviews[wk]=val;
-  saveData();
-  showToast('Wochenrückblick gespeichert');
+function deleteAssignment(id){
+  confirmAction('Diesen Eintrag wirklich löschen?', ()=>{
+    DATA.assignments = DATA.assignments.filter(a=>a.id!==id);
+    saveData(); navigate('school'); showToast('Gelöscht');
+  });
+}
+function openAssignmentModal(id){
+  const existing = id ? DATA.assignments.find(a=>a.id===id) : null;
+  openModal(`
+    <h2>${existing?'Eintrag bearbeiten':'Neue Aufgabe / Abgabe'}</h2>
+    <div class="field"><label>Titel *</label><input type="text" id="as-title" value="${escapeHtml(existing?.title||'')}" placeholder="z. B. Hausarbeit Kapitel 3"></div>
+    <div class="field-row">
+      <div class="field"><label>Fach / Projekt</label><input type="text" id="as-subject" value="${escapeHtml(existing?.subject||'')}"></div>
+      <div class="field"><label>Typ</label>
+        <select id="as-type">
+          ${['Hausaufgabe','Abgabe','Prüfung','Projekt'].map(t=>`<option ${existing?.type===t?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Fälligkeitsdatum</label><input type="date" id="as-date" value="${existing?.dueDate||''}"></div>
+      <div class="field"><label>Priorität</label>
+        <select id="as-prio">
+          <option value="niedrig" ${existing?.priority==='niedrig'?'selected':''}>Niedrig</option>
+          <option value="mittel" ${(!existing||existing?.priority==='mittel')?'selected':''}>Mittel</option>
+          <option value="hoch" ${existing?.priority==='hoch'?'selected':''}>Hoch</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Gewichtung an der Endnote (%) – optional</label><input type="number" id="as-weight" min="0" max="100" value="${existing?.gradeWeight||''}"></div>
+    <div class="field"><label>Notizen</label><textarea id="as-notes">${escapeHtml(existing?.notes||'')}</textarea></div>
+    <div id="as-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn" onclick="saveAssignmentForm('${existing?.id||''}')">Speichern</button>
+    </div>
+  `);
+}
+function saveAssignmentForm(id){
+  const title = document.getElementById('as-title').value.trim();
+  const err = document.getElementById('as-error');
+  if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
+  const weight = document.getElementById('as-weight').value;
+  const payload = {
+    title,
+    subject: document.getElementById('as-subject').value.trim(),
+    type: document.getElementById('as-type').value,
+    dueDate: document.getElementById('as-date').value,
+    priority: document.getElementById('as-prio').value,
+    gradeWeight: weight ? Number(weight) : null,
+    notes: document.getElementById('as-notes').value.trim()
+  };
+  if(id){ Object.assign(DATA.assignments.find(a=>a.id===id), payload); }
+  else{ payload.id=uid(); payload.status='Offen'; payload.createdAt=new Date().toISOString(); DATA.assignments.push(payload); }
+  saveData(); closeModal(); navigate('school'); showToast('Gespeichert');
+}
+
+/* ======================================================================
+   GESUNDHEIT
+   ====================================================================== */
+let healthTab = 'schlaf';
+RENDERERS.health = function(){
+  return `
+    <div class="page-header"><div><h1>Gesundheit</h1><div class="sub">Schlaf, Bewegung und Medikamente im Überblick</div></div></div>
+    ${tabBar([{key:'schlaf',label:'Schlaf'},{key:'bewegung',label:'Bewegung'},{key:'medikamente',label:'Medikamente'}], healthTab, 'setHealthTab')}
+    ${healthTab==='schlaf' ? renderSleepTab() : healthTab==='bewegung' ? renderMovementTab() : renderMedsTab()}
+  `;
+};
+function setHealthTab(key){ healthTab = key; navigate('health'); }
+
+function renderSleepTab(){
+  const entries = DATA.health.sleep.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,14);
+  const avg = entries.length ? (entries.reduce((s,e)=>s+(sleepHours(e)||0),0)/entries.length).toFixed(1) : '–';
+  return `
+    <div class="grid grid-2" style="margin-bottom:16px;">
+      <div class="stat-tile"><div class="num">${avg}h</div><div class="label">Ø Schlafdauer (letzte Einträge)</div></div>
+      <div class="stat-tile"><div class="num">${DATA.health.sleep.length}</div><div class="label">Einträge gesamt</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Schlaftracker<button class="btn small" onclick="openSleepModal()">+ Eintrag</button></div>
+      ${entries.length ? entries.map(e=>{
+        const h = sleepHours(e);
+        return `
+        <div class="list-row">
+          <div class="main-col">
+            <div class="row-title">${formatDateDE(e.date)} — ${h!==null?h+' Std.':'–'}</div>
+            <div class="row-meta"><span>🛏️ ${e.bedTime||'–'} → ⏰ ${e.wakeTime||'–'}</span>${e.quality?`<span class="pill deferred">${escapeHtml(e.quality)}</span>`:''}</div>
+            ${e.notes?`<div class="help-text">${escapeHtml(e.notes)}</div>`:''}
+          </div>
+          <div class="row-actions"><button class="icon-btn" onclick="deleteHealthEntry('sleep','${e.id}')">🗑️</button></div>
+        </div>`;
+      }).join('') : emptyRow('Noch keine Schlafdaten erfasst.')}
+    </div>
+  `;
+}
+function sleepHours(e){
+  if(!e.bedTime || !e.wakeTime) return null;
+  const [bh,bm] = e.bedTime.split(':').map(Number);
+  const [wh,wm] = e.wakeTime.split(':').map(Number);
+  let mins = (wh*60+wm) - (bh*60+bm);
+  if(mins <= 0) mins += 24*60; // über Mitternacht
+  return Math.round(mins/60*10)/10;
+}
+function openSleepModal(){
+  openModal(`
+    <h2>Schlaf eintragen</h2>
+    <div class="field"><label>Datum</label><input type="date" id="sl-date" value="${todayKey()}"></div>
+    <div class="field-row">
+      <div class="field"><label>Schlafenszeit</label><input type="time" id="sl-bed"></div>
+      <div class="field"><label>Aufwachzeit</label><input type="time" id="sl-wake"></div>
+    </div>
+    <div class="field"><label>Qualität</label>
+      <select id="sl-quality"><option>Gut</option><option>Okay</option><option>Schlecht</option></select>
+    </div>
+    <div class="field"><label>Notizen</label><textarea id="sl-notes"></textarea></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveSleepForm()">Speichern</button></div>
+  `);
+}
+function saveSleepForm(){
+  DATA.health.sleep.push({
+    id:uid(), date:document.getElementById('sl-date').value||todayKey(),
+    bedTime:document.getElementById('sl-bed').value, wakeTime:document.getElementById('sl-wake').value,
+    quality:document.getElementById('sl-quality').value, notes:document.getElementById('sl-notes').value.trim()
+  });
+  saveData(); closeModal(); navigate('health'); showToast('Gespeichert');
+}
+
+function renderMovementTab(){
+  const entries = DATA.health.movement.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const wk = weekKeyOf(new Date());
+  const weekTotal = entries.filter(e=>weekKeyOf(parseDateKey(e.date))===wk).reduce((s,e)=>s+(Number(e.duration)||0),0);
+  return `
+    <div class="grid grid-2" style="margin-bottom:16px;">
+      <div class="stat-tile"><div class="num">${weekTotal} Min.</div><div class="label">Bewegung diese Woche</div></div>
+      <div class="stat-tile"><div class="num">${entries.length}</div><div class="label">Einträge gesamt</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Bewegungstracker<button class="btn small" onclick="openMovementModal()">+ Eintrag</button></div>
+      ${entries.length ? entries.map(e=>`
+        <div class="list-row">
+          <div class="main-col"><div class="row-title">${escapeHtml(e.activity)}</div>
+            <div class="row-meta"><span>${formatDateDE(e.date)}</span><span>${e.duration} Min.</span>${e.category?`<span class="pill deferred">${escapeHtml(e.category)}</span>`:''}</div>
+          </div>
+          <div class="row-actions"><button class="icon-btn" onclick="deleteHealthEntry('movement','${e.id}')">🗑️</button></div>
+        </div>
+      `).join('') : emptyRow('Noch keine Bewegungseinträge vorhanden.')}
+    </div>
+  `;
+}
+function openMovementModal(){
+  openModal(`
+    <h2>Bewegung eintragen</h2>
+    <div class="field"><label>Aktivität</label><input type="text" id="mv-activity" placeholder="z. B. Spaziergang"></div>
+    <div class="field-row">
+      <div class="field"><label>Datum</label><input type="date" id="mv-date" value="${todayKey()}"></div>
+      <div class="field"><label>Dauer (Minuten)</label><input type="number" id="mv-duration" min="0"></div>
+    </div>
+    <div class="field"><label>Kategorie</label><input type="text" id="mv-cat" placeholder="z. B. Cardio, Kraft, Dehnen"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveMovementForm()">Speichern</button></div>
+  `);
+}
+function saveMovementForm(){
+  const activity = document.getElementById('mv-activity').value.trim();
+  if(!activity){ showToast('Bitte eine Aktivität angeben'); return; }
+  DATA.health.movement.push({id:uid(), activity, date:document.getElementById('mv-date').value||todayKey(), duration:Number(document.getElementById('mv-duration').value)||0, category:document.getElementById('mv-cat').value.trim()});
+  saveData(); closeModal(); navigate('health'); showToast('Gespeichert');
+}
+
+function renderMedsTab(){
+  const meds = DATA.health.meds;
+  return `
+    <div class="inline-warn" style="background:var(--sage);color:var(--forest);">KlarLeben empfiehlt keine Dosierungen und stellt keine medizinischen Diagnosen. Einträge werden ausschließlich von dir selbst verwaltet.</div>
+    <div class="card">
+      <div class="card-title">Medikamente &amp; Nahrungsergänzungsmittel<button class="btn small" onclick="openMedModal()">+ Hinzufügen</button></div>
+      ${meds.length ? meds.map(m=>`
+        <div class="list-row">
+          <div class="main-col">
+            <div class="row-title">${escapeHtml(m.name)}</div>
+            <div class="row-meta">${m.dose?`<span>${escapeHtml(m.dose)}</span>`:''}${m.type?`<span class="pill deferred">${escapeHtml(m.type)}</span>`:''}<span>${(m.logs||[]).length} Einnahme(n) dokumentiert</span></div>
+          </div>
+          <div class="row-actions">
+            <button class="btn small secondary" onclick="logMedIntake('${m.id}')">Einnahme loggen</button>
+            <button class="icon-btn" onclick="deleteMed('${m.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('') : emptyRow('Noch keine Präparate erfasst.')}
+    </div>
+  `;
+}
+function openMedModal(){
+  openModal(`
+    <h2>Präparat hinzufügen</h2>
+    <div class="field"><label>Name *</label><input type="text" id="md-name"></div>
+    <div class="field-row">
+      <div class="field"><label>Dosierung (von dir eingetragen)</label><input type="text" id="md-dose" placeholder="z. B. 1 Tablette"></div>
+      <div class="field"><label>Typ</label><select id="md-type"><option>Medikament</option><option>Nahrungsergänzung</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveMedForm()">Speichern</button></div>
+  `);
+}
+function saveMedForm(){
+  const name = document.getElementById('md-name').value.trim();
+  if(!name){ showToast('Bitte einen Namen angeben'); return; }
+  DATA.health.meds.push({id:uid(), name, dose:document.getElementById('md-dose').value.trim(), type:document.getElementById('md-type').value, logs:[]});
+  saveData(); closeModal(); navigate('health'); showToast('Gespeichert');
+}
+function logMedIntake(id){
+  const m = DATA.health.meds.find(x=>x.id===id);
+  m.logs = m.logs||[];
+  m.logs.push({date:todayKey(), time:new Date().toTimeString().slice(0,5)});
+  saveData(); navigate('health'); showToast('Einnahme dokumentiert');
+}
+function deleteMed(id){
+  confirmAction('Dieses Präparat wirklich löschen?', ()=>{ DATA.health.meds = DATA.health.meds.filter(m=>m.id!==id); saveData(); navigate('health'); });
+}
+function deleteHealthEntry(kind,id){
+  DATA.health[kind] = DATA.health[kind].filter(e=>e.id!==id);
+  saveData(); navigate('health'); showToast('Gelöscht');
 }
 
 /* ======================================================================
@@ -887,14 +1307,9 @@ function saveWeekReview(wk,val){
 RENDERERS.habits = function(){
   const tk = todayKey();
   return `
-    <div class="page-header">
-      <h1>Gewohnheiten</h1>
-      <div class="sub">${DATA.habits.length} Gewohnheit(en)</div>
-    </div>
+    <div class="page-header"><div><h1>Gewohnheiten</h1><div class="sub">${DATA.habits.length} Gewohnheit(en)</div></div></div>
     <div class="card">
-      <div class="card-title">Heute
-        <button class="btn small" onclick="openHabitModal()">+ Neue Gewohnheit</button>
-      </div>
+      <div class="card-title">Heute<button class="btn small" onclick="openHabitModal()">+ Neue Gewohnheit</button></div>
       ${DATA.habits.length ? DATA.habits.map(h=>habitRow(h,tk)).join('') : emptyRow('Noch keine Gewohnheiten vorhanden. Füge deine erste Gewohnheit hinzu – klein anfangen reicht völlig.')}
     </div>
   `;
@@ -902,6 +1317,13 @@ RENDERERS.habits = function(){
 function habitRow(h, tk){
   const checked = h.completions && h.completions[tk];
   const streak = computeStreak(h);
+  const start = startOfWeek(new Date());
+  const miniWeek = [...Array(7)].map((_,i)=>{
+    const d = new Date(start); d.setDate(start.getDate()+i);
+    const dk = dateKey(d);
+    const on = h.completions && h.completions[dk];
+    return `<div class="mini-day ${on?'on':''}">${WEEKDAYS_SHORT_DE[i][0]}</div>`;
+  }).join('');
   return `
     <div class="habit-row">
       <div class="habit-check ${checked?'checked':''}" onclick="toggleHabit('${h.id}')">${checked?'✓':''}</div>
@@ -912,6 +1334,7 @@ function habitRow(h, tk){
           ${h.category?`<span>${escapeHtml(h.category)}</span>`:''}
           ${streak>0?`<span class="streak">🔥 ${streak} Tage Serie</span>`:''}
         </div>
+        <div class="mini-week">${miniWeek}</div>
       </div>
       <div class="row-actions">
         <button class="icon-btn" onclick="openHabitModal('${h.id}')">✏️</button>
@@ -922,24 +1345,16 @@ function habitRow(h, tk){
 }
 function computeStreak(h){
   if(!h.completions) return 0;
-  let streak = 0;
-  let d = new Date();
-  while(true){
-    const dk = dateKey(d);
-    if(h.completions[dk]){ streak++; d.setDate(d.getDate()-1); }
-    else break;
-  }
+  let streak = 0; let d = new Date();
+  while(true){ const dk = dateKey(d); if(h.completions[dk]){ streak++; d.setDate(d.getDate()-1); } else break; }
   return streak;
 }
 function toggleHabit(id){
   const h = DATA.habits.find(x=>x.id===id);
-  if(!h) return;
   if(!h.completions) h.completions = {};
   const tk = todayKey();
-  if(h.completions[tk]) delete h.completions[tk];
-  else h.completions[tk] = true;
-  saveData();
-  navigate('habits');
+  if(h.completions[tk]) delete h.completions[tk]; else h.completions[tk] = true;
+  saveData(); navigate('habits');
 }
 function openHabitModal(id){
   const existing = id ? DATA.habits.find(h=>h.id===id) : null;
@@ -967,24 +1382,75 @@ function saveHabitForm(id){
   const err = document.getElementById('hf-error');
   if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
   const payload = { title, frequency: document.getElementById('hf-freq').value, category: document.getElementById('hf-cat').value.trim() };
-  if(id){
-    Object.assign(DATA.habits.find(h=>h.id===id), payload);
-  }else{
-    payload.id = uid(); payload.createdAt = new Date().toISOString(); payload.completions = {};
-    DATA.habits.push(payload);
-  }
-  saveData();
-  closeModal();
-  navigate('habits');
-  showToast('Gewohnheit gespeichert');
+  if(id){ Object.assign(DATA.habits.find(h=>h.id===id), payload); }
+  else{ payload.id = uid(); payload.createdAt = new Date().toISOString(); payload.completions = {}; DATA.habits.push(payload); }
+  saveData(); closeModal(); navigate('habits'); showToast('Gewohnheit gespeichert');
 }
 function deleteHabit(id){
   confirmAction('Diese Gewohnheit wirklich löschen? Der gesamte Verlauf geht verloren.', ()=>{
-    DATA.habits = DATA.habits.filter(h=>h.id!==id);
-    saveData();
-    navigate('habits');
-    showToast('Gewohnheit gelöscht');
+    DATA.habits = DATA.habits.filter(h=>h.id!==id); saveData(); navigate('habits'); showToast('Gewohnheit gelöscht');
   });
+}
+
+/* ======================================================================
+   JOURNAL
+   ====================================================================== */
+RENDERERS.journal = function(){
+  const tk = todayKey();
+  const todayEntry = DATA.journal.find(j=>j.date===tk);
+  const past = DATA.journal.slice().sort((a,b)=>b.date.localeCompare(a.date)).filter(j=>j.date!==tk);
+  return `
+    <div class="page-header"><div><h1>Journal</h1><div class="sub">Dein privater Raum – keine Regeln, keine Struktur nötig</div></div></div>
+    <div class="card">
+      <div class="card-title">Heutige Reflexion — ${formatDateDE(tk)}</div>
+      <div class="field"><label>Stimmung (1–10)</label><input type="range" id="jr-mood" min="1" max="10" value="${todayEntry?.mood||5}"></div>
+      <div class="field"><label>Energie (1–10)</label><input type="range" id="jr-energy" min="1" max="10" value="${todayEntry?.energy||5}"></div>
+      <div class="field"><label>3 Dinge, für die ich heute dankbar bin</label>
+        <input type="text" id="jr-g1" placeholder="1." value="${escapeHtml(todayEntry?.gratitude?.[0]||'')}" style="margin-bottom:6px;">
+        <input type="text" id="jr-g2" placeholder="2." value="${escapeHtml(todayEntry?.gratitude?.[1]||'')}" style="margin-bottom:6px;">
+        <input type="text" id="jr-g3" placeholder="3." value="${escapeHtml(todayEntry?.gratitude?.[2]||'')}">
+      </div>
+      <div class="field"><label>Freitext — was beschäftigt dich?</label><textarea id="jr-free">${escapeHtml(todayEntry?.freeText||'')}</textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Highlight des Tages</label><input type="text" id="jr-highlight" value="${escapeHtml(todayEntry?.highlight||'')}"></div>
+        <div class="field"><label>Was war schwer?</label><input type="text" id="jr-hard" value="${escapeHtml(todayEntry?.hard||'')}"></div>
+      </div>
+      <div class="field"><label>Was nehme ich mir für morgen vor?</label><input type="text" id="jr-tomorrow" value="${escapeHtml(todayEntry?.tomorrow||'')}"></div>
+      <button class="btn" onclick="saveJournalEntry()">Eintrag speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Frühere Einträge</div>
+      ${past.length ? past.slice(0,20).map(j=>`
+        <div class="list-row">
+          <div class="main-col">
+            <div class="row-title">${formatDateDE(j.date)} ${j.highlight?'— '+escapeHtml(j.highlight):''}</div>
+            <div class="row-meta"><span>Stimmung ${j.mood}/10</span><span>Energie ${j.energy}/10</span></div>
+          </div>
+          <div class="row-actions"><button class="icon-btn" onclick="deleteJournalEntry('${j.id}')">🗑️</button></div>
+        </div>
+      `).join('') : emptyRow('Noch keine früheren Einträge.')}
+    </div>
+  `;
+};
+function saveJournalEntry(){
+  const tk = todayKey();
+  const payload = {
+    date: tk,
+    mood: Number(document.getElementById('jr-mood').value),
+    energy: Number(document.getElementById('jr-energy').value),
+    gratitude: [document.getElementById('jr-g1').value.trim(), document.getElementById('jr-g2').value.trim(), document.getElementById('jr-g3').value.trim()],
+    freeText: document.getElementById('jr-free').value,
+    highlight: document.getElementById('jr-highlight').value.trim(),
+    hard: document.getElementById('jr-hard').value.trim(),
+    tomorrow: document.getElementById('jr-tomorrow').value.trim()
+  };
+  const existing = DATA.journal.find(j=>j.date===tk);
+  if(existing){ Object.assign(existing, payload); }
+  else{ payload.id = uid(); DATA.journal.push(payload); }
+  saveData(); navigate('journal'); showToast('Eintrag gespeichert');
+}
+function deleteJournalEntry(id){
+  confirmAction('Diesen Eintrag wirklich löschen?', ()=>{ DATA.journal = DATA.journal.filter(j=>j.id!==id); saveData(); navigate('journal'); });
 }
 
 /* ======================================================================
@@ -998,10 +1464,7 @@ RENDERERS.notes = function(){
     list = list.filter(n=>n.title.toLowerCase().includes(q) || (n.content||'').toLowerCase().includes(q));
   }
   return `
-    <div class="page-header">
-      <h1>Notizen</h1>
-      <div class="sub">${DATA.notes.length} Notiz(en)</div>
-    </div>
+    <div class="page-header"><div><h1>Notizen</h1><div class="sub">${DATA.notes.length} Notiz(en)</div></div></div>
     <div class="toolbar">
       <input type="text" class="search-box" placeholder="Notizen durchsuchen…" value="${escapeHtml(noteSearch)}" oninput="noteSearch=this.value; navigate('notes');">
       <button class="btn" onclick="openNoteModal()">+ Neue Notiz</button>
@@ -1010,10 +1473,7 @@ RENDERERS.notes = function(){
       ${list.length ? list.map(n=>`
         <div class="card">
           <div class="card-title">${escapeHtml(n.title)}
-            <span>
-              <button class="icon-btn" onclick="openNoteModal('${n.id}')">✏️</button>
-              <button class="icon-btn" onclick="deleteNote('${n.id}')">🗑️</button>
-            </span>
+            <span><button class="icon-btn" onclick="openNoteModal('${n.id}')">✏️</button><button class="icon-btn" onclick="deleteNote('${n.id}')">🗑️</button></span>
           </div>
           <p style="white-space:pre-wrap;font-size:13.5px;color:var(--warmgray);">${escapeHtml((n.content||'').slice(0,220))}${(n.content||'').length>220?'…':''}</p>
           <div class="row-meta">${n.category?`<span class="pill deferred">${escapeHtml(n.category)}</span>`:''}<span>${formatDateDE(n.date)}</span></div>
@@ -1040,60 +1500,589 @@ function saveNoteForm(id){
   const title = document.getElementById('nf-title').value.trim();
   const err = document.getElementById('nf-error');
   if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
-  const payload = {
-    title,
-    content: document.getElementById('nf-content').value,
-    category: document.getElementById('nf-cat').value.trim(),
-    updatedAt: new Date().toISOString()
-  };
-  if(id){
-    Object.assign(DATA.notes.find(n=>n.id===id), payload);
-  }else{
-    payload.id = uid(); payload.date = todayKey(); payload.createdAt = new Date().toISOString();
-    DATA.notes.push(payload);
-  }
-  saveData();
-  closeModal();
-  navigate('notes');
-  showToast('Notiz gespeichert');
+  const payload = { title, content: document.getElementById('nf-content').value, category: document.getElementById('nf-cat').value.trim(), updatedAt: new Date().toISOString() };
+  if(id){ Object.assign(DATA.notes.find(n=>n.id===id), payload); }
+  else{ payload.id = uid(); payload.date = todayKey(); payload.createdAt = new Date().toISOString(); DATA.notes.push(payload); }
+  saveData(); closeModal(); navigate('notes'); showToast('Notiz gespeichert');
 }
 function deleteNote(id){
-  confirmAction('Diese Notiz wirklich löschen?', ()=>{
-    DATA.notes = DATA.notes.filter(n=>n.id!==id);
-    saveData();
-    navigate('notes');
-    showToast('Notiz gelöscht');
-  });
+  confirmAction('Diese Notiz wirklich löschen?', ()=>{ DATA.notes = DATA.notes.filter(n=>n.id!==id); saveData(); navigate('notes'); showToast('Notiz gelöscht'); });
 }
 
 /* ======================================================================
-   AUSWERTUNGEN (einfache Statistiken)
+   HAUSHALT — Reinigungsplan
+   ====================================================================== */
+RENDERERS.household = function(){
+  const tk = todayKey();
+  const list = DATA.cleaning.slice();
+  const dueCount = list.filter(c=>nextDueDate(c) <= tk).length;
+  return `
+    <div class="page-header"><div><h1>Reinigungsplan</h1><div class="sub">Wiederkehrende Haushaltsaufgaben</div></div>
+      <button class="btn" onclick="openCleaningModal()">+ Aufgabe</button>
+    </div>
+    <div class="grid grid-2" style="margin-bottom:16px;">
+      <div class="stat-tile"><div class="num ${dueCount?'warn':''}">${dueCount}</div><div class="label">Heute fällig</div></div>
+      <div class="stat-tile"><div class="num">${list.length}</div><div class="label">Aufgaben gesamt</div></div>
+    </div>
+    <div class="card">
+      ${list.length ? list.map(c=>{
+        const due = nextDueDate(c);
+        const overdue = due <= tk;
+        return `
+        <div class="list-row">
+          <div class="main-col">
+            <div class="row-title">${escapeHtml(c.task)}</div>
+            <div class="row-meta">
+              ${c.room?`<span>${escapeHtml(c.room)}</span>`:''}
+              <span class="pill deferred">${escapeHtml(c.frequency)}</span>
+              <span style="${overdue?'color:var(--danger);font-weight:600;':''}">Nächstes Mal: ${formatDateDE(due)}</span>
+              ${c.lastDone?`<span>Zuletzt: ${formatDateDE(c.lastDone)}</span>`:''}
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="btn small secondary" onclick="markCleaningDone('${c.id}')">Erledigt</button>
+            <button class="icon-btn" onclick="deleteCleaning('${c.id}')">🗑️</button>
+          </div>
+        </div>`;
+      }).join('') : emptyRow('Noch keine Reinigungsaufgaben angelegt.')}
+    </div>
+  `;
+};
+function nextDueDate(c){
+  if(!c.lastDone) return todayKey();
+  const d = parseDateKey(c.lastDone);
+  const days = {taeglich:1, woechentlich:7, zweiwoechentlich:14, monatlich:30}[c.frequency] || 7;
+  d.setDate(d.getDate()+days);
+  return dateKey(d);
+}
+function markCleaningDone(id){
+  const c = DATA.cleaning.find(x=>x.id===id);
+  c.lastDone = todayKey();
+  saveData(); navigate('household'); showToast('Als erledigt markiert');
+}
+function deleteCleaning(id){
+  confirmAction('Diese Aufgabe wirklich löschen?', ()=>{ DATA.cleaning = DATA.cleaning.filter(c=>c.id!==id); saveData(); navigate('household'); });
+}
+function openCleaningModal(){
+  openModal(`
+    <h2>Neue Reinigungsaufgabe</h2>
+    <div class="field"><label>Aufgabe *</label><input type="text" id="cl-task" placeholder="z. B. Bad putzen"></div>
+    <div class="field-row">
+      <div class="field"><label>Raum</label><input type="text" id="cl-room"></div>
+      <div class="field"><label>Häufigkeit</label>
+        <select id="cl-freq"><option value="taeglich">Täglich</option><option value="woechentlich" selected>Wöchentlich</option><option value="zweiwoechentlich">Alle 2 Wochen</option><option value="monatlich">Monatlich</option></select>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveCleaningForm()">Speichern</button></div>
+  `);
+}
+function saveCleaningForm(){
+  const task = document.getElementById('cl-task').value.trim();
+  if(!task){ showToast('Bitte eine Aufgabe angeben'); return; }
+  DATA.cleaning.push({id:uid(), task, room:document.getElementById('cl-room').value.trim(), frequency:document.getElementById('cl-freq').value, lastDone:null});
+  saveData(); closeModal(); navigate('household'); showToast('Gespeichert');
+}
+
+/* ======================================================================
+   MAHLZEITEN
+   ====================================================================== */
+let mealTab = 'wochenplan';
+RENDERERS.meals = function(){
+  return `
+    <div class="page-header"><div><h1>Essensplanung</h1><div class="sub">Wochenplan, Rezepte, Vorrat und Einkauf</div></div></div>
+    ${tabBar([{key:'wochenplan',label:'Wochenplan'},{key:'rezepte',label:'Rezepte'},{key:'vorrat',label:'Vorrat'},{key:'einkauf',label:'Einkaufsliste'}], mealTab, 'setMealTab')}
+    ${mealTab==='wochenplan'?renderMealPlanTab():mealTab==='rezepte'?renderRecipesTab():mealTab==='vorrat'?renderPantryTab():renderGroceryTab()}
+  `;
+};
+function setMealTab(key){ mealTab = key; navigate('meals'); }
+
+function renderMealPlanTab(){
+  const wk = weekKeyOf(currentWeekAnchor);
+  const plan = DATA.meals.plan[wk] || {};
+  const rows = [{key:'fruehstueck',label:'Frühstück'},{key:'mittag',label:'Mittag'},{key:'abend',label:'Abend'}];
+  return `
+    <div class="toolbar">
+      <button class="btn secondary small" onclick="shiftWeek(-1); navigate('meals');">← Woche</button>
+      <button class="btn secondary small" onclick="currentWeekAnchor=new Date(); navigate('meals');">Diese Woche</button>
+      <button class="btn secondary small" onclick="shiftWeek(1); navigate('meals');">Woche →</button>
+    </div>
+    <div class="meal-grid">
+      <div class="mh"></div>
+      ${WEEKDAYS_SHORT_DE.map(d=>`<div class="mh">${d}</div>`).join('')}
+      ${rows.map(r=>`
+        <div class="rlabel">${r.label}</div>
+        ${[0,1,2,3,4,5,6].map(i=>{
+          const dayKey = ['mon','di','mi','do','fr','sa','so'][i];
+          const val = (plan[dayKey] && plan[dayKey][r.key]) || '';
+          const cellContent = val ? escapeHtml(val) : '<span class="help-text">+ hinzufügen</span>';
+          return `<div class="meal-cell" onclick="editMealCell('${wk}','${dayKey}','${r.key}')">${cellContent}</div>`;
+        }).join('')}
+      `).join('')}
+    </div>
+  `;
+}
+function editMealCell(wk,dayKey,mealKey){
+  const current = (DATA.meals.plan[wk] && DATA.meals.plan[wk][dayKey] && DATA.meals.plan[wk][dayKey][mealKey]) || '';
+  openModal(`
+    <h2>Mahlzeit planen</h2>
+    <div class="field"><label>Was gibt es?</label><input type="text" id="mp-val" value="${escapeHtml(current)}" placeholder="z. B. Linsensuppe"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveMealCell('${wk}','${dayKey}','${mealKey}')">Speichern</button></div>
+  `);
+}
+function saveMealCell(wk,dayKey,mealKey){
+  if(!DATA.meals.plan[wk]) DATA.meals.plan[wk]={};
+  if(!DATA.meals.plan[wk][dayKey]) DATA.meals.plan[wk][dayKey]={};
+  DATA.meals.plan[wk][dayKey][mealKey] = document.getElementById('mp-val').value.trim();
+  saveData(); closeModal(); navigate('meals');
+}
+
+function renderRecipesTab(){
+  const list = DATA.meals.recipes;
+  return `
+    <div class="toolbar"><button class="btn" style="margin-left:auto;" onclick="openRecipeModal()">+ Neues Rezept</button></div>
+    <div class="grid grid-2">
+      ${list.length ? list.map(r=>`
+        <div class="card">
+          <div class="card-title">${escapeHtml(r.title)}<span><button class="icon-btn" onclick="openRecipeModal('${r.id}')">✏️</button><button class="icon-btn" onclick="deleteRecipe('${r.id}')">🗑️</button></span></div>
+          <div class="row-meta" style="margin-bottom:8px;">${r.time?`<span>⏱️ ${escapeHtml(r.time)}</span>`:''}${r.servings?`<span>🍽️ ${escapeHtml(String(r.servings))} Portionen</span>`:''}${r.category?`<span class="pill deferred">${escapeHtml(r.category)}</span>`:''}</div>
+          <p style="font-size:13px;white-space:pre-wrap;">${escapeHtml(r.ingredients||'')}</p>
+        </div>
+      `).join('') : `<div class="card">${emptyRow('Noch keine Rezepte gespeichert.')}</div>`}
+    </div>
+  `;
+}
+function openRecipeModal(id){
+  const existing = id ? DATA.meals.recipes.find(r=>r.id===id) : null;
+  openModal(`
+    <h2>${existing?'Rezept bearbeiten':'Neues Rezept'}</h2>
+    <div class="field"><label>Titel *</label><input type="text" id="rc-title" value="${escapeHtml(existing?.title||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Zubereitungszeit</label><input type="text" id="rc-time" value="${escapeHtml(existing?.time||'')}" placeholder="z. B. 30 Min."></div>
+      <div class="field"><label>Portionen</label><input type="number" id="rc-servings" value="${existing?.servings||''}"></div>
+      <div class="field"><label>Kategorie</label><input type="text" id="rc-cat" value="${escapeHtml(existing?.category||'')}"></div>
+    </div>
+    <div class="field"><label>Zutaten (eine Zeile pro Zutat)</label><textarea id="rc-ingredients" style="min-height:90px;">${escapeHtml(existing?.ingredients||'')}</textarea></div>
+    <div class="field"><label>Zubereitung</label><textarea id="rc-steps" style="min-height:90px;">${escapeHtml(existing?.steps||'')}</textarea></div>
+    <div id="rc-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveRecipeForm('${existing?.id||''}')">Speichern</button></div>
+  `);
+}
+function saveRecipeForm(id){
+  const title = document.getElementById('rc-title').value.trim();
+  const err = document.getElementById('rc-error');
+  if(!title){ err.textContent='Bitte gib einen Titel ein.'; err.style.display='block'; return; }
+  const payload = { title, time:document.getElementById('rc-time').value.trim(), servings:Number(document.getElementById('rc-servings').value)||null, category:document.getElementById('rc-cat').value.trim(), ingredients:document.getElementById('rc-ingredients').value, steps:document.getElementById('rc-steps').value };
+  if(id){ Object.assign(DATA.meals.recipes.find(r=>r.id===id), payload); }
+  else{ payload.id=uid(); DATA.meals.recipes.push(payload); }
+  saveData(); closeModal(); navigate('meals'); showToast('Rezept gespeichert');
+}
+function deleteRecipe(id){
+  confirmAction('Dieses Rezept wirklich löschen?', ()=>{ DATA.meals.recipes = DATA.meals.recipes.filter(r=>r.id!==id); saveData(); navigate('meals'); });
+}
+
+function renderPantryTab(){
+  const items = DATA.meals.pantry;
+  return `
+    <div class="toolbar"><button class="btn" style="margin-left:auto;" onclick="openPantryModal()">+ Artikel</button></div>
+    <div class="card">
+      ${items.length ? items.map(p=>{
+        const low = p.minStock && Number(p.qty) <= Number(p.minStock);
+        return `
+        <div class="list-row">
+          <div class="main-col"><div class="row-title">${escapeHtml(p.name)}</div>
+            <div class="row-meta"><span>${p.qty||0} ${escapeHtml(p.unit||'')}</span>${p.category?`<span class="pill deferred">${escapeHtml(p.category)}</span>`:''}${low?`<span class="pill lowstock">Niedriger Bestand</span>`:''}</div>
+          </div>
+          <div class="row-actions">${low?`<button class="btn small secondary" onclick="addToGroceryFromPantry('${p.id}')">+ Einkaufsliste</button>`:''}<button class="icon-btn" onclick="deletePantry('${p.id}')">🗑️</button></div>
+        </div>`;
+      }).join('') : emptyRow('Noch keine Vorratsartikel erfasst.')}
+    </div>
+  `;
+}
+function openPantryModal(){
+  openModal(`
+    <h2>Vorratsartikel hinzufügen</h2>
+    <div class="field"><label>Name *</label><input type="text" id="pt-name"></div>
+    <div class="field-row">
+      <div class="field"><label>Menge</label><input type="number" id="pt-qty" value="1"></div>
+      <div class="field"><label>Einheit</label><input type="text" id="pt-unit" placeholder="z. B. Stück, g"></div>
+      <div class="field"><label>Mindestbestand (optional)</label><input type="number" id="pt-min"></div>
+    </div>
+    <div class="field"><label>Kategorie</label><input type="text" id="pt-cat"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="savePantryForm()">Speichern</button></div>
+  `);
+}
+function savePantryForm(){
+  const name = document.getElementById('pt-name').value.trim();
+  if(!name){ showToast('Bitte einen Namen angeben'); return; }
+  DATA.meals.pantry.push({id:uid(), name, qty:Number(document.getElementById('pt-qty').value)||0, unit:document.getElementById('pt-unit').value.trim(), minStock:Number(document.getElementById('pt-min').value)||null, category:document.getElementById('pt-cat').value.trim()});
+  saveData(); closeModal(); navigate('meals'); showToast('Gespeichert');
+}
+function deletePantry(id){ DATA.meals.pantry = DATA.meals.pantry.filter(p=>p.id!==id); saveData(); navigate('meals'); }
+function addToGroceryFromPantry(id){
+  const p = DATA.meals.pantry.find(x=>x.id===id);
+  DATA.meals.grocery.push({id:uid(), name:p.name, qty:1, category:p.category, checked:false});
+  saveData(); showToast('Zur Einkaufsliste hinzugefügt'); navigate('meals');
+}
+
+function renderGroceryTab(){
+  const items = DATA.meals.grocery;
+  return `
+    <div class="toolbar">
+      <button class="btn" onclick="openGroceryModal()">+ Artikel</button>
+      ${items.length?`<button class="btn secondary" onclick="resetGroceryList()">Liste zurücksetzen</button>`:''}
+    </div>
+    <div class="card">
+      ${items.length ? items.map(g=>`
+        <div class="list-row">
+          <div class="checkbox ${g.checked?'checked':''}" onclick="toggleGroceryChecked('${g.id}')">${g.checked?'✓':''}</div>
+          <div class="main-col"><div class="row-title ${g.checked?'done':''}">${escapeHtml(g.name)}</div>
+            <div class="row-meta"><span>${g.qty||1}x</span>${g.category?`<span class="pill deferred">${escapeHtml(g.category)}</span>`:''}</div>
+          </div>
+          <div class="row-actions"><button class="icon-btn" onclick="deleteGrocery('${g.id}')">🗑️</button></div>
+        </div>
+      `).join('') : emptyRow('Einkaufsliste ist leer.')}
+    </div>
+  `;
+}
+function openGroceryModal(){
+  openModal(`
+    <h2>Artikel zur Einkaufsliste</h2>
+    <div class="field"><label>Name *</label><input type="text" id="gr-name"></div>
+    <div class="field-row">
+      <div class="field"><label>Menge</label><input type="number" id="gr-qty" value="1"></div>
+      <div class="field"><label>Kategorie</label><input type="text" id="gr-cat"></div>
+    </div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveGroceryForm()">Speichern</button></div>
+  `);
+}
+function saveGroceryForm(){
+  const name = document.getElementById('gr-name').value.trim();
+  if(!name){ showToast('Bitte einen Namen angeben'); return; }
+  DATA.meals.grocery.push({id:uid(), name, qty:Number(document.getElementById('gr-qty').value)||1, category:document.getElementById('gr-cat').value.trim(), checked:false});
+  saveData(); closeModal(); navigate('meals'); showToast('Gespeichert');
+}
+function toggleGroceryChecked(id){ const g = DATA.meals.grocery.find(x=>x.id===id); g.checked = !g.checked; saveData(); navigate('meals'); }
+function deleteGrocery(id){ DATA.meals.grocery = DATA.meals.grocery.filter(g=>g.id!==id); saveData(); navigate('meals'); }
+function resetGroceryList(){
+  confirmAction('Die gesamte Einkaufsliste wirklich zurücksetzen?', ()=>{ DATA.meals.grocery = []; saveData(); navigate('meals'); showToast('Liste zurückgesetzt'); });
+}
+
+/* ======================================================================
+   FINANZEN
+   ====================================================================== */
+let financeTab = 'uebersicht';
+RENDERERS.finance = function(){
+  return `
+    <div class="page-header"><div><h1>Finanzen</h1><div class="sub">Übersicht, Rechnungen, Budget, Schulden und Sparziele</div></div></div>
+    ${tabBar([{key:'uebersicht',label:'Übersicht'},{key:'rechnungen',label:'Rechnungen'},{key:'budget',label:'Budget'},{key:'schulden',label:'Schulden'},{key:'sparziele',label:'Sparziele'}], financeTab, 'setFinanceTab')}
+    ${financeTab==='uebersicht'?renderFinanceOverview():financeTab==='rechnungen'?renderBillsTab():financeTab==='budget'?renderBudgetTab():financeTab==='schulden'?renderDebtsTab():renderSavingsTab()}
+  `;
+};
+function setFinanceTab(key){ financeTab = key; navigate('finance'); }
+
+function monthExpensesTotal(mk){
+  return DATA.finance.expenses.filter(e=>e.date && e.date.slice(0,7)===mk).reduce((s,e)=>s+Number(e.amount||0),0);
+}
+function renderFinanceOverview(){
+  const mk = monthKey();
+  const income = Number(DATA.finance.income)||0;
+  const spent = monthExpensesTotal(mk);
+  const diff = income - spent;
+  const openBills = DATA.finance.bills.filter(b=>!b.paid).length;
+  const totalDebt = DATA.finance.debts.reduce((s,d)=>s+Number(d.balance||0),0);
+  const savingsProgress = DATA.finance.savingsGoals.reduce((s,g)=>s+Number(g.current||0),0);
+
+  return `
+    <div class="card">
+      <div class="card-title">Monatliches Einkommen</div>
+      <div class="field" style="margin-bottom:0;max-width:220px;">
+        <input type="number" value="${income||''}" placeholder="0" onchange="setIncome(this.value)">
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="stat-tile"><div class="num">${formatMoney(spent)}</div><div class="label">Ausgaben diesen Monat</div></div>
+      <div class="stat-tile"><div class="num ${diff<0?'warn':''}">${formatMoney(diff)}</div><div class="label">Verfügbare Differenz</div></div>
+      <div class="stat-tile"><div class="num ${openBills?'warn':''}">${openBills}</div><div class="label">Offene Rechnungen</div></div>
+      <div class="stat-tile"><div class="num ${totalDebt?'warn':''}">${formatMoney(totalDebt)}</div><div class="label">Schulden gesamt</div></div>
+      <div class="stat-tile"><div class="num">${formatMoney(savingsProgress)}</div><div class="label">Gespart (alle Ziele)</div></div>
+      <div class="stat-tile"><div class="num">${DATA.finance.expenses.filter(e=>e.date&&e.date.slice(0,7)===mk).length}</div><div class="label">Ausgaben erfasst (Monat)</div></div>
+    </div>
+    <p class="help-text" style="margin-top:10px;">Alle Berechnungen basieren ausschließlich auf den von dir eingetragenen Daten. KlarLeben ist keine Finanzberatung.</p>
+  `;
+}
+function setIncome(val){ DATA.finance.income = Number(val)||0; saveData(); navigate('finance'); }
+
+function renderBillsTab(){
+  const bills = DATA.finance.bills.slice().sort((a,b)=>(a.dueDay||0)-(b.dueDay||0));
+  return `
+    <div class="toolbar"><button class="btn" style="margin-left:auto;" onclick="openBillModal()">+ Rechnung</button></div>
+    <div class="card">
+      ${bills.length ? bills.map(b=>`
+        <div class="list-row">
+          <div class="checkbox ${b.paid?'checked':''}" onclick="toggleBillPaid('${b.id}')">${b.paid?'✓':''}</div>
+          <div class="main-col"><div class="row-title ${b.paid?'done':''}">${escapeHtml(b.name)}</div>
+            <div class="row-meta"><span>${formatMoney(b.amount)}</span><span>Fällig am ${b.dueDay}.</span>${b.category?`<span class="pill deferred">${escapeHtml(b.category)}</span>`:''}${b.autopay?`<span class="pill done">Auto-Pay</span>`:''}</div>
+          </div>
+          <div class="row-actions"><button class="icon-btn" onclick="openBillModal('${b.id}')">✏️</button><button class="icon-btn" onclick="deleteBill('${b.id}')">🗑️</button></div>
+        </div>
+      `).join('') : emptyRow('Noch keine Rechnungen erfasst.')}
+    </div>
+  `;
+}
+function openBillModal(id){
+  const existing = id ? DATA.finance.bills.find(b=>b.id===id) : null;
+  openModal(`
+    <h2>${existing?'Rechnung bearbeiten':'Neue Rechnung'}</h2>
+    <div class="field"><label>Bezeichnung *</label><input type="text" id="bl-name" value="${escapeHtml(existing?.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Betrag</label><input type="number" id="bl-amount" step="0.01" value="${existing?.amount||''}"></div>
+      <div class="field"><label>Fälligkeitstag (1–31)</label><input type="number" id="bl-day" min="1" max="31" value="${existing?.dueDay||''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Kategorie</label><input type="text" id="bl-cat" value="${escapeHtml(existing?.category||'')}"></div>
+      <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:22px;"><label style="margin:0;"><input type="checkbox" id="bl-autopay" ${existing?.autopay?'checked':''}> Auto-Pay</label></div>
+    </div>
+    <div id="bl-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveBillForm('${existing?.id||''}')">Speichern</button></div>
+  `);
+}
+function saveBillForm(id){
+  const name = document.getElementById('bl-name').value.trim();
+  const err = document.getElementById('bl-error');
+  if(!name){ err.textContent='Bitte eine Bezeichnung angeben.'; err.style.display='block'; return; }
+  const payload = { name, amount:Number(document.getElementById('bl-amount').value)||0, dueDay:Number(document.getElementById('bl-day').value)||1, category:document.getElementById('bl-cat').value.trim(), autopay:document.getElementById('bl-autopay').checked };
+  if(id){ Object.assign(DATA.finance.bills.find(b=>b.id===id), payload); }
+  else{ payload.id=uid(); payload.paid=false; DATA.finance.bills.push(payload); }
+  saveData(); closeModal(); navigate('finance'); showToast('Gespeichert');
+}
+function toggleBillPaid(id){ const b = DATA.finance.bills.find(x=>x.id===id); b.paid=!b.paid; saveData(); navigate('finance'); }
+function deleteBill(id){ confirmAction('Diese Rechnung wirklich löschen?', ()=>{ DATA.finance.bills = DATA.finance.bills.filter(b=>b.id!==id); saveData(); navigate('finance'); }); }
+
+function renderBudgetTab(){
+  const mk = monthKey();
+  const cats = DATA.finance.budgetCategories;
+  const income = Number(DATA.finance.income)||0;
+  const groupTotals = {bedarf:0,wunsch:0,sparen:0};
+  cats.forEach(c=>{ groupTotals[c.group||'bedarf'] += Number(c.planned||0); });
+  const recentExpenses = DATA.finance.expenses.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,10);
+
+  return `
+    <div class="card">
+      <div class="card-title">Budgetquoten (von dir zugeordnet)</div>
+      <div class="grid grid-3">
+        <div class="stat-tile"><div class="num">${pct(groupTotals.bedarf,income)}%</div><div class="label">Bedarf — ${formatMoney(groupTotals.bedarf)}</div></div>
+        <div class="stat-tile"><div class="num">${pct(groupTotals.wunsch,income)}%</div><div class="label">Wunsch — ${formatMoney(groupTotals.wunsch)}</div></div>
+        <div class="stat-tile"><div class="num">${pct(groupTotals.sparen,income)}%</div><div class="label">Sparen — ${formatMoney(groupTotals.sparen)}</div></div>
+      </div>
+      <p class="help-text" style="margin-top:8px;">Eine gängige Orientierung ist die 50/30/20-Regel (Bedarf/Wunsch/Sparen) – ordne jeder Budgetkategorie unten eine Gruppe zu, um deine eigene Quote zu sehen.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Budgetkategorien<button class="btn small" onclick="openBudgetCatModal()">+ Kategorie</button></div>
+      ${cats.length ? cats.map(c=>{
+        const spent = DATA.finance.expenses.filter(e=>e.category===c.name && e.date && e.date.slice(0,7)===mk).reduce((s,e)=>s+Number(e.amount||0),0);
+        const pctUsed = c.planned ? Math.min(100,Math.round(spent/c.planned*100)) : 0;
+        return `
+        <div style="margin-bottom:14px;">
+          <div class="row-meta" style="justify-content:space-between;display:flex;">
+            <strong style="color:var(--text);">${escapeHtml(c.name)} <span class="pill deferred">${c.group||'bedarf'}</span></strong>
+            <span>${formatMoney(spent)} / ${formatMoney(c.planned)}</span>
+          </div>
+          <div class="progress-bar" style="margin-top:4px;"><div class="progress-bar-fill ${pctUsed>=100?'warn':''}" style="width:${pctUsed}%;"></div></div>
+        </div>`;
+      }).join('') : emptyRow('Noch keine Budgetkategorien angelegt.')}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ausgaben erfassen<button class="btn small" onclick="openExpenseModal()">+ Ausgabe</button></div>
+      ${recentExpenses.length ? recentExpenses.map(e=>`
+        <div class="list-row">
+          <div class="main-col"><div class="row-title">${escapeHtml(e.description||e.category||'Ausgabe')}</div>
+            <div class="row-meta"><span>${formatDateDE(e.date)}</span>${e.category?`<span class="pill deferred">${escapeHtml(e.category)}</span>`:''}</div>
+          </div>
+          <div style="font-weight:700;">${formatMoney(e.amount)}</div>
+          <div class="row-actions"><button class="icon-btn" onclick="deleteExpense('${e.id}')">🗑️</button></div>
+        </div>
+      `).join('') : emptyRow('Noch keine Ausgaben erfasst.')}
+    </div>
+  `;
+}
+function pct(part,whole){ return whole ? Math.round(part/whole*100) : 0; }
+function openBudgetCatModal(){
+  openModal(`
+    <h2>Budgetkategorie</h2>
+    <div class="field"><label>Name *</label><input type="text" id="bc-name" placeholder="z. B. Lebensmittel"></div>
+    <div class="field-row">
+      <div class="field"><label>Geplanter Betrag / Monat</label><input type="number" id="bc-planned" step="0.01"></div>
+      <div class="field"><label>Gruppe</label><select id="bc-group"><option value="bedarf">Bedarf</option><option value="wunsch">Wunsch</option><option value="sparen">Sparen</option></select></div>
+    </div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveBudgetCatForm()">Speichern</button></div>
+  `);
+}
+function saveBudgetCatForm(){
+  const name = document.getElementById('bc-name').value.trim();
+  if(!name){ showToast('Bitte einen Namen angeben'); return; }
+  DATA.finance.budgetCategories.push({id:uid(), name, planned:Number(document.getElementById('bc-planned').value)||0, group:document.getElementById('bc-group').value});
+  saveData(); closeModal(); navigate('finance'); showToast('Gespeichert');
+}
+function openExpenseModal(){
+  const catOptions = DATA.finance.budgetCategories.map(c=>`<option>${escapeHtml(c.name)}</option>`).join('');
+  openModal(`
+    <h2>Ausgabe erfassen</h2>
+    <div class="field-row">
+      <div class="field"><label>Betrag *</label><input type="number" id="ex-amount" step="0.01"></div>
+      <div class="field"><label>Datum</label><input type="date" id="ex-date" value="${todayKey()}"></div>
+    </div>
+    <div class="field"><label>Kategorie</label><input type="text" id="ex-cat" list="ex-cat-list" placeholder="z. B. Lebensmittel"><datalist id="ex-cat-list">${catOptions}</datalist></div>
+    <div class="field"><label>Beschreibung</label><input type="text" id="ex-desc"></div>
+    <div id="ex-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveExpenseForm()">Speichern</button></div>
+  `);
+}
+function saveExpenseForm(){
+  const amount = Number(document.getElementById('ex-amount').value);
+  const err = document.getElementById('ex-error');
+  if(!amount || amount<=0){ err.textContent='Bitte einen gültigen Betrag angeben.'; err.style.display='block'; return; }
+  DATA.finance.expenses.push({id:uid(), amount, date:document.getElementById('ex-date').value||todayKey(), category:document.getElementById('ex-cat').value.trim(), description:document.getElementById('ex-desc').value.trim()});
+  saveData(); closeModal(); navigate('finance'); showToast('Ausgabe gespeichert');
+}
+function deleteExpense(id){ DATA.finance.expenses = DATA.finance.expenses.filter(e=>e.id!==id); saveData(); navigate('finance'); }
+
+function renderDebtsTab(){
+  const debts = DATA.finance.debts;
+  return `
+    <div class="toolbar"><button class="btn" style="margin-left:auto;" onclick="openDebtModal()">+ Schuld</button></div>
+    ${debts.length ? debts.map(d=>{
+      const paidOff = Math.max(0, Number(d.originalBalance||d.balance) - Number(d.balance));
+      const pctPaid = d.originalBalance ? Math.round(paidOff/d.originalBalance*100) : 0;
+      return `
+      <div class="card">
+        <div class="card-title">${escapeHtml(d.name)}<span><button class="icon-btn" onclick="deleteDebt('${d.id}')">🗑️</button></span></div>
+        <div class="row-meta" style="margin-bottom:6px;">${d.type?`<span class="pill deferred">${escapeHtml(d.type)}</span>`:''}${d.interestRate?`<span>${d.interestRate}% Zinsen</span>`:''}${d.minPayment?`<span>Min. ${formatMoney(d.minPayment)}/Monat</span>`:''}</div>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width:${pctPaid}%;"></div></div>
+        <div class="row-meta" style="margin-top:6px;justify-content:space-between;display:flex;"><span>Restschuld: ${formatMoney(d.balance)}</span><span>${pctPaid}% abbezahlt</span></div>
+        <button class="btn small secondary" style="margin-top:10px;" onclick="logDebtPayment('${d.id}')">Zahlung erfassen</button>
+      </div>`;
+    }).join('') : `<div class="card">${emptyRow('Noch keine Schulden erfasst.')}</div>`}
+  `;
+}
+function openDebtModal(){
+  openModal(`
+    <h2>Neue Schuld</h2>
+    <div class="field"><label>Bezeichnung *</label><input type="text" id="dt-name" placeholder="z. B. Kreditkarte"></div>
+    <div class="field-row">
+      <div class="field"><label>Typ</label><input type="text" id="dt-type" placeholder="z. B. Kreditkarte, Kredit"></div>
+      <div class="field"><label>Aktueller Saldo *</label><input type="number" id="dt-balance" step="0.01"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Zinssatz % (optional)</label><input type="number" id="dt-rate" step="0.01"></div>
+      <div class="field"><label>Mindestzahlung/Monat (optional)</label><input type="number" id="dt-min" step="0.01"></div>
+    </div>
+    <div id="dt-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveDebtForm()">Speichern</button></div>
+  `);
+}
+function saveDebtForm(){
+  const name = document.getElementById('dt-name').value.trim();
+  const balance = Number(document.getElementById('dt-balance').value);
+  const err = document.getElementById('dt-error');
+  if(!name || !balance){ err.textContent='Bitte Bezeichnung und Saldo angeben.'; err.style.display='block'; return; }
+  DATA.finance.debts.push({id:uid(), name, type:document.getElementById('dt-type').value.trim(), balance, originalBalance:balance, interestRate:Number(document.getElementById('dt-rate').value)||null, minPayment:Number(document.getElementById('dt-min').value)||null, payments:[]});
+  saveData(); closeModal(); navigate('finance'); showToast('Gespeichert');
+}
+function deleteDebt(id){ confirmAction('Diese Schuld wirklich löschen?', ()=>{ DATA.finance.debts = DATA.finance.debts.filter(d=>d.id!==id); saveData(); navigate('finance'); }); }
+function logDebtPayment(id){
+  openModal(`
+    <h2>Zahlung erfassen</h2>
+    <div class="field"><label>Betrag *</label><input type="number" id="dp-amount" step="0.01"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="confirmDebtPayment('${id}')">Speichern</button></div>
+  `);
+}
+function confirmDebtPayment(id){
+  const amount = Number(document.getElementById('dp-amount').value);
+  if(!amount || amount<=0){ showToast('Bitte einen gültigen Betrag angeben'); return; }
+  const d = DATA.finance.debts.find(x=>x.id===id);
+  d.balance = Math.max(0, Number(d.balance) - amount);
+  d.payments = d.payments||[]; d.payments.push({date:todayKey(), amount});
+  saveData(); closeModal(); navigate('finance'); showToast('Zahlung erfasst');
+}
+
+function renderSavingsTab(){
+  const goals = DATA.finance.savingsGoals;
+  return `
+    <div class="toolbar"><button class="btn" style="margin-left:auto;" onclick="openSavingsModal()">+ Sparziel</button></div>
+    ${goals.length ? goals.map(g=>{
+      const pctDone = g.target ? Math.min(100,Math.round(Number(g.current||0)/g.target*100)) : 0;
+      return `
+      <div class="card">
+        <div class="card-title">${escapeHtml(g.name)}<span><button class="icon-btn" onclick="deleteSavingsGoal('${g.id}')">🗑️</button></span></div>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width:${pctDone}%;"></div></div>
+        <div class="row-meta" style="margin-top:6px;justify-content:space-between;display:flex;"><span>${formatMoney(g.current)} / ${formatMoney(g.target)}</span><span>${pctDone}%</span></div>
+        <button class="btn small secondary" style="margin-top:10px;" onclick="logSavingsDeposit('${g.id}')">Einzahlung hinzufügen</button>
+      </div>`;
+    }).join('') : `<div class="card">${emptyRow('Noch keine Sparziele angelegt.')}</div>`}
+  `;
+}
+function openSavingsModal(){
+  openModal(`
+    <h2>Neues Sparziel</h2>
+    <div class="field"><label>Name *</label><input type="text" id="sg-name" placeholder="z. B. Notgroschen"></div>
+    <div class="field"><label>Zielbetrag *</label><input type="number" id="sg-target" step="0.01"></div>
+    <div id="sg-error" class="inline-warn" style="display:none;"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="saveSavingsForm()">Speichern</button></div>
+  `);
+}
+function saveSavingsForm(){
+  const name = document.getElementById('sg-name').value.trim();
+  const target = Number(document.getElementById('sg-target').value);
+  const err = document.getElementById('sg-error');
+  if(!name || !target){ err.textContent='Bitte Name und Zielbetrag angeben.'; err.style.display='block'; return; }
+  DATA.finance.savingsGoals.push({id:uid(), name, target, current:0, deposits:[]});
+  saveData(); closeModal(); navigate('finance'); showToast('Gespeichert');
+}
+function deleteSavingsGoal(id){ confirmAction('Dieses Sparziel wirklich löschen?', ()=>{ DATA.finance.savingsGoals = DATA.finance.savingsGoals.filter(g=>g.id!==id); saveData(); navigate('finance'); }); }
+function logSavingsDeposit(id){
+  openModal(`
+    <h2>Einzahlung hinzufügen</h2>
+    <div class="field"><label>Betrag *</label><input type="number" id="sd-amount" step="0.01"></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn" onclick="confirmSavingsDeposit('${id}')">Speichern</button></div>
+  `);
+}
+function confirmSavingsDeposit(id){
+  const amount = Number(document.getElementById('sd-amount').value);
+  if(!amount || amount<=0){ showToast('Bitte einen gültigen Betrag angeben'); return; }
+  const g = DATA.finance.savingsGoals.find(x=>x.id===id);
+  g.current = Number(g.current||0) + amount;
+  g.deposits = g.deposits||[]; g.deposits.push({date:todayKey(), amount});
+  saveData(); closeModal(); navigate('finance'); showToast('Einzahlung gespeichert');
+}
+
+/* ======================================================================
+   AUSWERTUNGEN
    ====================================================================== */
 RENDERERS.stats = function(){
   const doneCount = DATA.tasks.filter(t=>t.status==='Erledigt').length;
   const openCount = DATA.tasks.filter(t=>t.status!=='Erledigt').length;
-  const habitStreaks = DATA.habits.map(h=>({title:h.title, streak:computeStreak(h)}));
-  const bestStreak = habitStreaks.sort((a,b)=>b.streak-a.streak)[0];
+  const habitStreaks = DATA.habits.map(h=>({title:h.title, streak:computeStreak(h)})).sort((a,b)=>b.streak-a.streak);
+  const totalDebt = DATA.finance.debts.reduce((s,d)=>s+Number(d.balance||0),0);
+  const totalSaved = DATA.finance.savingsGoals.reduce((s,g)=>s+Number(g.current||0),0);
 
-  if(!DATA.tasks.length && !DATA.habits.length && !DATA.notes.length){
-    return `
-      <div class="page-header"><h1>Auswertungen</h1></div>
-      <div class="card">${emptyRow('Noch keine Daten vorhanden. Sobald du Aufgaben, Gewohnheiten oder Notizen anlegst, erscheinen hier deine Auswertungen.')}</div>
-    `;
+  const hasAnyData = DATA.tasks.length||DATA.habits.length||DATA.notes.length||DATA.finance.bills.length||DATA.journal.length;
+  if(!hasAnyData){
+    return `<div class="page-header"><div><h1>Auswertungen</h1></div></div><div class="card">${emptyRow('Noch keine Daten vorhanden. Sobald du Aufgaben, Gewohnheiten, Finanzen oder Journal-Einträge anlegst, erscheinen hier deine Auswertungen.')}</div>`;
   }
 
   return `
-    <div class="page-header"><h1>Auswertungen</h1></div>
-    <div class="grid grid-3">
+    <div class="page-header"><div><h1>Auswertungen</h1></div></div>
+    <div class="grid grid-4">
       <div class="stat-tile"><div class="num">${doneCount}</div><div class="label">Erledigte Aufgaben</div></div>
       <div class="stat-tile"><div class="num">${openCount}</div><div class="label">Offene Aufgaben</div></div>
-      <div class="stat-tile"><div class="num">${DATA.notes.length}</div><div class="label">Notizen gesamt</div></div>
+      <div class="stat-tile"><div class="num">${formatMoney(totalDebt)}</div><div class="label">Schulden gesamt</div></div>
+      <div class="stat-tile"><div class="num">${formatMoney(totalSaved)}</div><div class="label">Gespart gesamt</div></div>
     </div>
     <div class="card" style="margin-top:16px;">
       <div class="card-title">Gewohnheiten-Serien</div>
-      ${habitStreaks.length ? habitStreaks.map(h=>`
-        <div class="list-row"><div class="main-col"><div class="row-title">${escapeHtml(h.title)}</div></div><div class="streak">🔥 ${h.streak} Tage</div></div>
-      `).join('') : emptyRow('Noch keine Gewohnheiten angelegt.')}
+      ${habitStreaks.length ? habitStreaks.map(h=>`<div class="list-row"><div class="main-col"><div class="row-title">${escapeHtml(h.title)}</div></div><div class="streak">🔥 ${h.streak} Tage</div></div>`).join('') : emptyRow('Noch keine Gewohnheiten angelegt.')}
     </div>
   `;
 };
@@ -1102,19 +2091,33 @@ RENDERERS.stats = function(){
    EINSTELLUNGEN
    ====================================================================== */
 const ALL_AREAS = [
-  {key:'today', label:'Mein Tag'},
-  {key:'tasks', label:'Aufgaben'},
+  {key:'today', label:'Mein Tag &amp; Aufgaben'},
   {key:'week', label:'Wochenplaner'},
-  {key:'habits', label:'Gewohnheiten'},
-  {key:'notes', label:'Notizen'}
+  {key:'school', label:'Arbeit &amp; Lernen'},
+  {key:'health', label:'Gesundheit'},
+  {key:'habits', label:'Gewohnheiten, Journal &amp; Notizen'},
+  {key:'household', label:'Haushalt &amp; Mahlzeiten'},
+  {key:'finance', label:'Finanzen'}
 ];
 RENDERERS.settings = function(){
   return `
-    <div class="page-header"><h1>Einstellungen</h1></div>
+    <div class="page-header"><div><h1>Einstellungen</h1></div></div>
+
+    <div class="card">
+      <div class="card-title">Darstellung</div>
+      <div class="field-row">
+        <div class="field"><label>Design</label>
+          <select onchange="DATA.settings.theme=this.value; saveData(); applyTheme(); navigate('settings');">
+            <option value="light" ${DATA.settings.theme!=='dark'?'selected':''}>Hell</option>
+            <option value="dark" ${DATA.settings.theme==='dark'?'selected':''}>Dunkel</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
     <div class="card">
       <div class="card-title">Persönlich</div>
-      <div class="field"><label>Name / Begrüßung</label><input type="text" id="set-name" value="${escapeHtml(DATA.profile.name)}" onchange="DATA.profile.name=this.value; saveData(); showToast('Gespeichert');"></div>
+      <div class="field"><label>Name / Begrüßung</label><input type="text" value="${escapeHtml(DATA.profile.name)}" onchange="DATA.profile.name=this.value; saveData(); showToast('Gespeichert');"></div>
     </div>
 
     <div class="card">
@@ -1126,10 +2129,7 @@ RENDERERS.settings = function(){
             <option value="CHF" ${DATA.settings.currency==='CHF'?'selected':''}>Schweizer Franken (CHF)</option>
           </select>
         </div>
-        <div class="field"><label>Wochenbeginn</label>
-          <select disabled><option selected>Montag</option></select>
-          <div class="help-text">Aktuell fest auf Montag eingestellt.</div>
-        </div>
+        <div class="field"><label>Wochenbeginn</label><select disabled><option selected>Montag</option></select></div>
       </div>
     </div>
 
@@ -1159,27 +2159,20 @@ RENDERERS.settings = function(){
 
     <div class="card">
       <div class="card-title">Über KlarLeben</div>
-      <p class="help-text">KlarLeben ist ein eigenständiges Organisationswerkzeug. Es behandelt, diagnostiziert oder verbessert kein ADHS und ersetzt keine medizinische oder psychologische Betreuung. Alle Einträge – insbesondere zu Gesundheit, Finanzen und Kontakten – werden ausschließlich lokal gespeichert.</p>
+      <p class="help-text">KlarLeben ist ein eigenständiges Organisationswerkzeug. Es behandelt, diagnostiziert oder verbessert kein ADHS und ersetzt keine medizinische, psychologische oder finanzielle Beratung. Alle Einträge – insbesondere zu Gesundheit, Finanzen und Kontakten – werden ausschließlich lokal gespeichert.</p>
     </div>
   `;
 };
 function toggleArea(key, checked){
-  if(checked){
-    if(!DATA.profile.visibleAreas.includes(key)) DATA.profile.visibleAreas.push(key);
-  }else{
-    DATA.profile.visibleAreas = DATA.profile.visibleAreas.filter(a=>a!==key);
-  }
-  saveData();
-  applyVisibleAreas();
-  showToast('Gespeichert');
+  if(checked){ if(!DATA.profile.visibleAreas.includes(key)) DATA.profile.visibleAreas.push(key); }
+  else{ DATA.profile.visibleAreas = DATA.profile.visibleAreas.filter(a=>a!==key); }
+  saveData(); applyVisibleAreas(); showToast('Gespeichert');
 }
-
 function exportData(){
   const blob = new Blob([JSON.stringify(DATA, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = 'klarleben-backup-' + todayKey() + '.json';
+  a.href = url; a.download = 'klarleben-backup-' + todayKey() + '.json';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showToast('Export erstellt');
@@ -1194,22 +2187,18 @@ function importData(file){
       openModal(`
         <h2>Daten importieren</h2>
         <p>Dadurch werden deine aktuellen Daten in diesem Browser überschrieben. Dieser Vorgang kann nicht rückgängig gemacht werden.</p>
-        <div class="modal-actions">
-          <button class="btn secondary" onclick="closeModal()">Abbrechen</button>
-          <button class="btn danger" id="doImportBtn">Jetzt überschreiben</button>
-        </div>
+        <div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Abbrechen</button><button class="btn danger" id="doImportBtn">Jetzt überschreiben</button></div>
       `);
       document.getElementById('doImportBtn').onclick = ()=>{
         const base = defaultData();
         DATA = Object.assign(base, parsed, {
           profile: Object.assign(base.profile, parsed.profile||{}),
-          settings: Object.assign(base.settings, parsed.settings||{})
+          settings: Object.assign(base.settings, parsed.settings||{}),
+          health: Object.assign(base.health, parsed.health||{}),
+          meals: Object.assign(base.meals, parsed.meals||{}),
+          finance: Object.assign(base.finance, parsed.finance||{})
         });
-        saveData();
-        closeModal();
-        applyVisibleAreas();
-        navigate('settings');
-        showToast('Daten importiert');
+        saveData(); closeModal(); applyVisibleAreas(); applyTheme(); navigate('settings'); showToast('Daten importiert');
       };
     }catch(err){
       openModal(`<h2>Import fehlgeschlagen</h2><p>Die Datei konnte nicht gelesen werden. Bitte stelle sicher, dass es sich um eine gültige KlarLeben-Exportdatei (JSON) handelt.</p><div class="modal-actions"><button class="btn" onclick="closeModal()">OK</button></div>`);
@@ -1219,24 +2208,17 @@ function importData(file){
 }
 function resetAllData(){
   confirmAction('Wirklich ALLE Daten unwiderruflich löschen? Erstelle vorher am besten ein Backup.', ()=>{
-    DATA = defaultData();
-    DATA.profile.onboarded = false;
-    saveData();
-    location.reload();
+    DATA = defaultData(); DATA.profile.onboarded = false; saveData(); location.reload();
   });
 }
 
 /* ======================================================================
    INIT
    ====================================================================== */
-function initNav(){
-  applyVisibleAreas();
-}
+applyTheme();
 initOnboarding();
-initNav();
-if(DATA.profile.onboarded){
-  navigate('dashboard');
-}
+applyVisibleAreas();
+if(DATA.profile.onboarded){ navigate('dashboard'); }
 </script>
 </body>
 </html>
