@@ -4,8 +4,9 @@
 :root[data-theme=dark]{--bg:#1b1424;--card:#281e34;--tx:#f0e8f7;--mut:#b2a5c1;--ln:#3b2e4b;--in:#34274a;--g:#c9c2d1;color-scheme:dark}
 *{box-sizing:border-box}html,body{margin:0}body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx)}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--card);border-bottom:3px solid var(--p)}
-.logo{font:italic 700 24px "Segoe Script","Brush Script MT",cursive;color:var(--p)}.logo b{color:var(--g)}
-.sp{flex:1}.pill{background:var(--in);border-radius:20px;padding:5px 12px;font-size:13px;color:var(--mut)}
+.logo{font:italic 700 24px "Segoe Script","Brush Script MT",cursive;color:var(--p);white-space:nowrap}.logo b{color:var(--g)}
+.htitle{flex:1;text-align:center;font-weight:700;color:var(--mut);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.02em}
+.sp{flex:1}.pill{background:var(--in);border-radius:20px;padding:5px 12px;font-size:13px;color:var(--mut);white-space:nowrap}
 button{font:inherit;cursor:pointer}#menu{display:none}
 .btn{background:var(--p);color:#fff;border:0;border-radius:10px;padding:9px 16px;font-weight:600}.btn:hover{background:var(--pd)}
 .btn2{background:var(--in);color:var(--tx);border:0;border-radius:10px;padding:9px 14px}
@@ -34,11 +35,21 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .tg{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--g);color:#fff;padding:10px 18px;border-radius:20px;z-index:20}
 .mb{display:flex;align-items:flex-end;gap:4px;height:90px}.mb i{flex:1;background:var(--p);border-radius:4px 4px 0 0;min-height:3px}.mb i+i{background:var(--p)}
 .sos{background:linear-gradient(135deg,var(--o),#ff7a45);font-size:17px;padding:14px 26px}.step{padding:10px 12px;border-radius:10px;opacity:.45}.step.on{opacity:1;background:var(--in);border-left:4px solid var(--o)}
-@media(max-width:800px){#menu{display:block}nav{position:fixed;left:0;top:0;bottom:0;height:auto;z-index:10;transform:translateX(-100%);transition:transform .2s;padding-top:calc(12px + env(safe-area-inset-top,0px))}nav.open{transform:none}.cols{grid-template-columns:1fr}main{padding:14px}.big{font-size:48px}}
+.gate{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+.gate .card{max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.12)}
+.gate h2{margin:0 0 6px;color:var(--p)}.gate p{color:var(--mut);margin:0 0 16px}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.sw{width:38px;height:38px;border-radius:50%;border:3px solid transparent;cursor:pointer;flex:none}
+.sw.on{border-color:var(--tx)}
+.modal-bg{position:fixed;inset:0;background:rgba(20,10,30,.45);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border-radius:16px;padding:20px;max-width:420px;width:100%;max-height:85vh;overflow:auto}
+@media(max-width:800px){#menu{display:block}nav{position:fixed;left:0;top:0;bottom:0;height:auto;z-index:10;transform:translateX(-100%);transition:transform .2s;padding-top:calc(12px + env(safe-area-inset-top,0px))}nav.open{transform:none}.cols{grid-template-columns:1fr}main{padding:14px}.big{font-size:48px}header{padding:9px 10px;gap:8px}.logo{font-size:19px}.pill{display:none}}
+@media(max-width:480px){.htitle{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
-<header><button class="ic" id="menu" onclick="document.querySelector('nav').classList.toggle('open')" aria-label="Menü">☰</button><span class="logo">Klar<b>Leben</b> 🌿</span><span class="sp"></span><span class="pill" id="dt"></span><button class="ic" id="th" onclick="theme()">🌙</button></header>
+<header><button class="ic" id="menu" onclick="document.querySelector('nav').classList.toggle('open')" aria-label="Menü">☰</button><span class="logo" id="logoName">Klar<b>Leben</b> 🌿</span><span class="htitle" id="midTitle">ADHS Planner</span><span class="sp"></span><span class="pill" id="dt"></span><button class="ic" onclick="location.hash='set'" title="Einstellungen" aria-label="Einstellungen">⚙️</button><button class="ic" id="th" onclick="theme()">🌙</button></header>
 <div id="app"><nav id="nav"></nav><main id="main"></main></div>
+<div class="gate" id="gate" style="display:none"><div class="card"><h2>Willkommen 👋</h2><p>Wie dürfen wir dich nennen? Damit personalisieren wir dein Dashboard.</p><input id="gn" placeholder="Dein Name" style="margin-bottom:12px" onkeydown="if(event.key=='Enter')gateGo()"><div class="row" style="justify-content:center"><button class="btn2" onclick="gateSkip()">Überspringen</button><button class="btn" onclick="gateGo()">Los geht's ✓</button></div></div></div>
 <script>
 const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const td=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
@@ -154,7 +165,22 @@ function fin(){const inc=nm(S.inc),b=D('bills').reduce((s,z)=>s+nm(z.v[1]),0),sp
  <div class="stats" style="margin-bottom:14px">${[['Einnahmen',inc],['Rechnungen',b],['Ausgaben',sp],['Schulden',db],['Übrig',inc-b-sp]].map(([l,v])=>`<div class="stat"><b>${fm(v)} €</b><span>${l}</span></div>`).join('')}</div>
  <div class="card"><h3>📐 Die 50/30/20-Regel</h3><div class="stats">${[['50 %','Notwendiges',.5],['30 %','Wünsche',.3],['20 %','Sparen / Schulden',.2]].map(([p,l,k])=>`<div class="stat"><b>${p}</b><span>${l}<br>${fm(inc*k)} €</span></div>`).join('')}</div></div>
  <div class="row"><button class="btn2" onclick="location.hash='bills'">🧾 Rechnungen</button><button class="btn2" onclick="location.hash='budget'">🌈 Budget</button><button class="btn2" onclick="location.hash='spend'">💸 Ausgaben</button><button class="btn2" onclick="location.hash='debt'">🔗 Schulden</button></div>`}
-let RS=0;function set(){return `<div class="card"><label>Dein Name<input value="${E(S.name||'')}" onchange="S.name=this.value;sv()"></label><div class="row"><button class="btn2" onclick="theme()">🌙 / ☀️ Dunkelmodus umschalten</button></div></div><div class="card"><h3>Daten</h3><p class="sub">Alle Daten liegen nur in deinem Browser.</p><button class="btn2" onclick="if(RS){S={};sv();RS=0;go()}else{RS=1;this.textContent='Wirklich alles löschen? Nochmal klicken'}">Alle Daten zurücksetzen</button></div>`}
+const ACCENTS=[{n:'Lavendel (Standard)',c:'#a45fe6'},{n:'Salbeigrün',c:'#6a8f6f'},{n:'Himmelblau',c:'#4f8fc4'},{n:'Terracotta',c:'#c4703f'},{n:'Rosé',c:'#c97fa8'}];
+function shade(hex,pct){const f=parseInt(hex.slice(1),16),t=pct<0?0:255,p=Math.abs(pct)/100,R=f>>16,Gc=f>>8&255,B=f&255;
+ return '#'+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-Gc)*p)+Gc)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1)}
+function applyAccent(hex){document.documentElement.style.setProperty('--p',hex);document.documentElement.style.setProperty('--pd',shade(hex,-20))}
+function setAccent(hex){S.accent=hex;sv();applyAccent(hex);go()}
+function applyBrand(){const nm=E(S.appName||'KlarLeben'),sub=E(S.subtitle!=null?S.subtitle:'ADHS Planner');
+ const el=$('#logoName');if(el)el.innerHTML=nm.replace(/Leben$/,'<b>Leben</b>')+' 🌿';
+ const mt=$('#midTitle');if(mt)mt.textContent=sub}
+let RS=0;function set(){return `<div class="card"><h3>Persönlich</h3><label>Dein Name<input value="${E(S.name||'')}" onchange="S.name=this.value;sv();go()"></label></div>
+ <div class="card"><h3>App anpassen</h3><label>App-Name<input value="${E(S.appName||'KlarLeben')}" onchange="S.appName=this.value;sv();applyBrand()"></label><label>Untertitel (Kopfzeile)<input value="${E(S.subtitle!=null?S.subtitle:'ADHS Planner')}" onchange="S.subtitle=this.value;sv();applyBrand()"></label>
+ <label>Akzentfarbe<div class="swatches">${ACCENTS.map(a=>`<button class="sw ${((S.accent||ACCENTS[0].c)==a.c)?'on':''}" style="background:${a.c}" title="${a.n}" aria-label="${a.n}" onclick="setAccent('${a.c}')"></button>`).join('')}</div></label>
+ <div class="row"><button class="btn2" onclick="theme()">🌙 / ☀️ Dunkelmodus umschalten</button></div></div>
+ <div class="card"><h3>Daten</h3><p class="sub">Alle Daten liegen nur in deinem Browser.</p><button class="btn2" onclick="if(RS){S={};sv();RS=0;go()}else{RS=1;this.textContent='Wirklich alles löschen? Nochmal klicken'}">Alle Daten zurücksetzen</button></div>`}
+/* ---- Willkommens-Gate ---- */
+function gateGo(){const v=$('#gn').value.trim();S.name=v;S.nameAsked=1;sv();$('#gate').style.display='none';go()}
+function gateSkip(){S.nameAsked=1;sv();$('#gate').style.display='none';go()}
 /* ---- Navigation ---- */
 function theme(){const d=document.documentElement,n=d.dataset.theme=='dark'?'light':'dark';d.dataset.theme=n;S.theme=n;sv();$('#th').textContent=n=='dark'?'☀️':'🌙'}
 let last='';function go(){const id=(location.hash||'#dash').slice(1),m=M[id]||M.dash,y=scrollY,same=last==m.id;last=m.id;
@@ -163,5 +189,7 @@ let last='';function go(){const id=(location.hash||'#dash').slice(1),m=M[id]||M.
  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.id==m.id));$('nav').classList.remove('open');scrollTo(0,same?y:0)}
 (function(){let g='',h='';Object.values(M).forEach(m=>{if(m.g!=g){g=m.g;h+=`<h6>${g}</h6>`}h+=`<a href="#${m.id}" data-id="${m.id}">${m.i} ${m.t}</a>`});$('#nav').innerHTML=h;
  document.documentElement.dataset.theme=S.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');$('#th').textContent=document.documentElement.dataset.theme=='dark'?'☀️':'🌙';
+ applyAccent(S.accent||ACCENTS[0].c);applyBrand();
+ if(!S.nameAsked){$('#gate').style.display='flex';$('#gn').focus()}
  $('#dt').textContent=new Date().toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});addEventListener('hashchange',go);go()})();
 </script></body></html>
