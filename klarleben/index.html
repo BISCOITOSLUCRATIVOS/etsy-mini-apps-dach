@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KlarLeben – Der All-in-One Lebensplaner</title>
+<title>KlarLeben – Dein persönlicher All-in-One Lebensplaner</title>
+<link rel="icon" type="image/png" href="assets/logo-64.png">
 <style>
   :root{
     --cream:#FFFDF9;
@@ -63,8 +64,10 @@
     overflow-y:auto;
   }
   .brand{display:flex;align-items:center;gap:10px;padding:6px 10px 20px 10px;}
-  .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--sage),var(--forest));display:flex;align-items:center;justify-content:center;color:var(--white);font-weight:700;font-size:15px;flex-shrink:0;}
+  .brand-mark{width:38px;height:38px;border-radius:12px;flex-shrink:0;overflow:hidden;box-shadow:var(--shadow);}
+  .brand-mark img{width:100%;height:100%;object-fit:cover;display:block;}
   .brand-name{font-size:17px;font-weight:700;}
+  .brand-name .accent{color:#D98E86;}
   .brand-sub{font-size:11px;color:var(--warmgray);}
 
   .nav-group{margin-bottom:2px;}
@@ -273,8 +276,9 @@
 <div id="onboarding" class="onboarding-overlay" style="display:none;">
   <div class="onboard-card">
     <div id="ob-step-1" class="onboard-step active">
-      <h1>Willkommen bei KlarLeben 🌿</h1>
-      <p>Dein ruhiger All-in-One Lebensplaner. Alle Daten bleiben nur auf diesem Gerät, in deinem Browser.</p>
+      <img src="assets/logo.png" alt="KlarLeben Logo" style="width:84px;height:84px;border-radius:20px;margin-bottom:14px;box-shadow:var(--shadow-lift);">
+      <h1>Willkommen bei Klar<span class="accent">Leben</span></h1>
+      <p>Dein persönlicher All-in-One Lebensplaner. Alle Daten bleiben nur auf diesem Gerät, in deinem Browser.</p>
       <div class="field" style="text-align:left;margin-top:18px;">
         <label for="ob-name">Wie dürfen wir dich nennen? (optional)</label>
         <input type="text" id="ob-name" placeholder="z. B. Mira">
@@ -309,10 +313,10 @@
   <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
   <nav class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-mark">KL</div>
+      <div class="brand-mark"><img src="assets/logo.png" alt="KlarLeben Logo"></div>
       <div>
-        <div class="brand-name">KlarLeben</div>
-        <div class="brand-sub">Lebensplaner</div>
+        <div class="brand-name">Klar<span class="accent">Leben</span></div>
+        <div class="brand-sub">Dein All-in-One Lebensplaner</div>
       </div>
     </div>
 
@@ -362,7 +366,10 @@
   <div class="main">
     <div class="topbar">
       <button class="hamburger" onclick="toggleSidebar(true)">☰</button>
-      <div class="brand-name" style="font-size:15px;">KlarLeben</div>
+      <div class="brand-name" style="font-size:15px;display:flex;align-items:center;gap:8px;">
+        <img src="assets/logo-64.png" alt="KlarLeben" style="width:24px;height:24px;border-radius:7px;">
+        Klar<span class="accent">Leben</span>
+      </div>
       <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleMobile">🌙</button>
     </div>
     <div class="content" id="content"></div>
