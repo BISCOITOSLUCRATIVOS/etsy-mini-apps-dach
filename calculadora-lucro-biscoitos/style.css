@@ -1,0 +1,547 @@
+/* ============================================================
+   MINHA CALCULADORA DE LUCRO — BISCOITOS DE NATAL
+   Identidade visual: verde-escuro, vermelho natalino, dourado,
+   fundo claro, cantos arredondados, botões grandes.
+   ============================================================ */
+
+:root {
+  --verde-escuro: #1f4d3b;
+  --verde-medio: #2e6e52;
+  --verde-claro: #e7f2ec;
+  --vermelho: #b23a2e;
+  --vermelho-escuro: #8f2d23;
+  --dourado: #c9a04d;
+  --dourado-claro: #f4e8cc;
+  --fundo: #fdf9f1;
+  --cartao: #ffffff;
+  --texto: #2b2b28;
+  --texto-suave: #6b665d;
+  --borda: #e7ddc8;
+  --sombra: 0 6px 18px rgba(31, 77, 59, 0.08);
+  --raio: 16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  color: var(--verde-escuro);
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+p { line-height: 1.5; }
+
+.decor-topo {
+  position: fixed;
+  top: -10px;
+  right: 18px;
+  font-size: 46px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---------- TELAS ---------- */
+.tela { display: none; }
+.tela-ativa { display: block; }
+
+/* ---------- TELA DE ENTRADA ---------- */
+#tela-entrada.tela-ativa {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--verde-claro) 0%, var(--fundo) 60%);
+}
+
+.card-entrada {
+  background: var(--cartao);
+  border-radius: 22px;
+  box-shadow: var(--sombra);
+  padding: 40px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid var(--borda);
+}
+
+.selo {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.card-entrada h1 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.subtitulo {
+  color: var(--texto-suave);
+  font-size: 15px;
+  margin-bottom: 26px;
+}
+
+#form-nome label {
+  display: block;
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--verde-escuro);
+}
+
+#form-nome input {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+/* ---------- CAMPOS / FORMULÁRIOS ---------- */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--borda);
+  border-radius: 12px;
+  font-size: 15px;
+  background: var(--cartao);
+  color: var(--texto);
+  font-family: inherit;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--verde-medio);
+  box-shadow: 0 0 0 3px rgba(46, 110, 82, 0.15);
+}
+
+.campo { margin-bottom: 16px; }
+.campo label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: var(--verde-escuro);
+}
+.opcional { font-weight: 400; color: var(--texto-suave); font-size: 12px; }
+
+.linha-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.formulario-cartao {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--sombra);
+}
+
+/* ---------- BOTÕES ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.15s ease;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primario {
+  background: var(--verde-escuro);
+  color: #fff;
+  width: 100%;
+}
+.btn-primario:hover { background: var(--verde-medio); }
+
+.btn-secundario {
+  background: var(--dourado-claro);
+  color: var(--verde-escuro);
+  border: 1.5px solid var(--dourado);
+}
+.btn-secundario:hover { background: #efdcab; }
+
+.btn-perigo {
+  background: var(--vermelho);
+  color: #fff;
+}
+.btn-perigo:hover { background: var(--vermelho-escuro); }
+
+.btn-grande { padding: 16px 24px; font-size: 16px; }
+
+.btn-icone {
+  background: var(--verde-claro);
+  border: none;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.btn-arquivo {
+  text-align: center;
+  cursor: pointer;
+}
+
+.link-discreto {
+  background: none;
+  border: none;
+  color: var(--verde-medio);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* ---------- APP PRINCIPAL / TOPO ---------- */
+#app-principal {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 18px 16px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.topo-app {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.topo-boasvindas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#saudacao-nome {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--verde-escuro);
+}
+
+.frase-boasvindas {
+  color: var(--texto-suave);
+  font-size: 14px;
+  margin: 4px 0 18px;
+}
+
+/* ---------- ABAS ---------- */
+.abas {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.aba {
+  flex: 0 0 auto;
+  background: var(--cartao);
+  border: 1.5px solid var(--borda);
+  color: var(--texto-suave);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.aba-ativa {
+  background: var(--verde-escuro);
+  border-color: var(--verde-escuro);
+  color: #fff;
+}
+
+.painel { display: none; }
+.painel-ativo { display: block; }
+
+.ajuda {
+  color: var(--texto-suave);
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+/* ---------- CARTÕES DE LISTA ---------- */
+.lista-cartoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cartao-item {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-left: 5px solid var(--dourado);
+  border-radius: var(--raio);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--sombra);
+}
+
+.cartao-item-info { flex: 1; min-width: 0; }
+
+.cartao-item-titulo {
+  font-weight: 700;
+  color: var(--verde-escuro);
+  margin-bottom: 2px;
+}
+
+.cartao-item-sub {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.cartao-item-acoes {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-mini {
+  background: var(--verde-claro);
+  border: none;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.btn-mini.perigo { background: #f6ddd9; }
+
+.estado-vazio {
+  color: var(--texto-suave);
+  font-style: italic;
+  text-align: center;
+  padding: 24px 10px;
+  font-size: 14px;
+}
+
+/* ---------- ITENS DE RECEITA / CUSTOS ADICIONAIS ---------- */
+.lista-ingredientes-receita, .lista-custos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.linha-item-receita, .linha-custo {
+  display: grid;
+  grid-template-columns: 1fr 110px 36px;
+  gap: 8px;
+  align-items: center;
+  background: var(--verde-claro);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.linha-item-receita select, .linha-custo input[type="text"] {
+  margin: 0;
+}
+
+.linha-item-receita input, .linha-custo input[type="number"] {
+  margin: 0;
+}
+
+.custo-item-preview {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--verde-medio);
+  font-weight: 600;
+}
+
+details.detalhes-custos {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+details.detalhes-custos summary {
+  font-weight: 700;
+  color: var(--verde-escuro);
+  cursor: pointer;
+}
+
+/* ---------- RESULTADOS ---------- */
+.caixa-resultado {
+  background: var(--verde-claro);
+  border: 1px solid var(--verde-medio);
+  border-radius: var(--raio);
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.explicacao {
+  font-size: 13px;
+  color: var(--verde-escuro);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px dashed var(--verde-medio);
+}
+
+.grid-resultado {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.grid-resultado-grande .mini-cartao { padding: 22px 16px; }
+
+.mini-cartao {
+  background: var(--cartao);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--borda);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mini-cartao .rotulo {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+.mini-cartao .valor {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--verde-escuro);
+}
+
+.mini-cartao.destaque {
+  background: linear-gradient(135deg, var(--dourado-claro), #fff);
+  border-color: var(--dourado);
+}
+.mini-cartao.destaque .valor { color: var(--vermelho); }
+
+.nota-estimativa {
+  font-size: 13px;
+  color: var(--texto-suave);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ---------- MODAIS ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 77, 59, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.modal[hidden] { display: none; }
+
+.modal-caixa {
+  background: var(--cartao);
+  border-radius: 18px;
+  padding: 26px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.modal-grande { max-width: 480px; }
+
+.modal-caixa input {
+  margin: 14px 0;
+}
+
+.modal-botoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.modal-botoes-coluna { flex-direction: column; }
+.modal-botoes .btn { flex: 1; }
+
+.aviso-privacidade {
+  background: var(--verde-claro);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 13.5px;
+  color: var(--verde-escuro);
+}
+
+.btn-fechar-modal {
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  width: 100%;
+  margin-top: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ---------- TOAST ---------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--verde-escuro);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 100;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.toast-erro { background: var(--vermelho); }
+.toast[hidden] { display: none; }
+
+.campo-erro {
+  border-color: var(--vermelho) !important;
+  box-shadow: 0 0 0 3px rgba(178, 58, 46, 0.15) !important;
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 480px) {
+  .card-entrada { padding: 30px 22px; }
+  .linha-item-receita { grid-template-columns: 1fr 90px 32px; }
+  .mini-cartao .valor { font-size: 17px; }
+}

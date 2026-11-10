@@ -9,6 +9,7 @@ Cada app vive na sua própria pasta e é 100% autocontida: um único `index.html
 | App | Pasta | Conceito | Status |
 |---|---|---|---|
 | KlarLeben – Der All-in-One Lebensplaner | `klarleben/` | ADHS-Alltagsplaner | Phase 1–2 (arquitetura + núcleo funcional) |
+| Minha Calculadora de Lucro – Biscoitos de Natal | `calculadora-lucro-biscoitos/` | Order Bump PT-BR: custo, preço e lucro para quem vende biscoitos de Natal | Completo e testado |
 
 ## Publicação
 

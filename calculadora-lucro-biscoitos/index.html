@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Calculadora de Lucro — Biscoitos de Natal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Decoração natalina de fundo -->
+<div class="decor-topo" aria-hidden="true">❄</div>
+
+<!-- ===================== TELA 0 — ENTRADA ===================== -->
+<section id="tela-entrada" class="tela tela-ativa">
+  <div class="card-entrada">
+    <div class="selo">🎄</div>
+    <h1>Minha Calculadora de Lucro</h1>
+    <p class="subtitulo">Descubra quanto custa produzir seus biscoitos, quanto cobrar e quanto pode lucrar neste Natal.</p>
+
+    <form id="form-nome" autocomplete="off">
+      <label for="input-nome">Como podemos chamar você?</label>
+      <input type="text" id="input-nome" placeholder="Digite seu nome" maxlength="40" required>
+      <button type="submit" class="btn btn-primario btn-grande">COMEÇAR</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== APP PRINCIPAL ===================== -->
+<div id="app-principal" class="tela">
+
+  <header class="topo-app">
+    <div class="topo-boasvindas">
+      <span id="saudacao-nome">Olá!</span>
+      <button id="btn-trocar-nome" class="link-discreto" type="button">alterar nome</button>
+    </div>
+    <button id="btn-abrir-privacidade" class="btn-icone" type="button" title="Privacidade e dados">🔒</button>
+  </header>
+
+  <p id="frase-boasvindas" class="frase-boasvindas"></p>
+
+  <nav class="abas" role="tablist" aria-label="Seções da calculadora">
+    <button class="aba aba-ativa" data-aba="ingredientes" type="button">🧂 Ingredientes</button>
+    <button class="aba" data-aba="receita" type="button">🍪 Calcular Receita</button>
+    <button class="aba" data-aba="preco" type="button">💰 Quanto Cobrar</button>
+    <button class="aba" data-aba="resultados" type="button">📊 Resultados</button>
+    <button class="aba" data-aba="historico" type="button">🗂 Histórico</button>
+  </nav>
+
+  <!-- ---------- ABA 1: INGREDIENTES ---------- -->
+  <section class="painel painel-ativo" id="painel-ingredientes">
+    <h2>Meus ingredientes e custos</h2>
+    <p class="ajuda">Cadastre o que você compra. O app calcula sozinho quanto custou a parte que você realmente usar na receita.</p>
+
+    <form id="form-ingrediente" class="formulario-cartao">
+      <div class="campo">
+        <label for="ing-nome">Nome do ingrediente</label>
+        <input type="text" id="ing-nome" placeholder="Ex: Farinha de trigo" required>
+      </div>
+      <div class="linha-campos">
+        <div class="campo">
+          <label for="ing-qtd-comprada">Quantidade comprada</label>
+          <input type="number" id="ing-qtd-comprada" min="0" step="0.01" placeholder="Ex: 1" required>
+        </div>
+        <div class="campo">
+          <label for="ing-unidade">Unidade</label>
+          <select id="ing-unidade" required>
+            <option value="g">gramas (g)</option>
+            <option value="kg">quilos (kg)</option>
+            <option value="ml">mililitros (ml)</option>
+            <option value="l">litros (l)</option>
+            <option value="un">unidade</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label for="ing-preco">Preço pago (R$)</label>
+          <input type="number" id="ing-preco" min="0" step="0.01" placeholder="Ex: 6,00" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primario" id="btn-salvar-ingrediente">Adicionar ingrediente</button>
+      <input type="hidden" id="ing-editando-id">
+    </form>
+
+    <div id="lista-ingredientes" class="lista-cartoes"></div>
+    <p id="vazio-ingredientes" class="estado-vazio">Você ainda não cadastrou nenhum ingrediente.</p>
+  </section>
+
+  <!-- ---------- ABA 2: CALCULAR RECEITA ---------- -->
+  <section class="painel" id="painel-receita">
+    <h2>Calcular minha receita</h2>
+    <p class="ajuda">Escolha os ingredientes e as quantidades usadas nesta receita. O custo de cada um é calculado proporcionalmente ao que você cadastrou.</p>
+
+    <form id="form-receita" class="formulario-cartao">
+      <div class="campo">
+        <label for="receita-nome">Nome da receita</label>
+        <input type="text" id="receita-nome" placeholder="Ex: Biscoito de gengibre" required>
+      </div>
+
+      <div class="campo">
+        <label>Ingredientes usados nesta receita</label>
+        <div id="lista-ingredientes-receita" class="lista-ingredientes-receita"></div>
+        <button type="button" id="btn-add-item-receita" class="btn btn-secundario">+ Adicionar ingrediente à receita</button>
+        <p id="vazio-ingredientes-receita-aviso" class="estado-vazio" hidden>Cadastre ao menos um ingrediente na aba "Ingredientes" antes de montar uma receita.</p>
+      </div>
+
+      <div class="campo">
+        <label for="receita-rendimento">Quantos biscoitos essa receita rende?</label>
+        <input type="number" id="receita-rendimento" min="1" step="1" placeholder="Ex: 30" required>
+      </div>
+
+      <button type="submit" class="btn btn-primario" id="btn-salvar-receita">Calcular e salvar receita</button>
+      <input type="hidden" id="receita-editando-id">
+    </form>
+
+    <div id="resumo-receita-calculada" class="caixa-resultado" hidden>
+      <h3>Resultado da receita</h3>
+      <div class="grid-resultado">
+        <div class="mini-cartao"><span class="rotulo">Custo total dos ingredientes</span><span class="valor" id="rr-custo-total">—</span></div>
+        <div class="mini-cartao"><span class="rotulo">Rendimento</span><span class="valor" id="rr-rendimento">—</span></div>
+        <div class="mini-cartao destaque"><span class="rotulo">Custo por biscoito</span><span class="valor" id="rr-custo-unidade">—</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- ABA 3: QUANTO DEVO COBRAR ---------- -->
+  <section class="painel" id="painel-preco">
+    <h2>Quanto devo cobrar?</h2>
+    <p class="ajuda">Escolha uma receita já calculada, informe os custos extras e a margem desejada. A gente faz a conta certa pra você.</p>
+
+    <form id="form-preco" class="formulario-cartao">
+      <div class="campo">
+        <label for="preco-receita">Receita</label>
+        <select id="preco-receita" required>
+          <option value="">Selecione uma receita calculada</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="preco-tipo-venda">Como você vende?</label>
+        <select id="preco-tipo-venda" required>
+          <option value="unidade">Por unidade</option>
+          <option value="caixa">Por caixa</option>
+          <option value="pacote">Por pacote</option>
+          <option value="kit">Por kit</option>
+        </select>
+      </div>
+
+      <div class="linha-campos">
+        <div class="campo">
+          <label for="preco-qtd-embalagem">Biscoitos por embalagem</label>
+          <input type="number" id="preco-qtd-embalagem" min="1" step="1" placeholder="Ex: 6" required>
+        </div>
+        <div class="campo">
+          <label for="preco-custo-embalagem">Custo da embalagem (R$)</label>
+          <input type="number" id="preco-custo-embalagem" min="0" step="0.01" placeholder="Ex: 2,50">
+        </div>
+      </div>
+
+      <details class="detalhes-custos">
+        <summary>Custos adicionais (embalagens, etiquetas, gás, mão de obra...)</summary>
+        <div id="lista-custos-adicionais" class="lista-custos"></div>
+        <button type="button" id="btn-add-custo" class="btn btn-secundario">+ Adicionar custo</button>
+      </details>
+
+      <div class="linha-campos">
+        <div class="campo">
+          <label for="preco-margem">Margem de lucro desejada (%)</label>
+          <input type="number" id="preco-margem" min="0" max="95" step="1" placeholder="Ex: 40" required>
+        </div>
+        <div class="campo">
+          <label for="preco-taxa">Taxas adicionais (%) <span class="opcional">opcional</span></label>
+          <input type="number" id="preco-taxa" min="0" max="50" step="0.1" placeholder="Ex: 5">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primario" id="btn-calcular-preco">Calcular preço de venda</button>
+    </form>
+
+    <div id="resumo-preco-calculado" class="caixa-resultado" hidden>
+      <h3>Como chegamos nesse preço</h3>
+      <p id="explicacao-calculo" class="explicacao"></p>
+      <div class="grid-resultado">
+        <div class="mini-cartao"><span class="rotulo">Custo total do produto</span><span class="valor" id="pr-custo-total">—</span></div>
+        <div class="mini-cartao"><span class="rotulo">Custo por unidade</span><span class="valor" id="pr-custo-unidade">—</span></div>
+        <div class="mini-cartao destaque"><span class="rotulo">Preço sugerido de venda</span><span class="valor" id="pr-preco-venda">—</span></div>
+        <div class="mini-cartao destaque"><span class="rotulo">Lucro estimado por venda</span><span class="valor" id="pr-lucro">—</span></div>
+      </div>
+      <button type="button" id="btn-ver-resultados" class="btn btn-primario btn-grande">Ver painel de resultados completo</button>
+    </div>
+  </section>
+
+  <!-- ---------- ABA 4: RESULTADOS ---------- -->
+  <section class="painel" id="painel-resultados">
+    <h2>Painel de resultados</h2>
+    <p class="ajuda">Um resumo visual do que você calculou. Lembre-se: é uma estimativa com base no que você preencheu.</p>
+
+    <div id="resultados-vazio" class="estado-vazio">Calcule uma receita e um preço de venda primeiro, nas abas anteriores.</div>
+
+    <div id="resultados-conteudo" class="grid-resultado grid-resultado-grande" hidden>
+      <div class="mini-cartao"><span class="rotulo">Custo de produção</span><span class="valor" id="res-custo">—</span></div>
+      <div class="mini-cartao"><span class="rotulo">Preço de venda</span><span class="valor" id="res-preco">—</span></div>
+      <div class="mini-cartao destaque"><span class="rotulo">Lucro estimado</span><span class="valor" id="res-lucro">—</span></div>
+      <div class="mini-cartao"><span class="rotulo">Quantidade produzida</span><span class="valor" id="res-qtd">—</span></div>
+      <div class="mini-cartao destaque"><span class="rotulo">Lucro potencial da produção toda</span><span class="valor" id="res-lucro-total">—</span></div>
+    </div>
+    <p class="nota-estimativa" id="nota-estimativa" hidden>⚠ O lucro apresentado é uma estimativa baseada nos dados que você preencheu.</p>
+  </section>
+
+  <!-- ---------- ABA 5: HISTÓRICO ---------- -->
+  <section class="painel" id="painel-historico">
+    <h2>Histórico de receitas</h2>
+    <p class="ajuda">Suas receitas salvas ficam aqui. Você pode abrir, editar, duplicar ou excluir.</p>
+    <div id="lista-historico" class="lista-cartoes"></div>
+    <p id="vazio-historico" class="estado-vazio">Nenhuma receita salva ainda.</p>
+  </section>
+
+</div>
+
+<!-- ===================== MODAL: TROCAR NOME ===================== -->
+<div id="modal-trocar-nome" class="modal" hidden>
+  <div class="modal-caixa">
+    <h3>Alterar nome</h3>
+    <form id="form-trocar-nome">
+      <input type="text" id="input-novo-nome" maxlength="40" required>
+      <div class="modal-botoes">
+        <button type="button" class="btn btn-secundario" id="btn-cancelar-nome">Cancelar</button>
+        <button type="submit" class="btn btn-primario">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== MODAL: PRIVACIDADE E DADOS ===================== -->
+<div id="modal-privacidade" class="modal" hidden>
+  <div class="modal-caixa modal-grande">
+    <h3>🔒 Privacidade e seus dados</h3>
+    <p class="aviso-privacidade">
+      Privacidade: seus dados ficam armazenados apenas neste navegador e neste aparelho. Não enviamos suas informações
+      para servidores externos. Se você trocar de aparelho ou navegador, precisará transferir seus dados usando a
+      opção de exportação.
+    </p>
+    <div class="modal-botoes modal-botoes-coluna">
+      <button type="button" id="btn-exportar-dados" class="btn btn-secundario">⬇ Exportar meus dados (JSON)</button>
+      <label class="btn btn-secundario btn-arquivo">
+        ⬆ Importar dados (JSON)
+        <input type="file" id="input-importar-dados" accept="application/json" hidden>
+      </label>
+      <button type="button" id="btn-apagar-dados" class="btn btn-perigo">🗑 Apagar todos os meus dados</button>
+    </div>
+    <button type="button" class="btn btn-fechar-modal" id="btn-fechar-privacidade">Fechar</button>
+  </div>
+</div>
+
+<!-- ===================== MODAL: CONFIRMAÇÃO GENÉRICA ===================== -->
+<div id="modal-confirmar" class="modal" hidden>
+  <div class="modal-caixa">
+    <h3 id="confirmar-titulo">Confirmar ação</h3>
+    <p id="confirmar-texto"></p>
+    <div class="modal-botoes">
+      <button type="button" class="btn btn-secundario" id="btn-confirmar-nao">Cancelar</button>
+      <button type="button" class="btn btn-perigo" id="btn-confirmar-sim">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Caixa de aviso (toast) -->
+<div id="toast" class="toast" hidden></div>
+
+<script src="script.js"></script>
+</body>
+</html>
