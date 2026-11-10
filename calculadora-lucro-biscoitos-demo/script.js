@@ -914,23 +914,28 @@
       { id: "demo-ovo", nome: "Ovo", qtdComprada: 12, unidade: "un", preco: 9 }
     ];
 
+    // Lote escalado para um "fechamento grande de temporada" (ex.: feira de Natal /
+    // venda em atacado) — mantém o custo/preço/lucro por embalagem idênticos aos
+    // de um lote pequeno (mesma margem, mesma receita), só produzindo mais, para
+    // que o card "Lucro potencial da produção toda" fique num valor de propaganda
+    // mais impactante (~R$ 3.690). Só existe aqui na versão demo/teste.
     const receitaGengibre = {
       id: "demo-receita-gengibre",
       nome: "Biscoito de Gengibre de Natal",
       itens: [
-        { ingredienteId: "demo-farinha", quantidade: 600, unidade: "g" },
-        { ingredienteId: "demo-manteiga", quantidade: 300, unidade: "g" },
-        { ingredienteId: "demo-acucar", quantidade: 250, unidade: "g" },
-        { ingredienteId: "demo-ovo", quantidade: 2, unidade: "un" }
+        { ingredienteId: "demo-farinha", quantidade: 36000, unidade: "g" },
+        { ingredienteId: "demo-manteiga", quantidade: 18000, unidade: "g" },
+        { ingredienteId: "demo-acucar", quantidade: 15000, unidade: "g" },
+        { ingredienteId: "demo-ovo", quantidade: 120, unidade: "un" }
       ],
-      rendimento: 40,
-      custoTotal: 13.55,
-      custoUnidade: 13.55 / 40,
+      rendimento: 2448,
+      custoTotal: 829.26,
+      custoUnidade: 829.26 / 2448,
       detalhesCusto: [
-        { nome: "Farinha de trigo", custo: 3.6 },
-        { nome: "Manteiga", custo: 7.2 },
-        { nome: "Açúcar", custo: 1.25 },
-        { nome: "Ovo", custo: 1.5 }
+        { nome: "Farinha de trigo", custo: 216.0 },
+        { nome: "Manteiga", custo: 432.0 },
+        { nome: "Açúcar", custo: 75.0 },
+        { nome: "Ovo", custo: 90.0 }
       ],
       criadoEm: Date.now() - 2 * 86400000,
       precoConfig: {
@@ -940,8 +945,8 @@
         margem: 45,
         taxa: 5,
         custosAdicionais: [
-          { nome: "Gás e energia", valor: 10 },
-          { nome: "Mão de obra", valor: 20 }
+          { nome: "Gás e energia", valor: 612 },
+          { nome: "Mão de obra", valor: 1224 }
         ]
       }
     };
