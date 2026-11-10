@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Compras Inteligente — Confeitaria Natalina</title>
+<style>
+/* ============================================================
+   LISTA DE COMPRAS INTELIGENTE
+   Identidade: verde profundo + dourado, estilo app premium.
+   ============================================================ */
+:root{
+  --verde-profundo:#174C3B;
+  --verde-secundario:#23644D;
+  --dourado:#D6AD57;
+  --dourado-claro:#f3e6c6;
+  --dourado-escuro:#a9813a;
+  --creme:#FFF8EA;
+  --branco:#FFFFFF;
+  --texto:#26352D;
+  --texto-suave:#6b7268;
+  --cinza-suave:#F2F3EF;
+  --borda:#e7e2d3;
+  --vermelho:#b23a2e;
+  --vermelho-escuro:#8f2d23;
+  --sombra:0 6px 18px rgba(23,76,59,0.09);
+  --raio:16px;
+  --sidebar-largura:270px;
+  --fonte-display:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",Palatino,serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--creme);color:var(--texto);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;}
+h1,h2,h3{color:var(--verde-profundo);font-weight:700;margin:0 0 8px;}
+p{line-height:1.5;}
+button{font-family:inherit;}
+.decor-topo{position:fixed;top:-10px;right:18px;font-size:46px;opacity:0.16;pointer-events:none;z-index:0;}
+
+/* ---------- LAYOUT PRINCIPAL ---------- */
+#app{display:flex;align-items:stretch;min-height:100vh;position:relative;z-index:1;}
+
+.backdrop-sidebar{position:fixed;inset:0;background:rgba(10,25,18,0.5);z-index:55;}
+.backdrop-sidebar[hidden]{display:none;}
+
+.sidebar-lateral{
+  width:var(--sidebar-largura);flex:0 0 var(--sidebar-largura);
+  background:linear-gradient(180deg,var(--verde-profundo) 0%,#0f3327 100%);
+  color:#fff;display:flex;flex-direction:column;padding:26px 18px;
+  position:fixed;top:0;left:0;bottom:0;z-index:60;transform:translateX(0);
+  transition:transform .25s ease;overflow-y:auto;
+}
+.marca-sidebar{display:flex;align-items:center;gap:12px;margin-bottom:26px;padding:0 4px;}
+.marca-icone{width:44px;height:44px;border-radius:12px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.25);
+  background:var(--dourado);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.kicker-sidebar{color:var(--dourado-claro);text-transform:uppercase;letter-spacing:2px;font-size:10.5px;font-weight:700;margin:0 0 2px;}
+.titulo-marca-sidebar{font-family:var(--fonte-display);font-style:italic;font-weight:700;font-size:16.5px;line-height:1.2;margin:0;color:#fff;}
+
+.abas{display:flex;flex-direction:column;gap:3px;}
+.aba{display:flex;align-items:center;gap:10px;background:transparent;border:none;color:rgba(255,255,255,.82);
+  border-radius:12px;padding:12px 13px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;text-align:left;width:100%;}
+.aba:hover{background:rgba(255,255,255,.08);}
+.aba-icone{font-size:16px;width:20px;text-align:center;}
+.aba-ativa{background:var(--dourado);color:var(--verde-profundo);}
+.aba-ativa:hover{background:var(--dourado);}
+
+.sidebar-rodape{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.14);font-size:11px;color:rgba(255,255,255,.55);text-align:center;}
+
+.conteudo-principal{flex:1;min-width:0;max-width:980px;margin:0 auto;padding:18px 20px 70px;margin-left:calc(var(--sidebar-largura) + 24px);}
+
+.btn-hamburguer{display:none;flex-direction:column;justify-content:center;gap:4px;width:40px;height:40px;
+  background:var(--cinza-suave);border:none;border-radius:10px;cursor:pointer;flex-shrink:0;}
+.btn-hamburguer span{display:block;width:18px;height:2px;margin:0 auto;background:var(--verde-profundo);border-radius:2px;}
+
+.topo-app{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;}
+.topo-titulos{flex:1;min-width:0;}
+.kicker-topo{text-transform:uppercase;letter-spacing:1.6px;font-size:11px;font-weight:700;color:var(--dourado-escuro);margin:0;}
+.titulo-topo{font-family:var(--fonte-display);font-style:italic;font-size:22px;margin:2px 0 0;color:var(--verde-profundo);}
+.subtitulo-topo{color:var(--texto-suave);font-size:13.5px;margin:2px 0 0;}
+
+/* ---------- TELAS/PAINEIS ---------- */
+.painel{display:none;}
+.painel-ativo{display:block;}
+.ajuda{color:var(--texto-suave);font-size:14px;margin:0 0 18px;}
+
+/* ---------- CARTÕES / FORM ---------- */
+.cartao{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);box-shadow:var(--sombra);padding:20px;margin-bottom:18px;}
+.grade-cartoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px;}
+.stat-cartao{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);box-shadow:var(--sombra);padding:18px;text-align:center;}
+.stat-cartao .stat-valor{font-size:26px;font-weight:800;color:var(--verde-profundo);display:block;margin:4px 0 2px;}
+.stat-cartao .stat-rotulo{font-size:12.5px;color:var(--texto-suave);font-weight:600;}
+
+.acesso-rapido{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:22px;}
+.card-acesso{background:linear-gradient(135deg,var(--verde-profundo),var(--verde-secundario));color:#fff;border:none;
+  border-radius:var(--raio);padding:20px;text-align:left;cursor:pointer;box-shadow:var(--sombra);}
+.card-acesso:hover{opacity:.92;}
+.card-acesso .icone{font-size:26px;display:block;margin-bottom:8px;}
+.card-acesso .rotulo{font-weight:700;font-size:15px;}
+
+.mensagem-acolhedora{background:var(--dourado-claro);border:1px solid var(--dourado);border-radius:var(--raio);padding:16px 18px;
+  font-size:14.5px;color:var(--verde-profundo);margin-bottom:22px;}
+
+/* ---------- CAMPOS ---------- */
+input[type=text],input[type=number],input[type=search],select,textarea{
+  width:100%;padding:11px 13px;border:1.5px solid var(--borda);border-radius:11px;font-size:14.5px;
+  background:var(--branco);color:var(--texto);font-family:inherit;}
+textarea{resize:vertical;min-height:60px;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde-secundario);box-shadow:0 0 0 3px rgba(35,100,77,.15);}
+.campo{margin-bottom:14px;}
+.campo label{display:block;font-weight:600;font-size:13.5px;margin-bottom:5px;color:var(--verde-profundo);}
+.linha-campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.opcional{font-weight:400;color:var(--texto-suave);font-size:11.5px;}
+
+/* ---------- BOTÕES ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:11px;
+  padding:12px 20px;font-size:14.5px;font-weight:700;cursor:pointer;transition:transform .08s,opacity .15s;}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.btn-primario{background:var(--verde-profundo);color:#fff;}
+.btn-primario:hover{background:var(--verde-secundario);}
+.btn-secundario{background:var(--dourado-claro);color:var(--verde-profundo);border:1.5px solid var(--dourado);}
+.btn-secundario:hover{background:#ecd9a4;}
+.btn-perigo{background:var(--vermelho);color:#fff;}
+.btn-perigo:hover{background:var(--vermelho-escuro);}
+.btn-grande{padding:15px 24px;font-size:15.5px;width:100%;}
+.btn-mini{background:var(--cinza-suave);border:none;border-radius:8px;width:34px;height:34px;font-size:15px;cursor:pointer;flex-shrink:0;}
+.btn-mini.perigo{background:#f6ddd9;}
+.btn-bloco{width:100%;text-align:left;}
+
+/* ---------- LISTAS DE CARTÕES (receitas/historico) ---------- */
+.lista-cartoes{display:flex;flex-direction:column;gap:12px;}
+.item-cartao{background:var(--branco);border:1px solid var(--borda);border-left:5px solid var(--dourado);border-radius:var(--raio);
+  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;box-shadow:var(--sombra);}
+.item-cartao-info{flex:1;min-width:0;}
+.item-cartao-titulo{font-weight:700;color:var(--verde-profundo);margin-bottom:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.item-cartao-sub{font-size:12.5px;color:var(--texto-suave);}
+.item-cartao-acoes{display:flex;gap:6px;flex-shrink:0;}
+.selo-exemplo{background:var(--dourado);color:var(--verde-profundo);font-size:10px;font-weight:800;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;letter-spacing:.4px;}
+.selo-categoria{background:var(--cinza-suave);color:var(--texto-suave);font-size:11px;font-weight:600;padding:2px 9px;border-radius:999px;}
+.estado-vazio{color:var(--texto-suave);font-style:italic;text-align:center;padding:26px 12px;font-size:14px;background:var(--cinza-suave);border-radius:var(--raio);}
+
+/* ---------- INGREDIENTES (formulário de receita) ---------- */
+.linha-ingrediente{display:grid;grid-template-columns:1.4fr 90px 120px 36px;gap:8px;align-items:center;
+  background:var(--cinza-suave);padding:9px;border-radius:10px;margin-bottom:8px;}
+.linha-ingrediente input,.linha-ingrediente select{margin:0;}
+
+/* ---------- PLANEJAR PRODUÇÃO ---------- */
+.receita-planejamento{border:1px solid var(--borda);border-radius:var(--raio);padding:14px 16px;margin-bottom:12px;background:var(--branco);}
+.receita-planejamento-topo{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.receita-planejamento-topo input[type=checkbox]{width:19px;height:19px;accent-color:var(--verde-profundo);}
+.receita-planejamento-corpo{display:none;padding-left:29px;}
+.receita-planejamento.selecionada .receita-planejamento-corpo{display:block;}
+.modo-radio{display:flex;gap:14px;margin-bottom:10px;font-size:13px;}
+.modo-radio label{display:flex;align-items:center;gap:5px;font-weight:600;color:var(--texto-suave);cursor:pointer;}
+.preview-rendimento{background:var(--dourado-claro);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--verde-profundo);font-weight:600;}
+
+/* ---------- LISTA DE COMPRAS ---------- */
+.filtros-lista{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.filtro-botao{background:var(--branco);border:1.5px solid var(--borda);color:var(--texto-suave);border-radius:999px;
+  padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;}
+.filtro-botao.ativo{background:var(--verde-profundo);border-color:var(--verde-profundo);color:#fff;}
+.grupo-categoria{margin-bottom:20px;}
+.grupo-categoria-titulo{font-size:13px;font-weight:800;color:var(--dourado-escuro);text-transform:uppercase;letter-spacing:.6px;
+  margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--dourado-claro);}
+.item-compra{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;background:var(--branco);
+  border:1px solid var(--borda);border-radius:12px;padding:11px 13px;margin-bottom:8px;}
+.item-compra.comprado{opacity:.55;}
+.item-compra.comprado .item-compra-nome{text-decoration:line-through;}
+.item-compra input[type=checkbox]{width:20px;height:20px;accent-color:var(--verde-secundario);cursor:pointer;}
+.item-compra-nome{font-weight:700;font-size:14.5px;color:var(--texto);}
+.item-compra-detalhe{font-size:12px;color:var(--texto-suave);margin-top:2px;}
+.item-compra-detalhe .aviso{color:var(--vermelho);font-weight:600;}
+.item-compra-direita{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.item-compra-preco{width:110px;}
+.item-compra-categoria-select{width:150px;font-size:12px;padding:7px 9px;}
+.barra-acoes-lista{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;}
+.barra-acoes-lista .btn{flex:1 1 auto;min-width:140px;}
+
+/* ---------- DESPENSA ---------- */
+.tabela-despensa{width:100%;border-collapse:collapse;}
+.tabela-despensa th{text-align:left;font-size:12px;color:var(--texto-suave);padding:8px 10px;border-bottom:2px solid var(--borda);}
+.tabela-despensa td{padding:9px 10px;border-bottom:1px solid var(--borda);font-size:13.5px;}
+
+/* ---------- GRÁFICOS ---------- */
+.graficos-area{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:18px 0;}
+.cartao-grafico{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);padding:18px;box-shadow:var(--sombra);text-align:center;}
+.cartao-grafico h3{font-size:14.5px;margin-bottom:2px;}
+.ajuda-grafico{font-size:12px;color:var(--texto-suave);margin:0 0 10px;}
+.grafico-svg-area{display:flex;justify-content:center;}
+.grafico-svg-area svg{max-width:100%;height:auto;}
+.legenda-grafico{list-style:none;margin:12px 0 0;padding:0;text-align:left;display:flex;flex-direction:column;gap:5px;}
+.legenda-grafico li{display:flex;align-items:center;gap:7px;font-size:12px;}
+.legenda-grafico .bolinha{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.legenda-grafico .legenda-valor{margin-left:auto;font-weight:700;color:var(--verde-profundo);}
+
+/* ---------- MODAIS / TOAST ---------- */
+.modal{position:fixed;inset:0;background:rgba(23,76,59,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:80;}
+.modal[hidden]{display:none;}
+.modal-caixa{background:var(--branco);border-radius:18px;padding:26px;max-width:440px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);max-height:85vh;overflow-y:auto;}
+.modal-botoes{display:flex;gap:10px;margin-top:16px;}
+.modal-botoes .btn{flex:1;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--verde-profundo);color:#fff;padding:12px 20px;
+  border-radius:999px;font-size:13.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:100;max-width:90vw;text-align:center;}
+.toast.toast-erro{background:var(--vermelho);}
+.toast[hidden]{display:none;}
+.campo-erro{border-color:var(--vermelho) !important;box-shadow:0 0 0 3px rgba(178,58,46,.15) !important;}
+
+.aviso-privacidade{background:var(--cinza-suave);border-radius:10px;padding:14px;font-size:13px;color:var(--verde-profundo);margin-bottom:16px;}
+
+/* ---------- IMPRESSÃO ---------- */
+#area-impressao{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #area-impressao,#area-impressao *{visibility:visible;}
+  #area-impressao{display:block;position:absolute;top:0;left:0;width:100%;padding:20px;}
+  .imp-cabecalho h1{font-size:20px;margin-bottom:2px;}
+  .imp-meta{font-size:12px;margin-bottom:14px;}
+  .imp-categoria{font-size:13px;font-weight:800;text-transform:uppercase;margin:14px 0 6px;border-bottom:1px solid #999;padding-bottom:3px;}
+  .imp-item{font-size:12.5px;padding:3px 0;}
+  .imp-notas{margin-top:24px;border-top:1px dashed #999;padding-top:10px;font-size:12px;}
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width:900px){
+  .sidebar-lateral{transform:translateX(-100%);width:86vw;max-width:300px;flex-basis:auto;}
+  .sidebar-lateral.sidebar-aberta{transform:translateX(0);box-shadow:10px 0 30px rgba(0,0,0,.25);}
+  .conteudo-principal{margin-left:0;max-width:680px;padding:16px 16px 70px;}
+  .btn-hamburguer{display:flex;}
+}
+@media (max-width:480px){
+  .linha-ingrediente{grid-template-columns:1fr 70px 36px;grid-template-areas:"nome nome nome" "qtd un del";}
+  .item-compra{grid-template-columns:22px 1fr;}
+  .item-compra-direita{grid-column:1 / -1;justify-content:flex-start;margin-top:6px;}
+}
+</style>
+</head>
+<body>
+
+<div class="decor-topo" aria-hidden="true">❄</div>
+
+<div id="app">
+  <div id="backdrop-sidebar" class="backdrop-sidebar" hidden></div>
+
+  <aside id="sidebar-lateral" class="sidebar-lateral">
+    <div class="marca-sidebar">
+      <div class="marca-icone">🛒</div>
+      <div>
+        <p class="kicker-sidebar">Confeitaria Natalina</p>
+        <p class="titulo-marca-sidebar">Lista de Compras<br>Inteligente</p>
+      </div>
+    </div>
+    <nav class="abas" role="tablist" aria-label="Seções do aplicativo">
+      <button class="aba aba-ativa" data-aba="inicio" type="button"><span class="aba-icone">🏠</span> Início</button>
+      <button class="aba" data-aba="receitas" type="button"><span class="aba-icone">🍪</span> Minhas Receitas</button>
+      <button class="aba" data-aba="planejar" type="button"><span class="aba-icone">📋</span> Planejar Produção</button>
+      <button class="aba" data-aba="lista-compras" type="button"><span class="aba-icone">🛍</span> Lista de Compras</button>
+      <button class="aba" data-aba="despensa" type="button"><span class="aba-icone">🗄</span> Minha Despensa</button>
+      <button class="aba" data-aba="custos" type="button"><span class="aba-icone">💰</span> Custos</button>
+      <button class="aba" data-aba="historico" type="button"><span class="aba-icone">🕑</span> Histórico</button>
+      <button class="aba" data-aba="backup" type="button"><span class="aba-icone">⚙️</span> Backup e Configurações</button>
+    </nav>
+    <p class="sidebar-rodape">Seus dados ficam só neste navegador.</p>
+  </aside>
+
+  <div class="conteudo-principal">
+    <header class="topo-app">
+      <button id="btn-menu-mobile" class="btn-hamburguer" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <div class="topo-titulos">
+        <p class="kicker-topo">Lista de Compras Inteligente</p>
+        <p class="subtitulo-topo">Seu planejamento de ingredientes para produzir e vender.</p>
+      </div>
+    </header>
+
+    <!-- =================== INÍCIO =================== -->
+    <section class="painel painel-ativo" id="painel-inicio">
+      <h2>Início</h2>
+      <p class="mensagem-acolhedora">Vamos organizar sua produção? Escolha suas receitas e deixe o aplicativo calcular os ingredientes necessários.</p>
+
+      <div class="grade-cartoes">
+        <div class="stat-cartao"><span class="stat-valor" id="stat-receitas">0</span><span class="stat-rotulo">Receitas cadastradas</span></div>
+        <div class="stat-cartao"><span class="stat-valor" id="stat-listas">0</span><span class="stat-rotulo">Listas de compras criadas</span></div>
+        <div class="stat-cartao"><span class="stat-valor" id="stat-pendentes">0</span><span class="stat-rotulo">Ingredientes pendentes</span></div>
+        <div class="stat-cartao"><span class="stat-valor" id="stat-valor-proxima">—</span><span class="stat-rotulo">Valor estimado da próxima compra</span></div>
+      </div>
+
+      <div class="acesso-rapido">
+        <button class="card-acesso" type="button" data-ir="receitas-nova"><span class="icone">🍪</span><span class="rotulo">Cadastrar receita</span></button>
+        <button class="card-acesso" type="button" data-ir="planejar"><span class="icone">📋</span><span class="rotulo">Planejar produção</span></button>
+        <button class="card-acesso" type="button" data-ir="planejar"><span class="icone">🛍</span><span class="rotulo">Gerar lista de compras</span></button>
+        <button class="card-acesso" type="button" data-ir="despensa"><span class="icone">🗄</span><span class="rotulo">Consultar minha despensa</span></button>
+      </div>
+
+      <div class="graficos-area" id="graficos-inicio"></div>
+    </section>
+
+    <!-- =================== MINHAS RECEITAS =================== -->
+    <section class="painel" id="painel-receitas">
+      <h2>Minhas receitas</h2>
+      <p class="ajuda">Cadastre suas receitas com os ingredientes e o rendimento. Depois é só planejar a produção.</p>
+
+      <div class="campo">
+        <input type="search" id="busca-receitas" placeholder="🔎 Pesquisar receitas...">
+      </div>
+
+      <button class="btn btn-primario btn-grande" id="btn-nova-receita" type="button">+ Nova receita</button>
+
+      <div class="cartao" id="form-receita-cartao" hidden style="margin-top:16px;">
+        <h3 id="form-receita-titulo">Nova receita</h3>
+        <form id="form-receita">
+          <div class="campo">
+            <label for="receita-nome">Nome da receita</label>
+            <input type="text" id="receita-nome" placeholder="Ex: Biscoito de Baunilha" required>
+          </div>
+          <div class="linha-campos">
+            <div class="campo">
+              <label for="receita-categoria">Categoria</label>
+              <select id="receita-categoria">
+                <option>Massas</option>
+                <option>Biscoitos amanteigados</option>
+                <option>Gingerbread</option>
+                <option>Coberturas</option>
+                <option>Recheios</option>
+                <option>Decoração</option>
+                <option>Outros</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="receita-rendimento">Rendimento original</label>
+              <input type="number" id="receita-rendimento" min="1" step="1" placeholder="Ex: 30" required>
+            </div>
+            <div class="campo">
+              <label for="receita-unidade-rendimento">Unidade do rendimento</label>
+              <select id="receita-unidade-rendimento">
+                <option value="unidades">unidades</option>
+                <option value="caixas">caixas</option>
+                <option value="porcoes">porções</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Ingredientes</label>
+            <div id="lista-ingredientes-form"></div>
+            <button type="button" class="btn btn-secundario" id="btn-add-ingrediente">+ Adicionar ingrediente</button>
+          </div>
+
+          <div class="campo">
+            <label for="receita-observacoes">Observações <span class="opcional">opcional</span></label>
+            <textarea id="receita-observacoes" placeholder="Ex: render menos se as formas forem maiores..."></textarea>
+          </div>
+
+          <input type="hidden" id="receita-editando-id">
+          <div class="modal-botoes">
+            <button type="button" class="btn btn-secundario" id="btn-cancelar-receita">Cancelar</button>
+            <button type="submit" class="btn btn-primario" id="btn-salvar-receita">Salvar receita</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="lista-receitas" class="lista-cartoes" style="margin-top:16px;"></div>
+      <p id="vazio-receitas" class="estado-vazio" hidden>Você ainda não cadastrou receitas. Comece adicionando sua primeira receita para gerar sua lista de compras.</p>
+    </section>
+
+    <!-- =================== PLANEJAR PRODUÇÃO =================== -->
+    <section class="painel" id="painel-planejar">
+      <h2>Planejar minha produção</h2>
+      <p class="ajuda">Selecione as receitas e informe a quantidade desejada. O aplicativo calcula os ingredientes automaticamente.</p>
+
+      <div class="campo">
+        <label for="planejamento-nome">Nome da produção</label>
+        <input type="text" id="planejamento-nome" placeholder="Ex: Feira de Natal - 10/12">
+      </div>
+
+      <div id="lista-planejamento"></div>
+      <p id="vazio-planejamento" class="estado-vazio" hidden>Cadastre uma receita primeiro para poder planejar a produção.</p>
+
+      <button class="btn btn-primario btn-grande" id="btn-gerar-lista" type="button" style="margin-top:16px;">GERAR MINHA LISTA DE COMPRAS</button>
+    </section>
+
+    <!-- =================== LISTA DE COMPRAS =================== -->
+    <section class="painel" id="painel-lista-compras">
+      <h2>Minha lista de compras</h2>
+      <p class="ajuda" id="lista-compras-subtitulo">Gere uma lista na aba "Planejar Produção" para começar.</p>
+
+      <div id="lista-compras-conteudo" hidden>
+        <div class="filtros-lista">
+          <button class="filtro-botao ativo" data-filtro="todos" type="button">Todos</button>
+          <button class="filtro-botao" data-filtro="pendentes" type="button">Pendentes</button>
+          <button class="filtro-botao" data-filtro="comprados" type="button">Comprados</button>
+          <select id="filtro-categoria" class="item-compra-categoria-select" style="width:auto;">
+            <option value="">Todas as categorias</option>
+          </select>
+        </div>
+
+        <div id="grupos-lista-compras"></div>
+
+        <div class="cartao" style="margin-top:14px;">
+          <h3 style="font-size:14px;">Adicionar item manualmente</h3>
+          <div class="linha-campos">
+            <input type="text" id="manual-nome" placeholder="Nome do ingrediente">
+            <input type="number" id="manual-qtd" placeholder="Quantidade" min="0" step="0.01">
+            <select id="manual-unidade">
+              <option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option>
+              <option value="l">L</option><option value="un">unidade</option>
+              <option value="colher_cha">colher de chá</option><option value="colher_sopa">colher de sopa</option>
+              <option value="xicara">xícara</option><option value="pacote">pacote</option><option value="caixa">caixa</option>
+            </select>
+            <button class="btn btn-secundario" id="btn-add-manual" type="button">+ Adicionar</button>
+          </div>
+        </div>
+
+        <div class="barra-acoes-lista">
+          <button class="btn btn-secundario" id="btn-limpar-marcacoes" type="button">Limpar marcações</button>
+          <button class="btn btn-secundario" id="btn-imprimir" type="button">🖨 Imprimir / Salvar PDF</button>
+          <button class="btn btn-secundario" id="btn-csv" type="button">⬇ Baixar CSV</button>
+          <button class="btn btn-secundario" id="btn-copiar" type="button">📋 Copiar lista</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== MINHA DESPENSA =================== -->
+    <section class="painel" id="painel-despensa">
+      <h2>Minha despensa</h2>
+      <p class="ajuda">Registre o que você já tem em casa. A lista de compras desconta automaticamente essas quantidades.</p>
+
+      <div class="cartao">
+        <form id="form-despensa">
+          <div class="linha-campos">
+            <input type="text" id="despensa-nome" placeholder="Nome do ingrediente" required>
+            <input type="number" id="despensa-qtd" placeholder="Quantidade" min="0" step="0.01" required>
+            <select id="despensa-unidade">
+              <option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option>
+              <option value="l">L</option><option value="un">unidade</option>
+              <option value="colher_cha">colher de chá</option><option value="colher_sopa">colher de sopa</option>
+              <option value="xicara">xícara</option><option value="pacote">pacote</option><option value="caixa">caixa</option>
+            </select>
+          </div>
+          <div class="campo">
+            <input type="text" id="despensa-observacao" placeholder="Observação (opcional)">
+          </div>
+          <input type="hidden" id="despensa-editando-id">
+          <button type="submit" class="btn btn-primario" id="btn-salvar-despensa">Adicionar à despensa</button>
+        </form>
+      </div>
+
+      <div id="lista-despensa" class="lista-cartoes"></div>
+      <p id="vazio-despensa" class="estado-vazio" hidden>Sua despensa está vazia. Cadastre o que você já tem em casa.</p>
+    </section>
+
+    <!-- =================== CUSTOS =================== -->
+    <section class="painel" id="painel-custos">
+      <h2>Custos da compra</h2>
+      <p class="ajuda">Resumo financeiro estimado da lista de compras ativa.</p>
+
+      <div id="custos-vazio" class="estado-vazio">Gere uma lista de compras primeiro para ver os custos.</div>
+      <div id="custos-conteudo" hidden>
+        <div class="grade-cartoes">
+          <div class="stat-cartao"><span class="stat-valor" id="custo-total">—</span><span class="stat-rotulo">Total estimado da compra</span></div>
+          <div class="stat-cartao"><span class="stat-valor" id="custo-com-preco">0</span><span class="stat-rotulo">Itens com preço cadastrado</span></div>
+          <div class="stat-cartao"><span class="stat-valor" id="custo-sem-preco">0</span><span class="stat-rotulo">Itens sem preço</span></div>
+        </div>
+        <div class="graficos-area" id="graficos-custos"></div>
+      </div>
+    </section>
+
+    <!-- =================== HISTÓRICO =================== -->
+    <section class="painel" id="painel-historico">
+      <h2>Histórico de listas</h2>
+      <p class="ajuda">Suas listas de compras salvas. Abra, duplique ou exclua.</p>
+      <div class="graficos-area" id="graficos-historico"></div>
+      <div id="lista-historico" class="lista-cartoes"></div>
+      <p id="vazio-historico" class="estado-vazio" hidden>Nenhuma lista de compras criada ainda.</p>
+    </section>
+
+    <!-- =================== BACKUP E CONFIGURAÇÕES =================== -->
+    <section class="painel" id="painel-backup">
+      <h2>Backup e configurações</h2>
+      <p class="aviso-privacidade">Seus dados ficam armazenados neste navegador e dispositivo. Limpar os dados do navegador ou trocar de dispositivo pode fazer com que você perca suas informações. Faça backups regularmente.</p>
+
+      <div class="cartao">
+        <button class="btn btn-secundario btn-bloco" id="btn-exportar-backup" type="button" style="margin-bottom:10px;">⬇ Exportar backup (JSON)</button>
+        <label class="btn btn-secundario btn-bloco" style="margin-bottom:10px; text-align:center; cursor:pointer; display:block;">
+          ⬆ Importar backup (JSON)
+          <input type="file" id="input-importar-backup" accept="application/json" hidden>
+        </label>
+        <button class="btn btn-perigo btn-bloco" id="btn-limpar-dados" type="button">🗑 Limpar todos os dados</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div id="modal-confirmar" class="modal" hidden>
+  <div class="modal-caixa">
+    <h3 id="confirmar-titulo">Confirmar ação</h3>
+    <p id="confirmar-texto"></p>
+    <div class="modal-botoes">
+      <button type="button" class="btn btn-secundario" id="btn-confirmar-nao">Cancelar</button>
+      <button type="button" class="btn btn-perigo" id="btn-confirmar-sim">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COPIAR (fallback manual) -->
+<div id="modal-copiar" class="modal" hidden>
+  <div class="modal-caixa">
+    <h3>Copie manualmente</h3>
+    <p style="font-size:13px;">Não foi possível copiar automaticamente. Selecione o texto abaixo e copie (Ctrl+C ou Cmd+C).</p>
+    <textarea id="texto-copiar" style="height:220px;" readonly></textarea>
+    <div class="modal-botoes"><button type="button" class="btn btn-primario" id="btn-fechar-copiar">Fechar</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<!-- Área usada só na impressão -->
+<div id="area-impressao"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   CONSTANTES
+   ============================================================ */
+const STORAGE_KEY = "listaComprasInteligente_v1";
+
+const UNIDADE_LABEL = {
+  g:"g", kg:"kg", ml:"ml", l:"L", un:"unidade",
+  colher_cha:"colher de chá", colher_sopa:"colher de sopa",
+  xicara:"xícara", pacote:"pacote", caixa:"caixa"
+};
+const GRUPO_UNIDADE = {
+  g:"massa", kg:"massa", ml:"volume", l:"volume", un:"un",
+  colher_cha:"colher_cha", colher_sopa:"colher_sopa", xicara:"xicara", pacote:"pacote", caixa:"caixa"
+};
+const FATOR_BASE = { g:1, kg:1000, ml:1, l:1000, un:1, colher_cha:1, colher_sopa:1, xicara:1, pacote:1, caixa:1 };
+
+const CATEGORIAS_INGREDIENTE = ["Farinhas e secos","Açúcares e adoçantes","Gorduras e laticínios","Ovos e ingredientes frescos","Chocolates e coberturas","Frutas e recheios","Temperos e especiarias","Embalagens","Outros"];
+const CATEGORIAS_RECEITA = ["Massas","Biscoitos amanteigados","Gingerbread","Coberturas","Recheios","Decoração","Outros"];
+
+const PALETA_GRAFICO = ["#174C3B","#D6AD57","#b23a2e","#23644D","#a9813a","#6b7268","#8f2d23","#e0c48a"];
+
+const DICIONARIO_CATEGORIA = [
+  [/farinha|fermento|bicarbonato|amido|aveia/, "Farinhas e secos"],
+  [/a[cç][uú]car|mel\b|adocante|adoçante/, "Açúcares e adoçantes"],
+  [/manteiga|margarina|leite|creme de leite|nata|queijo/, "Gorduras e laticínios"],
+  [/\bovo/, "Ovos e ingredientes frescos"],
+  [/chocolate|cacau|cobertura|granulado/, "Chocolates e coberturas"],
+  [/fruta|geleia|recheio|doce de leite|goiabada|damasco|uva passa/, "Frutas e recheios"],
+  [/canela|cravo|gengibre|noz moscada|baunilha|ess[eê]ncia|especiaria/, "Temperos e especiarias"],
+  [/saquinho|embalagem|etiqueta|papel celofane|caixinha/, "Embalagens"]
+];
+
+/* ============================================================
+   FUNÇÕES PURAS DE CÁLCULO (testadas isoladamente antes da UI)
+   ============================================================ */
+function normalizarNome(nome){ return nome.trim().toLowerCase().replace(/\s+/g," "); }
+function paraBase(qtd, unidade){ return qtd * FATOR_BASE[unidade]; }
+function calcularMultiplicador(rendimentoOriginal, quantidadeDesejada){ return quantidadeDesejada / rendimentoOriginal; }
+function multiplicarIngredientes(ingredientes, multiplicador){
+  return ingredientes.map(i => ({...i, quantidade: i.quantidade * multiplicador}));
+}
+function agregarIngredientes(itens){
+  const mapa = new Map();
+  for(const item of itens){
+    const norm = normalizarNome(item.nome);
+    const grupo = GRUPO_UNIDADE[item.unidade];
+    const chave = norm + "::" + grupo;
+    if(!mapa.has(chave)){
+      mapa.set(chave, { nomeNormalizado:norm, nomeExibicao:item.nome.trim(), grupo, quantidadeBase:0 });
+    }
+    mapa.get(chave).quantidadeBase += paraBase(item.quantidade, item.unidade);
+  }
+  return Array.from(mapa.values());
+}
+function descontarDespensa(quantidadeNecessariaBase, itensDespensaMesmoGrupo){
+  const disponivel = itensDespensaMesmoGrupo.reduce((s,d)=> s + paraBase(d.quantidade, d.unidade), 0);
+  const comprar = Math.max(0, quantidadeNecessariaBase - disponivel);
+  return { disponivel, comprar };
+}
+function sugerirCategoria(nome){
+  const n = normalizarNome(nome);
+  for(const [regex, categoria] of DICIONARIO_CATEGORIA){
+    if(regex.test(n)) return categoria;
+  }
+  return "Outros";
+}
+function formatarQuantidadeBase(valorBase, grupo){
+  if(grupo === "massa"){
+    return valorBase >= 1000 ? formatarNumero(valorBase/1000) + " kg" : formatarNumero(valorBase) + " g";
+  }
+  if(grupo === "volume"){
+    return valorBase >= 1000 ? formatarNumero(valorBase/1000) + " L" : formatarNumero(valorBase) + " ml";
+  }
+  const rotulo = UNIDADE_LABEL[grupo] || grupo;
+  return formatarNumero(valorBase) + " " + rotulo + (valorBase !== 1 && grupo === "un" ? "s" : "");
+}
+function formatarNumero(n){
+  const arred = Math.round(n * 100) / 100;
+  return arred.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+}
+function formatarMoeda(valor){
+  if(valor === null || valor === undefined || isNaN(valor)) return "—";
+  return valor.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+}
+function novoId(){ return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8); }
+
+/* ============================================================
+   ESTADO + PERSISTÊNCIA
+   ============================================================ */
+function estadoPadrao(){
+  return { receitas:[], despensa:[], listas:[], listaAtivaId:null };
+}
+let estado = carregarEstado();
+function carregarEstado(){
+  try{
+    const bruto = localStorage.getItem(STORAGE_KEY);
+    if(!bruto) return semearExemplos(estadoPadrao());
+    return Object.assign(estadoPadrao(), JSON.parse(bruto));
+  }catch(e){
+    console.warn("Não foi possível ler dados salvos, começando do zero.", e);
+    return semearExemplos(estadoPadrao());
+  }
+}
+function salvarEstado(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(estado)); }
+  catch(e){ mostrarToast("Não foi possível salvar seus dados neste navegador.", true); }
+}
+
+function semearExemplos(est){
+  est.receitas = [
+    {
+      id:"exemplo-baunilha", nome:"Biscoito de Baunilha — exemplo", categoria:"Biscoitos amanteigados",
+      rendimento:30, unidadeRendimento:"unidades", exemplo:true, criadoEm: Date.now(),
+      observacoes:"Receita de exemplo editável. Ajuste as quantidades pros seus testes reais.",
+      ingredientes:[
+        {id:novoId(), nome:"Farinha de trigo", quantidade:500, unidade:"g"},
+        {id:novoId(), nome:"Açúcar", quantidade:200, unidade:"g"},
+        {id:novoId(), nome:"Manteiga", quantidade:250, unidade:"g"},
+        {id:novoId(), nome:"Ovo", quantidade:2, unidade:"un"},
+        {id:novoId(), nome:"Essência de baunilha", quantidade:1, unidade:"colher_cha"}
+      ]
+    },
+    {
+      id:"exemplo-chocolate", nome:"Biscoito de Chocolate — exemplo", categoria:"Biscoitos amanteigados",
+      rendimento:30, unidadeRendimento:"unidades", exemplo:true, criadoEm: Date.now()-1000,
+      observacoes:"Receita de exemplo editável.",
+      ingredientes:[
+        {id:novoId(), nome:"Farinha de trigo", quantidade:450, unidade:"g"},
+        {id:novoId(), nome:"Açúcar", quantidade:200, unidade:"g"},
+        {id:novoId(), nome:"Manteiga", quantidade:220, unidade:"g"},
+        {id:novoId(), nome:"Chocolate em pó", quantidade:60, unidade:"g"},
+        {id:novoId(), nome:"Ovo", quantidade:2, unidade:"un"}
+      ]
+    },
+    {
+      id:"exemplo-gingerbread", nome:"Gingerbread — exemplo", categoria:"Gingerbread",
+      rendimento:25, unidadeRendimento:"unidades", exemplo:true, criadoEm: Date.now()-2000,
+      observacoes:"Receita de exemplo editável. Rendimento varia conforme o tamanho do molde.",
+      ingredientes:[
+        {id:novoId(), nome:"Farinha de trigo", quantidade:600, unidade:"g"},
+        {id:novoId(), nome:"Açúcar mascavo", quantidade:150, unidade:"g"},
+        {id:novoId(), nome:"Manteiga", quantidade:150, unidade:"g"},
+        {id:novoId(), nome:"Mel", quantidade:3, unidade:"colher_sopa"},
+        {id:novoId(), nome:"Gengibre em pó", quantidade:2, unidade:"colher_cha"},
+        {id:novoId(), nome:"Canela em pó", quantidade:1, unidade:"colher_cha"},
+        {id:novoId(), nome:"Ovo", quantidade:1, unidade:"un"}
+      ]
+    }
+  ];
+  return est;
+}
+
+/* ============================================================
+   UTILITÁRIOS DE DOM
+   ============================================================ */
+const $ = sel => document.querySelector(sel);
+const $all = sel => Array.from(document.querySelectorAll(sel));
+function escapeHtml(texto){ const d=document.createElement("div"); d.textContent = texto==null?"":String(texto); return d.innerHTML; }
+
+let toastTimer=null;
+function mostrarToast(msg, erro){
+  clearTimeout(toastTimer);
+  const toast = $("#toast");
+  toast.textContent = msg;
+  toast.classList.toggle("toast-erro", !!erro);
+  toast.hidden = false;
+  toastTimer = setTimeout(()=>{ toast.hidden = true; }, 3200);
+}
+function marcarErro(el){
+  el.classList.add("campo-erro");
+  el.addEventListener("input", function limpar(){ el.classList.remove("campo-erro"); el.removeEventListener("input", limpar); }, {once:true});
+}
+function abrirModal(sel){ $(sel).hidden=false; }
+function fecharModal(sel){ $(sel).hidden=true; }
+let confirmarCallback=null;
+function pedirConfirmacao(titulo, texto, cb){
+  $("#confirmar-titulo").textContent = titulo;
+  $("#confirmar-texto").textContent = texto;
+  confirmarCallback = cb;
+  abrirModal("#modal-confirmar");
+}
+$("#btn-confirmar-sim").addEventListener("click", function(){
+  fecharModal("#modal-confirmar");
+  if(confirmarCallback) confirmarCallback();
+  confirmarCallback=null;
+});
+$("#btn-confirmar-nao").addEventListener("click", function(){ fecharModal("#modal-confirmar"); confirmarCallback=null; });
+$all(".modal").forEach(m => m.addEventListener("click", e => { if(e.target===m) m.hidden=true; }));
+
+/* ============================================================
+   NAVEGAÇÃO / MENU LATERAL
+   ============================================================ */
+$all(".aba").forEach(botao=>{
+  botao.addEventListener("click", function(){
+    irParaAbaPorNome(botao.dataset.aba);
+    fecharMenuLateral();
+  });
+});
+function irParaAbaPorNome(nome){
+  $all(".aba").forEach(b=>b.classList.remove("aba-ativa"));
+  const botao = $all(".aba").find(b=>b.dataset.aba===nome);
+  if(botao) botao.classList.add("aba-ativa");
+  $all(".painel").forEach(p=>p.classList.remove("painel-ativo"));
+  const painel = $(`#painel-${nome}`);
+  if(painel) painel.classList.add("painel-ativo");
+  if(nome==="inicio") renderizarInicio();
+  if(nome==="receitas") renderizarReceitas();
+  if(nome==="planejar") renderizarPlanejamento();
+  if(nome==="lista-compras") renderizarListaCompras();
+  if(nome==="despensa") renderizarDespensa();
+  if(nome==="custos") renderizarCustos();
+  if(nome==="historico") renderizarHistorico();
+}
+$all("[data-ir]").forEach(btn=>{
+  btn.addEventListener("click", function(){
+    const alvo = btn.dataset.ir;
+    if(alvo==="receitas-nova"){ irParaAbaPorNome("receitas"); abrirFormularioReceita(); }
+    else irParaAbaPorNome(alvo);
+  });
+});
+
+const sidebarLateral = $("#sidebar-lateral");
+const backdropSidebar = $("#backdrop-sidebar");
+const btnMenuMobile = $("#btn-menu-mobile");
+function abrirMenuLateral(){ sidebarLateral.classList.add("sidebar-aberta"); backdropSidebar.hidden=false; btnMenuMobile.setAttribute("aria-expanded","true"); }
+function fecharMenuLateral(){ sidebarLateral.classList.remove("sidebar-aberta"); backdropSidebar.hidden=true; btnMenuMobile.setAttribute("aria-expanded","false"); }
+btnMenuMobile.addEventListener("click", function(){
+  sidebarLateral.classList.contains("sidebar-aberta") ? fecharMenuLateral() : abrirMenuLateral();
+});
+backdropSidebar.addEventListener("click", fecharMenuLateral);
+
+/* ============================================================
+   GRÁFICOS (SVG puro)
+   ============================================================ */
+function svgDonut(fatias, totalRotulo){
+  const total = fatias.reduce((s,f)=>s+f.valor,0);
+  if(total<=0 || fatias.length===0) return {svg:'<p class="estado-vazio" style="padding:8px;">Sem dados ainda.</p>', legenda:[]};
+  const raio=52, espessura=22, circ=2*Math.PI*raio;
+  let acumulado=0, circulos="";
+  fatias.forEach(f=>{
+    const fracao=f.valor/total, comp=fracao*circ, offset=-acumulado*circ;
+    circulos += `<circle cx="60" cy="60" r="${raio}" fill="none" stroke="${f.cor}" stroke-width="${espessura}" stroke-dasharray="${comp} ${circ-comp}" stroke-dashoffset="${offset}" transform="rotate(-90 60 60)"></circle>`;
+    acumulado += fracao;
+  });
+  const svg = `<svg viewBox="0 0 120 120" width="200" height="200" role="img"><circle cx="60" cy="60" r="${raio}" fill="none" stroke="#eee" stroke-width="${espessura}"></circle>${circulos}
+    <text x="60" y="56" text-anchor="middle" font-size="12" font-weight="700" fill="#174C3B">${escapeHtml(totalRotulo || "")}</text></svg>`;
+  return {svg, legenda:fatias.map(f=>({...f, pct:((f.valor/total)*100).toFixed(0)}))};
+}
+function svgBarras(dados, maxAltura){
+  maxAltura = maxAltura||110;
+  const maximo = Math.max(...dados.map(d=>d.valor), 0.01);
+  const larguraBarra=44, espaco=22, largura=dados.length*larguraBarra+(dados.length+1)*espaco;
+  let barras="";
+  dados.forEach((d,i)=>{
+    const altura=(d.valor/maximo)*maxAltura, x=espaco+i*(larguraBarra+espaco), y=maxAltura-altura+16;
+    barras += `<text x="${x+larguraBarra/2}" y="${y-6}" text-anchor="middle" font-size="10" font-weight="700" fill="#26352D">${escapeHtml(d.rotuloValor||d.valor)}</text>
+      <rect x="${x}" y="${y}" width="${larguraBarra}" height="${Math.max(altura,2)}" rx="6" fill="${d.cor}"></rect>
+      <text x="${x+larguraBarra/2}" y="${maxAltura+32}" text-anchor="middle" font-size="10.5" font-weight="600" fill="#6b7268">${escapeHtml(d.rotulo)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${largura} 165" width="${Math.min(largura,280)}" height="165" role="img">${barras}</svg>`;
+}
+function montarCartaoGrafico(titulo, ajuda, corpoHtml, legendaItens){
+  const legendaHtml = (legendaItens && legendaItens.length)
+    ? `<ul class="legenda-grafico">${legendaItens.map(f=>`<li><span class="bolinha" style="background:${f.cor}"></span>${escapeHtml(f.rotulo)}${f.pct!=null?` (${f.pct}%)`:""}<span class="legenda-valor">${escapeHtml(f.valorExibicao||"")}</span></li>`).join("")}</ul>`
+    : "";
+  return `<div class="cartao-grafico"><h3>${escapeHtml(titulo)}</h3><p class="ajuda-grafico">${escapeHtml(ajuda)}</p><div class="grafico-svg-area">${corpoHtml}</div>${legendaHtml}</div>`;
+}
+
+/* ============================================================
+   INÍCIO
+   ============================================================ */
+function listaAtiva(){ return estado.listas.find(l=>l.id===estado.listaAtivaId) || null; }
+
+function renderizarInicio(){
+  $("#stat-receitas").textContent = estado.receitas.length;
+  $("#stat-listas").textContent = estado.listas.length;
+  const ativa = listaAtiva();
+  const pendentes = ativa ? ativa.itens.filter(i=>!i.comprado).length : 0;
+  $("#stat-pendentes").textContent = pendentes;
+  const valorPendente = ativa ? ativa.itens.filter(i=>!i.comprado && i.precoEstimado!=null).reduce((s,i)=>s+i.precoEstimado,0) : 0;
+  $("#stat-valor-proxima").textContent = ativa ? formatarMoeda(valorPendente) : "—";
+
+  // gráfico: receitas por categoria
+  const contagem = {};
+  estado.receitas.forEach(r=>{ contagem[r.categoria] = (contagem[r.categoria]||0)+1; });
+  const dadosBarras = Object.entries(contagem).map(([rotulo,valor],i)=>({rotulo, valor, rotuloValor:valor, cor:PALETA_GRAFICO[i%PALETA_GRAFICO.length]}));
+
+  let html = "";
+  if(dadosBarras.length){
+    html += montarCartaoGrafico("Receitas por categoria","Quantas receitas você tem em cada categoria.", svgBarras(dadosBarras));
+  }
+  if(ativa){
+    const comprados = ativa.itens.filter(i=>i.comprado).length;
+    const pend = ativa.itens.length - comprados;
+    const donut = svgDonut([
+      {rotulo:"Comprados", valor:comprados, cor:"#23644D"},
+      {rotulo:"Pendentes", valor:pend, cor:"#D6AD57"}
+    ], `${comprados}/${ativa.itens.length}`);
+    html += montarCartaoGrafico("Progresso da lista ativa", `"${escapeHtml(ativa.nomeProducao)}"`, donut.svg,
+      donut.legenda.map(f=>({...f, valorExibicao:f.valor+" itens"})));
+  }
+  $("#graficos-inicio").innerHTML = html;
+}
+
+/* ============================================================
+   MINHAS RECEITAS
+   ============================================================ */
+function criarLinhaIngredienteForm(dados){
+  const linha = document.createElement("div");
+  linha.className = "linha-ingrediente";
+  linha.innerHTML = `
+    <input type="text" class="ing-nome" placeholder="Nome do ingrediente" value="${dados?escapeHtml(dados.nome):""}">
+    <input type="number" class="ing-qtd" placeholder="Qtd" min="0" step="0.01" value="${dados?dados.quantidade:""}">
+    <select class="ing-unidade">${Object.entries(UNIDADE_LABEL).map(([v,l])=>`<option value="${v}" ${dados&&dados.unidade===v?"selected":""}>${l}</option>`).join("")}</select>
+    <button type="button" class="btn-mini perigo" title="Remover">✕</button>`;
+  linha.querySelector(".btn-mini").addEventListener("click", ()=>linha.remove());
+  $("#lista-ingredientes-form").appendChild(linha);
+}
+$("#btn-add-ingrediente").addEventListener("click", ()=>criarLinhaIngredienteForm());
+
+function abrirFormularioReceita(receitaExistente){
+  $("#form-receita-cartao").hidden = false;
+  $("#lista-ingredientes-form").innerHTML = "";
+  if(receitaExistente){
+    $("#form-receita-titulo").textContent = "Editar receita";
+    $("#receita-nome").value = receitaExistente.nome;
+    $("#receita-categoria").value = receitaExistente.categoria;
+    $("#receita-rendimento").value = receitaExistente.rendimento;
+    $("#receita-unidade-rendimento").value = receitaExistente.unidadeRendimento;
+    $("#receita-observacoes").value = receitaExistente.observacoes || "";
+    $("#receita-editando-id").value = receitaExistente.id;
+    receitaExistente.ingredientes.forEach(i=>criarLinhaIngredienteForm(i));
+  } else {
+    $("#form-receita-titulo").textContent = "Nova receita";
+    $("#form-receita").reset();
+    $("#receita-editando-id").value = "";
+    criarLinhaIngredienteForm(); criarLinhaIngredienteForm();
+  }
+  $("#receita-nome").scrollIntoView({behavior:"smooth", block:"center"});
+}
+$("#btn-nova-receita").addEventListener("click", ()=>abrirFormularioReceita());
+$("#btn-cancelar-receita").addEventListener("click", ()=>{ $("#form-receita-cartao").hidden = true; });
+
+$("#form-receita").addEventListener("submit", function(e){
+  e.preventDefault();
+  const nome = $("#receita-nome").value.trim();
+  const categoria = $("#receita-categoria").value;
+  const rendimento = parseFloat($("#receita-rendimento").value);
+  const unidadeRendimento = $("#receita-unidade-rendimento").value;
+  const observacoes = $("#receita-observacoes").value.trim();
+  const editandoId = $("#receita-editando-id").value;
+
+  let valido = true;
+  if(!nome){ marcarErro($("#receita-nome")); valido=false; }
+  if(!(rendimento>0)){ marcarErro($("#receita-rendimento")); valido=false; }
+
+  const ingredientes = $all(".linha-ingrediente").map(linha=>({
+    id: novoId(),
+    nome: linha.querySelector(".ing-nome").value.trim(),
+    quantidade: parseFloat(linha.querySelector(".ing-qtd").value),
+    unidade: linha.querySelector(".ing-unidade").value
+  })).filter(i=>i.nome && i.quantidade>0);
+
+  if(ingredientes.length===0){ mostrarToast("Adicione ao menos um ingrediente válido.", true); valido=false; }
+  if(!valido) return;
+
+  if(editandoId){
+    const r = estado.receitas.find(r=>r.id===editandoId);
+    Object.assign(r, {nome, categoria, rendimento, unidadeRendimento, observacoes, ingredientes});
+    mostrarToast("Receita atualizada.");
+  } else {
+    estado.receitas.push({ id:novoId(), nome, categoria, rendimento, unidadeRendimento, observacoes, ingredientes, exemplo:false, criadoEm:Date.now() });
+    mostrarToast("Receita salva.");
+  }
+  salvarEstado();
+  $("#form-receita-cartao").hidden = true;
+  renderizarReceitas();
+});
+
+function renderizarReceitas(){
+  const termo = normalizarNome($("#busca-receitas").value || "");
+  const lista = $("#lista-receitas");
+  const filtradas = estado.receitas.filter(r => !termo || normalizarNome(r.nome).includes(termo));
+  lista.innerHTML = "";
+  $("#vazio-receitas").hidden = estado.receitas.length>0;
+
+  filtradas.forEach(r=>{
+    const card = document.createElement("div");
+    card.className = "item-cartao";
+    card.innerHTML = `
+      <div class="item-cartao-info">
+        <div class="item-cartao-titulo">${escapeHtml(r.nome)} ${r.exemplo?'<span class="selo-exemplo">Exemplo editável</span>':""} <span class="selo-categoria">${escapeHtml(r.categoria)}</span></div>
+        <div class="item-cartao-sub">Rende ${r.rendimento} ${r.unidadeRendimento} · ${r.ingredientes.length} ingrediente(s)</div>
+      </div>
+      <div class="item-cartao-acoes">
+        <button type="button" class="btn-mini" title="Editar">✏️</button>
+        <button type="button" class="btn-mini" title="Duplicar">📄</button>
+        <button type="button" class="btn-mini perigo" title="Excluir">🗑</button>
+      </div>`;
+    const [bEditar,bDuplicar,bExcluir] = card.querySelectorAll(".btn-mini");
+    bEditar.addEventListener("click", ()=>abrirFormularioReceita(r));
+    bDuplicar.addEventListener("click", ()=>{
+      const copia = JSON.parse(JSON.stringify(r));
+      copia.id = novoId(); copia.nome = r.nome + " (cópia)"; copia.exemplo=false; copia.criadoEm=Date.now();
+      copia.ingredientes.forEach(i=>i.id=novoId());
+      estado.receitas.push(copia); salvarEstado(); renderizarReceitas();
+      mostrarToast("Receita duplicada.");
+    });
+    bExcluir.addEventListener("click", ()=>{
+      pedirConfirmacao("Excluir receita", `Tem certeza que deseja excluir "${r.nome}"?`, ()=>{
+        estado.receitas = estado.receitas.filter(x=>x.id!==r.id);
+        salvarEstado(); renderizarReceitas();
+        mostrarToast("Receita excluída.");
+      });
+    });
+    lista.appendChild(card);
+  });
+}
+$("#busca-receitas").addEventListener("input", renderizarReceitas);
+
+/* ============================================================
+   PLANEJAR PRODUÇÃO
+   ============================================================ */
+function renderizarPlanejamento(){
+  const container = $("#lista-planejamento");
+  container.innerHTML = "";
+  $("#vazio-planejamento").hidden = estado.receitas.length>0;
+
+  estado.receitas.forEach(r=>{
+    const bloco = document.createElement("div");
+    bloco.className = "receita-planejamento";
+    bloco.dataset.receitaId = r.id;
+    bloco.innerHTML = `
+      <div class="receita-planejamento-topo">
+        <input type="checkbox" class="plan-check">
+        <div><strong>${escapeHtml(r.nome)}</strong><div class="item-cartao-sub">Rendimento original: ${r.rendimento} ${r.unidadeRendimento}</div></div>
+      </div>
+      <div class="receita-planejamento-corpo">
+        <div class="modo-radio">
+          <label><input type="radio" name="modo-${r.id}" value="unidades" checked> Por quantidade final</label>
+          <label><input type="radio" name="modo-${r.id}" value="vezes"> Por número de receitas</label>
+        </div>
+        <div class="campo campo-unidades">
+          <label>Quantidade desejada (${r.unidadeRendimento})</label>
+          <input type="number" class="plan-qtd-desejada" min="1" step="1" placeholder="Ex: 90">
+        </div>
+        <div class="campo campo-vezes" hidden>
+          <label>Quantas vezes fazer essa receita</label>
+          <input type="number" class="plan-vezes" min="0.1" step="0.1" placeholder="Ex: 3">
+        </div>
+        <div class="preview-rendimento">Rendimento planejado: <span class="plan-preview">—</span></div>
+      </div>`;
+    container.appendChild(bloco);
+
+    const check = bloco.querySelector(".plan-check");
+    const corpo = bloco.querySelector(".receita-planejamento-corpo");
+    check.addEventListener("change", ()=> bloco.classList.toggle("selecionada", check.checked));
+
+    const radios = bloco.querySelectorAll(`input[name="modo-${r.id}"]`);
+    const campoUnidades = bloco.querySelector(".campo-unidades");
+    const campoVezes = bloco.querySelector(".campo-vezes");
+    radios.forEach(rad => rad.addEventListener("change", ()=>{
+      const modo = bloco.querySelector(`input[name="modo-${r.id}"]:checked`).value;
+      campoUnidades.hidden = modo!=="unidades";
+      campoVezes.hidden = modo!=="vezes";
+      atualizarPreview();
+    }));
+
+    const inputDesejada = bloco.querySelector(".plan-qtd-desejada");
+    const inputVezes = bloco.querySelector(".plan-vezes");
+    const preview = bloco.querySelector(".plan-preview");
+    function atualizarPreview(){
+      const modo = bloco.querySelector(`input[name="modo-${r.id}"]:checked`).value;
+      let multiplicador;
+      if(modo==="unidades"){
+        const desejada = parseFloat(inputDesejada.value);
+        multiplicador = desejada>0 ? calcularMultiplicador(r.rendimento, desejada) : 0;
+      } else {
+        multiplicador = parseFloat(inputVezes.value) || 0;
+      }
+      const rendimentoPlanejado = r.rendimento * multiplicador;
+      preview.textContent = multiplicador>0 ? `${formatarNumero(rendimentoPlanejado)} ${r.unidadeRendimento} (multiplicador ${formatarNumero(multiplicador)}x)` : "—";
+    }
+    inputDesejada.addEventListener("input", atualizarPreview);
+    inputVezes.addEventListener("input", atualizarPreview);
+  });
+}
+
+$("#btn-gerar-lista").addEventListener("click", function(){
+  const nomeProducao = $("#planejamento-nome").value.trim() || ("Produção de " + new Date().toLocaleDateString("pt-BR"));
+  const blocos = $all(".receita-planejamento").filter(b => b.querySelector(".plan-check").checked);
+
+  if(blocos.length===0){ mostrarToast("Selecione ao menos uma receita para planejar.", true); return; }
+
+  const receitasSelecionadas = [];
+  const todosIngredientesMultiplicados = [];
+  let algumInvalido = false;
+
+  blocos.forEach(bloco=>{
+    const receitaId = bloco.dataset.receitaId;
+    const r = estado.receitas.find(x=>x.id===receitaId);
+    const modo = bloco.querySelector(`input[name="modo-${receitaId}"]:checked`).value;
+    let multiplicador;
+    if(modo==="unidades"){
+      const desejada = parseFloat(bloco.querySelector(".plan-qtd-desejada").value);
+      if(!(desejada>0)){ marcarErro(bloco.querySelector(".plan-qtd-desejada")); algumInvalido=true; return; }
+      multiplicador = calcularMultiplicador(r.rendimento, desejada);
+    } else {
+      multiplicador = parseFloat(bloco.querySelector(".plan-vezes").value);
+      if(!(multiplicador>0)){ marcarErro(bloco.querySelector(".plan-vezes")); algumInvalido=true; return; }
+    }
+    receitasSelecionadas.push({ receitaId, nomeReceita:r.nome, rendimentoOriginal:r.rendimento, unidadeRendimento:r.unidadeRendimento, multiplicador });
+    const multiplicados = multiplicarIngredientes(r.ingredientes, multiplicador);
+    todosIngredientesMultiplicados.push(...multiplicados);
+  });
+
+  if(algumInvalido){ mostrarToast("Informe a quantidade para todas as receitas selecionadas.", true); return; }
+
+  const agregados = agregarIngredientes(todosIngredientesMultiplicados);
+  const itens = agregados.map(a => {
+    const { disponivel, comprar } = calcularDisponivelDespensa(a.nomeNormalizado, a.grupo);
+    return {
+      id: novoId(),
+      nomeExibicao: a.nomeExibicao,
+      nomeNormalizado: a.nomeNormalizado,
+      grupo: a.grupo,
+      categoria: sugerirCategoria(a.nomeExibicao),
+      quantidadeBase: a.quantidadeBase,
+      quantidadeDespensaBase: disponivel,
+      quantidadeComprarBase: comprar,
+      precoEstimado: null,
+      comprado: false,
+      manual: false
+    };
+  });
+
+  // marca avisos de mesmo nome em grupos diferentes (unidades incompatíveis)
+  const contagemPorNome = {};
+  itens.forEach(i => { contagemPorNome[i.nomeNormalizado] = (contagemPorNome[i.nomeNormalizado]||0)+1; });
+  itens.forEach(i => { i.avisoUnidadeIncompativel = contagemPorNome[i.nomeNormalizado] > 1; });
+
+  const novaLista = {
+    id: novoId(),
+    nomeProducao,
+    dataCriacao: Date.now(),
+    receitasSelecionadas,
+    itens,
+    totalEstimado: 0,
+    situacao: "em_andamento"
+  };
+  estado.listas.push(novaLista);
+  estado.listaAtivaId = novaLista.id;
+  salvarEstado();
+  mostrarToast("Lista de compras gerada!");
+  irParaAbaPorNome("lista-compras");
+});
+
+function calcularDisponivelDespensa(nomeNormalizado, grupo){
+  const itensDespensa = estado.despensa.filter(d => normalizarNome(d.nome)===nomeNormalizado && GRUPO_UNIDADE[d.unidade]===grupo);
+  return descontarDespensa(0, []).disponivel !== undefined
+    ? (function(){
+        const total = itensDespensa.reduce((s,d)=>s+paraBase(d.quantidade,d.unidade),0);
+        return { disponivel: total, comprar: null }; // comprar calculado depois com a necessidade
+      })()
+    : {disponivel:0, comprar:null};
+}
+
+/* recalcula disponível/comprar de TODOS os itens da lista ativa a partir da despensa atual */
+function recomputarDespensaDaListaAtiva(){
+  const ativa = listaAtiva();
+  if(!ativa) return;
+  ativa.itens.forEach(item=>{
+    const itensDespensa = estado.despensa.filter(d => normalizarNome(d.nome)===item.nomeNormalizado && GRUPO_UNIDADE[d.unidade]===item.grupo);
+    const { disponivel, comprar } = descontarDespensa(item.quantidadeBase, itensDespensa);
+    item.quantidadeDespensaBase = disponivel;
+    item.quantidadeComprarBase = comprar;
+  });
+  salvarEstado();
+}
+
+/* ============================================================
+   LISTA DE COMPRAS
+   ============================================================ */
+let filtroAtual = "todos";
+let filtroCategoriaAtual = "";
+
+function renderizarListaCompras(){
+  const ativa = listaAtiva();
+  if(!ativa){
+    $("#lista-compras-conteudo").hidden = true;
+    $("#lista-compras-subtitulo").textContent = 'Gere uma lista na aba "Planejar Produção" para começar.';
+    return;
+  }
+  recomputarDespensaDaListaAtiva();
+  $("#lista-compras-conteudo").hidden = false;
+  $("#lista-compras-subtitulo").textContent = `"${ativa.nomeProducao}" — criada em ${new Date(ativa.dataCriacao).toLocaleDateString("pt-BR")}`;
+
+  const selectCategoria = $("#filtro-categoria");
+  const categoriasPresentes = Array.from(new Set(ativa.itens.map(i=>i.categoria)));
+  selectCategoria.innerHTML = '<option value="">Todas as categorias</option>' + categoriasPresentes.map(c=>`<option value="${escapeHtml(c)}" ${c===filtroCategoriaAtual?"selected":""}>${escapeHtml(c)}</option>`).join("");
+
+  let itensFiltrados = ativa.itens.slice();
+  if(filtroAtual==="pendentes") itensFiltrados = itensFiltrados.filter(i=>!i.comprado);
+  if(filtroAtual==="comprados") itensFiltrados = itensFiltrados.filter(i=>i.comprado);
+  if(filtroCategoriaAtual) itensFiltrados = itensFiltrados.filter(i=>i.categoria===filtroCategoriaAtual);
+
+  const porCategoria = {};
+  itensFiltrados.forEach(i=>{ (porCategoria[i.categoria] = porCategoria[i.categoria]||[]).push(i); });
+
+  const container = $("#grupos-lista-compras");
+  container.innerHTML = "";
+  if(itensFiltrados.length===0){
+    container.innerHTML = '<p class="estado-vazio">Nenhum item encontrado com esse filtro.</p>';
+  } else {
+    CATEGORIAS_INGREDIENTE.forEach(categoria=>{
+      const itensCat = porCategoria[categoria];
+      if(!itensCat || !itensCat.length) return;
+      const grupo = document.createElement("div");
+      grupo.className = "grupo-categoria";
+      grupo.innerHTML = `<div class="grupo-categoria-titulo">${escapeHtml(categoria)}</div>`;
+      itensCat.forEach(item => grupo.appendChild(montarLinhaItemCompra(item, ativa)));
+      container.appendChild(grupo);
+    });
+  }
+
+  atualizarBotoesFiltro();
+}
+
+function montarLinhaItemCompra(item, lista){
+  const linha = document.createElement("div");
+  linha.className = "item-compra" + (item.comprado ? " comprado" : "");
+  const qtdTexto = formatarQuantidadeBase(item.quantidadeBase, item.grupo);
+  const dispTexto = formatarQuantidadeBase(item.quantidadeDespensaBase, item.grupo);
+  const comprarTexto = formatarQuantidadeBase(item.quantidadeComprarBase, item.grupo);
+  linha.innerHTML = `
+    <input type="checkbox" ${item.comprado?"checked":""} title="Marcar como comprado">
+    <div>
+      <div class="item-compra-nome">${escapeHtml(item.nomeExibicao)}</div>
+      <div class="item-compra-detalhe">Necessário: ${qtdTexto} · Despensa: ${dispTexto} · <strong>Comprar: ${comprarTexto}</strong>
+        ${item.avisoUnidadeIncompativel ? '<br><span class="aviso">⚠ também aparece em outra unidade incompatível — não foi somado automaticamente</span>' : ""}
+      </div>
+    </div>
+    <div class="item-compra-direita">
+      <select class="item-compra-categoria-select"></select>
+      <input type="number" class="item-compra-preco" placeholder="Preço R$" min="0" step="0.01" value="${item.precoEstimado!=null?item.precoEstimado:""}">
+      ${item.manual ? '<button type="button" class="btn-mini perigo" title="Remover">✕</button>' : ""}
+    </div>`;
+
+  const selectCat = linha.querySelector(".item-compra-categoria-select");
+  selectCat.innerHTML = CATEGORIAS_INGREDIENTE.map(c=>`<option value="${escapeHtml(c)}" ${c===item.categoria?"selected":""}>${escapeHtml(c)}</option>`).join("");
+  selectCat.addEventListener("change", function(){ item.categoria = this.value; salvarEstado(); renderizarListaCompras(); });
+
+  linha.querySelector('input[type=checkbox]').addEventListener("change", function(){
+    item.comprado = this.checked;
+    salvarEstado();
+    if(item.comprado) mostrarToast(`"${item.nomeExibicao}" marcado como comprado.`);
+    renderizarListaCompras();
+    renderizarInicio();
+  });
+
+  linha.querySelector(".item-compra-preco").addEventListener("change", function(){
+    const v = parseFloat(this.value);
+    item.precoEstimado = (this.value==="" || isNaN(v) || v<0) ? null : v;
+    salvarEstado();
+    renderizarCustos();
+  });
+
+  const btnRemover = linha.querySelector('button[title="Remover"]');
+  if(btnRemover){
+    btnRemover.addEventListener("click", function(){
+      lista.itens = lista.itens.filter(i=>i.id!==item.id);
+      salvarEstado(); renderizarListaCompras();
+    });
+  }
+  return linha;
+}
+
+function atualizarBotoesFiltro(){
+  $all(".filtro-botao").forEach(b=>b.classList.toggle("ativo", b.dataset.filtro===filtroAtual));
+}
+$all(".filtro-botao").forEach(b=>b.addEventListener("click", function(){ filtroAtual=b.dataset.filtro; renderizarListaCompras(); }));
+$("#filtro-categoria").addEventListener("change", function(){ filtroCategoriaAtual=this.value; renderizarListaCompras(); });
+
+$("#btn-add-manual").addEventListener("click", function(){
+  const ativa = listaAtiva();
+  if(!ativa){ mostrarToast("Gere uma lista primeiro.", true); return; }
+  const nome = $("#manual-nome").value.trim();
+  const qtd = parseFloat($("#manual-qtd").value);
+  const unidade = $("#manual-unidade").value;
+  if(!nome){ marcarErro($("#manual-nome")); return; }
+  if(!(qtd>0)){ marcarErro($("#manual-qtd")); return; }
+
+  const grupo = GRUPO_UNIDADE[unidade];
+  const quantidadeBase = paraBase(qtd, unidade);
+  const nomeNormalizado = normalizarNome(nome);
+  const itensDespensa = estado.despensa.filter(d => normalizarNome(d.nome)===nomeNormalizado && GRUPO_UNIDADE[d.unidade]===grupo);
+  const { disponivel, comprar } = descontarDespensa(quantidadeBase, itensDespensa);
+
+  ativa.itens.push({
+    id: novoId(), nomeExibicao: nome, nomeNormalizado, grupo,
+    categoria: sugerirCategoria(nome), quantidadeBase, quantidadeDespensaBase: disponivel,
+    quantidadeComprarBase: comprar, precoEstimado: null, comprado:false, manual:true, avisoUnidadeIncompativel:false
+  });
+  salvarEstado();
+  $("#manual-nome").value=""; $("#manual-qtd").value="";
+  mostrarToast("Ingrediente adicionado à lista.");
+  renderizarListaCompras();
+});
+
+$("#btn-limpar-marcacoes").addEventListener("click", function(){
+  const ativa = listaAtiva();
+  if(!ativa) return;
+  pedirConfirmacao("Limpar marcações", "Isso vai desmarcar todos os itens como não comprados. Continuar?", ()=>{
+    ativa.itens.forEach(i=>i.comprado=false);
+    salvarEstado(); renderizarListaCompras(); renderizarInicio();
+    mostrarToast("Marcações limpas.");
+  });
+});
+
+/* ---- impressão ---- */
+$("#btn-imprimir").addEventListener("click", function(){
+  const ativa = listaAtiva();
+  if(!ativa) return;
+  const porCategoria = {};
+  ativa.itens.forEach(i=>{ (porCategoria[i.categoria]=porCategoria[i.categoria]||[]).push(i); });
+  let html = `<div class="imp-cabecalho"><h1>LISTA DE COMPRAS — CONFEITARIA</h1></div>
+    <div class="imp-meta">
+      <div><strong>Nome da produção:</strong> ${escapeHtml(ativa.nomeProducao)}</div>
+      <div><strong>Data:</strong> ${new Date(ativa.dataCriacao).toLocaleDateString("pt-BR")}</div>
+      <div><strong>Receitas selecionadas:</strong> ${ativa.receitasSelecionadas.map(r=>escapeHtml(r.nomeReceita)).join(", ")}</div>
+    </div>`;
+  CATEGORIAS_INGREDIENTE.forEach(cat=>{
+    const itens = porCategoria[cat];
+    if(!itens || !itens.length) return;
+    html += `<div class="imp-categoria">${escapeHtml(cat)}</div>`;
+    itens.forEach(i=>{
+      html += `<div class="imp-item">[${i.comprado?"X":" "}] ${escapeHtml(i.nomeExibicao)} — ${formatarQuantidadeBase(i.quantidadeComprarBase,i.grupo)} a comprar (necessário ${formatarQuantidadeBase(i.quantidadeBase,i.grupo)})</div>`;
+    });
+  });
+  html += `<div class="imp-notas">Anotações:<br><br><br><br></div>`;
+  $("#area-impressao").innerHTML = html;
+  window.print();
+});
+
+/* ---- CSV ---- */
+$("#btn-csv").addEventListener("click", function(){
+  const ativa = listaAtiva();
+  if(!ativa) return;
+  const linhas = [["Categoria","Item","Quantidade necessária","Unidade","Disponível na despensa","Comprar","Preço estimado","Comprado"]];
+  ativa.itens.forEach(i=>{
+    linhas.push([
+      i.categoria, i.nomeExibicao,
+      formatarNumero(i.quantidadeBase), i.grupo==="massa"?"g":i.grupo==="volume"?"ml":(UNIDADE_LABEL[i.grupo]||i.grupo),
+      formatarNumero(i.quantidadeDespensaBase), formatarNumero(i.quantidadeComprarBase),
+      i.precoEstimado!=null ? i.precoEstimado.toFixed(2).replace(".",",") : "Preço não informado",
+      i.comprado ? "Sim":"Não"
+    ]);
+  });
+  const csv = linhas.map(l => l.map(c => `"${String(c).replace(/"/g,'""')}"`).join(";")).join("\r\n");
+  const blob = new Blob(["﻿"+csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href=url; a.download = `lista-de-compras-${ativa.nomeProducao.replace(/\s+/g,"-").toLowerCase()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  mostrarToast("CSV baixado.");
+});
+
+/* ---- copiar ---- */
+$("#btn-copiar").addEventListener("click", async function(){
+  const ativa = listaAtiva();
+  if(!ativa) return;
+  const porCategoria = {};
+  ativa.itens.forEach(i=>{ (porCategoria[i.categoria]=porCategoria[i.categoria]||[]).push(i); });
+  let texto = `LISTA DE COMPRAS — ${ativa.nomeProducao}\n${new Date(ativa.dataCriacao).toLocaleDateString("pt-BR")}\n\n`;
+  CATEGORIAS_INGREDIENTE.forEach(cat=>{
+    const itens = porCategoria[cat];
+    if(!itens || !itens.length) return;
+    texto += `${cat.toUpperCase()}\n`;
+    itens.forEach(i=> texto += `[${i.comprado?"x":" "}] ${i.nomeExibicao} — ${formatarQuantidadeBase(i.quantidadeComprarBase,i.grupo)}\n`);
+    texto += "\n";
+  });
+  try{
+    await navigator.clipboard.writeText(texto);
+    mostrarToast("Lista copiada!");
+  }catch(e){
+    $("#texto-copiar").value = texto;
+    abrirModal("#modal-copiar");
+  }
+});
+$("#btn-fechar-copiar").addEventListener("click", ()=>fecharModal("#modal-copiar"));
+
+/* ============================================================
+   MINHA DESPENSA
+   ============================================================ */
+$("#form-despensa").addEventListener("submit", function(e){
+  e.preventDefault();
+  const nome = $("#despensa-nome").value.trim();
+  const qtd = parseFloat($("#despensa-qtd").value);
+  const unidade = $("#despensa-unidade").value;
+  const observacao = $("#despensa-observacao").value.trim();
+  const editandoId = $("#despensa-editando-id").value;
+
+  let valido = true;
+  if(!nome){ marcarErro($("#despensa-nome")); valido=false; }
+  if(!(qtd>=0) || isNaN(qtd)){ marcarErro($("#despensa-qtd")); valido=false; }
+  if(!valido) return;
+
+  if(editandoId){
+    const d = estado.despensa.find(x=>x.id===editandoId);
+    Object.assign(d, {nome, quantidade:qtd, unidade, observacao});
+    mostrarToast("Item da despensa atualizado.");
+  } else {
+    estado.despensa.push({ id:novoId(), nome, quantidade:qtd, unidade, observacao });
+    mostrarToast("Item adicionado à despensa.");
+  }
+  salvarEstado();
+  $("#form-despensa").reset();
+  $("#despensa-editando-id").value = "";
+  $("#btn-salvar-despensa").textContent = "Adicionar à despensa";
+  recomputarDespensaDaListaAtiva();
+  renderizarDespensa();
+});
+
+function renderizarDespensa(){
+  const lista = $("#lista-despensa");
+  lista.innerHTML = "";
+  $("#vazio-despensa").hidden = estado.despensa.length>0;
+  estado.despensa.forEach(d=>{
+    const card = document.createElement("div");
+    card.className = "item-cartao";
+    card.innerHTML = `
+      <div class="item-cartao-info">
+        <div class="item-cartao-titulo">${escapeHtml(d.nome)}</div>
+        <div class="item-cartao-sub">${formatarNumero(d.quantidade)} ${UNIDADE_LABEL[d.unidade]}${d.observacao?" · "+escapeHtml(d.observacao):""}</div>
+      </div>
+      <div class="item-cartao-acoes">
+        <button type="button" class="btn-mini" title="Editar">✏️</button>
+        <button type="button" class="btn-mini perigo" title="Excluir">🗑</button>
+      </div>`;
+    const [bEditar,bExcluir] = card.querySelectorAll(".btn-mini");
+    bEditar.addEventListener("click", ()=>{
+      $("#despensa-nome").value=d.nome; $("#despensa-qtd").value=d.quantidade;
+      $("#despensa-unidade").value=d.unidade; $("#despensa-observacao").value=d.observacao||"";
+      $("#despensa-editando-id").value=d.id;
+      $("#btn-salvar-despensa").textContent = "Salvar alterações";
+      $("#despensa-nome").scrollIntoView({behavior:"smooth", block:"center"});
+    });
+    bExcluir.addEventListener("click", ()=>{
+      pedirConfirmacao("Excluir da despensa", `Remover "${d.nome}" da despensa?`, ()=>{
+        estado.despensa = estado.despensa.filter(x=>x.id!==d.id);
+        salvarEstado(); recomputarDespensaDaListaAtiva(); renderizarDespensa();
+        mostrarToast("Removido da despensa.");
+      });
+    });
+    lista.appendChild(card);
+  });
+}
+
+/* ============================================================
+   CUSTOS
+   ============================================================ */
+function renderizarCustos(){
+  const ativa = listaAtiva();
+  if(!ativa){ $("#custos-vazio").hidden=false; $("#custos-conteudo").hidden=true; return; }
+  $("#custos-vazio").hidden = true; $("#custos-conteudo").hidden = false;
+
+  const comPreco = ativa.itens.filter(i=>i.precoEstimado!=null);
+  const semPreco = ativa.itens.filter(i=>i.precoEstimado==null);
+  const total = comPreco.reduce((s,i)=>s+i.precoEstimado,0);
+  ativa.totalEstimado = total;
+  salvarEstado();
+
+  $("#custo-total").textContent = formatarMoeda(total);
+  $("#custo-com-preco").textContent = comPreco.length;
+  $("#custo-sem-preco").textContent = semPreco.length;
+
+  const porCategoria = {};
+  comPreco.forEach(i=>{ porCategoria[i.categoria] = (porCategoria[i.categoria]||0) + i.precoEstimado; });
+  const fatias = Object.entries(porCategoria).map(([rotulo,valor],i)=>({rotulo, valor, cor:PALETA_GRAFICO[i%PALETA_GRAFICO.length]}));
+  const donut = svgDonut(fatias, formatarMoeda(total));
+
+  let html = "";
+  if(fatias.length){
+    html += montarCartaoGrafico("Custo por categoria","Quanto do total vem de cada categoria.", donut.svg,
+      donut.legenda.map(f=>({...f, valorExibicao:formatarMoeda(f.valor)})));
+  }
+  html += montarCartaoGrafico("Itens com preço x sem preço","Quantos itens já têm preço cadastrado.",
+    svgBarras([
+      {rotulo:"Com preço", valor:comPreco.length, rotuloValor:comPreco.length, cor:"#23644D"},
+      {rotulo:"Sem preço", valor:semPreco.length, rotuloValor:semPreco.length, cor:"#D6AD57"}
+    ]));
+  $("#graficos-custos").innerHTML = html;
+}
+
+/* ============================================================
+   HISTÓRICO
+   ============================================================ */
+function renderizarHistorico(){
+  const lista = $("#lista-historico");
+  lista.innerHTML = "";
+  $("#vazio-historico").hidden = estado.listas.length>0;
+
+  const dadosBarras = estado.listas.slice(-6).map((l,i)=>({
+    rotulo: l.nomeProducao.length>10 ? l.nomeProducao.slice(0,9)+"…" : l.nomeProducao,
+    valor: l.totalEstimado || 0,
+    rotuloValor: formatarMoeda(l.totalEstimado||0),
+    cor: PALETA_GRAFICO[i%PALETA_GRAFICO.length]
+  }));
+  $("#graficos-historico").innerHTML = dadosBarras.length
+    ? montarCartaoGrafico("Gasto estimado por produção","Total estimado de cada lista salva.", svgBarras(dadosBarras))
+    : "";
+
+  estado.listas.slice().reverse().forEach(l=>{
+    const comprados = l.itens.filter(i=>i.comprado).length;
+    const card = document.createElement("div");
+    card.className = "item-cartao";
+    card.innerHTML = `
+      <div class="item-cartao-info">
+        <div class="item-cartao-titulo">${escapeHtml(l.nomeProducao)} ${l.id===estado.listaAtivaId?'<span class="selo-categoria">ativa</span>':""}</div>
+        <div class="item-cartao-sub">${new Date(l.dataCriacao).toLocaleDateString("pt-BR")} · ${comprados}/${l.itens.length} comprados · ${formatarMoeda(l.totalEstimado||0)}</div>
+      </div>
+      <div class="item-cartao-acoes">
+        <button type="button" class="btn-mini" title="Abrir">📂</button>
+        <button type="button" class="btn-mini" title="Duplicar">📄</button>
+        <button type="button" class="btn-mini perigo" title="Excluir">🗑</button>
+      </div>`;
+    const [bAbrir,bDuplicar,bExcluir] = card.querySelectorAll(".btn-mini");
+    bAbrir.addEventListener("click", ()=>{ estado.listaAtivaId=l.id; salvarEstado(); irParaAbaPorNome("lista-compras"); });
+    bDuplicar.addEventListener("click", ()=>{
+      pedirConfirmacao("Duplicar lista", `Criar uma cópia de "${l.nomeProducao}"?`, ()=>{
+        const copia = JSON.parse(JSON.stringify(l));
+        copia.id = novoId(); copia.nomeProducao = l.nomeProducao + " (cópia)"; copia.dataCriacao = Date.now();
+        copia.itens.forEach(i=>i.id=novoId());
+        estado.listas.push(copia); salvarEstado(); renderizarHistorico();
+        mostrarToast("Lista duplicada.");
+      });
+    });
+    bExcluir.addEventListener("click", ()=>{
+      pedirConfirmacao("Excluir lista", `Excluir "${l.nomeProducao}" do histórico? Essa ação não pode ser desfeita.`, ()=>{
+        estado.listas = estado.listas.filter(x=>x.id!==l.id);
+        if(estado.listaAtivaId===l.id) estado.listaAtivaId = estado.listas.length ? estado.listas[estado.listas.length-1].id : null;
+        salvarEstado(); renderizarHistorico();
+        mostrarToast("Lista excluída.");
+      });
+    });
+    lista.appendChild(card);
+  });
+}
+
+/* ============================================================
+   BACKUP E CONFIGURAÇÕES
+   ============================================================ */
+$("#btn-exportar-backup").addEventListener("click", function(){
+  const blob = new Blob([JSON.stringify(estado, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `backup-lista-de-compras-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  mostrarToast("Backup exportado.");
+});
+
+$("#input-importar-backup").addEventListener("change", function(e){
+  const arquivo = e.target.files[0];
+  if(!arquivo) return;
+  const leitor = new FileReader();
+  leitor.onload = function(){
+    try{
+      const dados = JSON.parse(leitor.result);
+      if(typeof dados !== "object" || dados===null || !Array.isArray(dados.receitas)) throw new Error("formato inválido");
+      pedirConfirmacao("Importar backup", "Isso vai substituir todos os dados atuais pelos dados do arquivo importado. Deseja continuar?", ()=>{
+        estado = Object.assign(estadoPadrao(), dados);
+        salvarEstado();
+        mostrarToast("Backup importado com sucesso! Atualizando...");
+        setTimeout(()=>window.location.reload(), 900);
+      });
+    }catch(err){
+      mostrarToast("Esse arquivo não parece ser um backup válido.", true);
+    }
+  };
+  leitor.readAsText(arquivo);
+  e.target.value = "";
+});
+
+$("#btn-limpar-dados").addEventListener("click", function(){
+  pedirConfirmacao("Limpar todos os dados", "Isso vai excluir receitas, despensa, listas e histórico salvos neste navegador. Essa ação não pode ser desfeita.", ()=>{
+    localStorage.removeItem(STORAGE_KEY);
+    mostrarToast("Todos os dados foram apagados.");
+    setTimeout(()=>window.location.reload(), 600);
+  });
+});
+
+/* ============================================================
+   INÍCIO
+   ============================================================ */
+salvarEstado(); // garante que exemplos semeados fiquem persistidos já na 1ª visita
+renderizarInicio();
+renderizarReceitas();
+
+})();
+</script>
+</body>
+</html>
