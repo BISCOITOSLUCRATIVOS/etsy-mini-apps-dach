@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minha Calculadora de Lucro — DEMO (dados de exemplo)</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1f4d3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Calc. de Lucro">
+
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,8 +24,9 @@
 <!-- ===================== TELA 0 — ENTRADA ===================== -->
 <section id="tela-entrada" class="tela tela-ativa">
   <div class="card-entrada">
-    <div class="selo">🎄</div>
-    <h1>Minha Calculadora de Lucro</h1>
+    <div class="selo"><img src="icon-192.png" alt="" class="selo-icone"></div>
+    <p class="kicker-marca">Kit Lucrativo · Edição de Natal</p>
+    <h1 class="titulo-marca">Minha Calculadora<br>de Lucro</h1>
     <p class="subtitulo">Descubra quanto custa produzir seus biscoitos, quanto cobrar e quanto pode lucrar neste Natal.</p>
 
     <form id="form-nome" autocomplete="off">
@@ -29,23 +40,44 @@
 <!-- ===================== APP PRINCIPAL ===================== -->
 <div id="app-principal" class="tela">
 
-  <header class="topo-app">
-    <div class="topo-boasvindas">
-      <span id="saudacao-nome">Olá!</span>
-      <button id="btn-trocar-nome" class="link-discreto" type="button">alterar nome</button>
+  <div id="backdrop-sidebar" class="backdrop-sidebar" hidden></div>
+
+  <aside id="sidebar-lateral" class="sidebar-lateral">
+    <div class="marca-sidebar">
+      <img src="icon-192.png" alt="" class="marca-icone">
+      <div class="marca-texto">
+        <p class="kicker-marca kicker-sidebar">Kit Lucrativo</p>
+        <p class="titulo-marca-sidebar">Calculadora<br>de Lucro</p>
+      </div>
     </div>
-    <button id="btn-abrir-privacidade" class="btn-icone" type="button" title="Privacidade e dados">🔒</button>
-  </header>
 
-  <p id="frase-boasvindas" class="frase-boasvindas"></p>
+    <nav class="abas" role="tablist" aria-label="Seções da calculadora">
+      <button class="aba aba-ativa" data-aba="ingredientes" type="button"><span class="aba-icone">🧂</span> Ingredientes</button>
+      <button class="aba" data-aba="receita" type="button"><span class="aba-icone">🍪</span> Calcular Receita</button>
+      <button class="aba" data-aba="preco" type="button"><span class="aba-icone">💰</span> Quanto Cobrar</button>
+      <button class="aba" data-aba="resultados" type="button"><span class="aba-icone">📊</span> Resultados</button>
+      <button class="aba" data-aba="historico" type="button"><span class="aba-icone">🗂</span> Histórico</button>
+    </nav>
 
-  <nav class="abas" role="tablist" aria-label="Seções da calculadora">
-    <button class="aba aba-ativa" data-aba="ingredientes" type="button">🧂 Ingredientes</button>
-    <button class="aba" data-aba="receita" type="button">🍪 Calcular Receita</button>
-    <button class="aba" data-aba="preco" type="button">💰 Quanto Cobrar</button>
-    <button class="aba" data-aba="resultados" type="button">📊 Resultados</button>
-    <button class="aba" data-aba="historico" type="button">🗂 Histórico</button>
-  </nav>
+    <div class="sidebar-rodape">
+      <button id="btn-abrir-privacidade" class="btn-rodape-sidebar" type="button">🔒 Privacidade e dados</button>
+    </div>
+  </aside>
+
+  <div id="conteudo-principal" class="conteudo-principal">
+
+    <header class="topo-app">
+      <button id="btn-menu-mobile" class="btn-hamburguer" type="button" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topo-boasvindas">
+        <span id="saudacao-nome">Olá!</span>
+        <button id="btn-trocar-nome" class="link-discreto" type="button">alterar nome</button>
+      </div>
+      <button id="btn-abrir-privacidade-mobile" class="btn-icone btn-icone-mobile" type="button" title="Privacidade e dados">🔒</button>
+    </header>
+
+    <p id="frase-boasvindas" class="frase-boasvindas"></p>
 
   <!-- ---------- ABA 1: INGREDIENTES ---------- -->
   <section class="painel painel-ativo" id="painel-ingredientes">
@@ -204,6 +236,25 @@
       <div class="mini-cartao destaque"><span class="rotulo">Lucro potencial da produção toda</span><span class="valor" id="res-lucro-total">—</span></div>
     </div>
     <p class="nota-estimativa" id="nota-estimativa" hidden>⚠ O lucro apresentado é uma estimativa baseada nos dados que você preencheu.</p>
+
+    <div id="graficos-resultado" class="graficos-resultado" hidden>
+      <div class="cartao-grafico">
+        <h3>Composição do custo</h3>
+        <p class="ajuda-grafico">De onde vem o custo de cada embalagem vendida.</p>
+        <div id="grafico-composicao" class="grafico-donut-area"></div>
+        <ul id="legenda-composicao" class="legenda-grafico"></ul>
+      </div>
+      <div class="cartao-grafico">
+        <h3>Custo × Preço × Lucro</h3>
+        <p class="ajuda-grafico">Comparação por embalagem vendida.</p>
+        <div id="grafico-barras" class="grafico-barras-area"></div>
+      </div>
+      <div class="cartao-grafico">
+        <h3>Margem real atingida</h3>
+        <p class="ajuda-grafico">Quanto do preço de venda vira lucro.</p>
+        <div id="grafico-margem" class="grafico-margem-area"></div>
+      </div>
+    </div>
   </section>
 
   <!-- ---------- ABA 5: HISTÓRICO ---------- -->
@@ -214,7 +265,8 @@
     <p id="vazio-historico" class="estado-vazio">Nenhuma receita salva ainda.</p>
   </section>
 
-</div>
+  </div><!-- /conteudo-principal -->
+</div><!-- /app-principal -->
 
 <!-- ===================== MODAL: TROCAR NOME ===================== -->
 <div id="modal-trocar-nome" class="modal" hidden>

@@ -200,6 +200,7 @@
       $(`#painel-${alvo}`).classList.add("painel-ativo");
       if (alvo === "resultados") atualizarPainelResultados();
       if (alvo === "receita") atualizarAvisoIngredientesReceita();
+      fecharMenuLateral();
     });
   });
 
@@ -207,6 +208,30 @@
     const botao = $all(".aba").find((b) => b.dataset.aba === nomeAba);
     if (botao) botao.click();
   }
+
+  /* ============================================================
+     MENU LATERAL (off-canvas no celular)
+     ============================================================ */
+
+  const sidebarLateral = $("#sidebar-lateral");
+  const backdropSidebar = $("#backdrop-sidebar");
+  const btnMenuMobile = $("#btn-menu-mobile");
+
+  function abrirMenuLateral() {
+    sidebarLateral.classList.add("sidebar-aberta");
+    backdropSidebar.hidden = false;
+    btnMenuMobile.setAttribute("aria-expanded", "true");
+  }
+  function fecharMenuLateral() {
+    sidebarLateral.classList.remove("sidebar-aberta");
+    backdropSidebar.hidden = true;
+    btnMenuMobile.setAttribute("aria-expanded", "false");
+  }
+  btnMenuMobile.addEventListener("click", function () {
+    if (sidebarLateral.classList.contains("sidebar-aberta")) fecharMenuLateral();
+    else abrirMenuLateral();
+  });
+  backdropSidebar.addEventListener("click", fecharMenuLateral);
 
   /* ============================================================
      INGREDIENTES
@@ -422,16 +447,16 @@
     }
     if (!valido) return;
 
-    const { custoTotal } = calcularCustoReceita(itens);
+    const { custoTotal, detalhes } = calcularCustoReceita(itens);
     const custoUnidade = custoTotal / rendimento;
 
     let receita;
     if (editandoId) {
       receita = estado.receitas.find((r) => r.id === editandoId);
-      Object.assign(receita, { nome, itens, rendimento, custoTotal, custoUnidade });
+      Object.assign(receita, { nome, itens, rendimento, custoTotal, custoUnidade, detalhesCusto: detalhes });
       mostrarToast("Receita atualizada.");
     } else {
-      receita = { id: novoId(), nome, itens, rendimento, custoTotal, custoUnidade, criadoEm: Date.now(), precoConfig: null };
+      receita = { id: novoId(), nome, itens, rendimento, custoTotal, custoUnidade, detalhesCusto: detalhes, criadoEm: Date.now(), precoConfig: null };
       estado.receitas.push(receita);
       mostrarToast("Receita calculada e salva.");
     }
@@ -543,16 +568,51 @@
     };
     salvarEstado();
 
+    const margemReal = precoVenda > 0 ? (lucroPorVenda / precoVenda) * 100 : 0;
+
     ultimoResultado = {
       custoProducao: custoPorEmbalagem,
       precoVenda,
       lucroEstimado: lucroPorVenda,
       quantidadeProduzida: quantidadeEmbalagensProduzidas,
-      lucroPotencialTotal
+      lucroPotencialTotal,
+      margemReal,
+      composicaoCusto: construirComposicaoCusto(receita, qtdEmbalagem, custoProducaoPorBiscoito, somaCustosAdicionais, custoEmbalagemFisica)
     };
 
     renderizarHistorico();
   });
+
+  function construirComposicaoCusto(receita, qtdEmbalagem, custoProducaoPorBiscoito, somaCustosAdicionais, custoEmbalagemFisica) {
+    const PALETA = ["#2e6e52", "#c9a04d", "#b23a2e", "#9a7a34", "#6b665d", "#1f4d3b", "#e0a978"];
+    const porNome = new Map();
+    (receita.detalhesCusto || []).forEach((d) => {
+      const custoNoLote = d.custo; // custo total do ingrediente no lote inteiro
+      const custoNaEmbalagem = (custoNoLote / receita.rendimento) * qtdEmbalagem;
+      porNome.set(d.nome, (porNome.get(d.nome) || 0) + custoNaEmbalagem);
+    });
+
+    let fatias = Array.from(porNome, ([rotulo, valor]) => ({ rotulo, valor }));
+
+    const custosAdicionaisNaEmbalagem = (somaCustosAdicionais / receita.rendimento) * qtdEmbalagem;
+    if (custosAdicionaisNaEmbalagem > 0.001) {
+      fatias.push({ rotulo: "Custos adicionais", valor: custosAdicionaisNaEmbalagem });
+    }
+    if (custoEmbalagemFisica > 0.001) {
+      fatias.push({ rotulo: "Embalagem física", valor: custoEmbalagemFisica });
+    }
+
+    fatias.sort((a, b) => b.valor - a.valor);
+
+    // agrupa o que passar de 5 fatias num "Outros", pra não poluir o gráfico
+    if (fatias.length > 5) {
+      const principais = fatias.slice(0, 4);
+      const restoValor = fatias.slice(4).reduce((s, f) => s + f.valor, 0);
+      fatias = principais.concat([{ rotulo: "Outros", valor: restoValor }]);
+    }
+
+    return fatias.map((f, i) => ({ ...f, cor: PALETA[i % PALETA.length] }));
+  }
 
   $("#btn-ver-resultados").addEventListener("click", function () {
     irParaAba("resultados");
@@ -563,6 +623,7 @@
       $("#resultados-vazio").hidden = false;
       $("#resultados-conteudo").hidden = true;
       $("#nota-estimativa").hidden = true;
+      $("#graficos-resultado").hidden = true;
       return;
     }
     $("#resultados-vazio").hidden = true;
@@ -573,6 +634,102 @@
     $("#res-lucro").textContent = formatarMoeda(ultimoResultado.lucroEstimado);
     $("#res-qtd").textContent = `${ultimoResultado.quantidadeProduzida} embalagens`;
     $("#res-lucro-total").textContent = formatarMoeda(ultimoResultado.lucroPotencialTotal);
+
+    $("#graficos-resultado").hidden = false;
+    renderizarGraficoDonut($("#grafico-composicao"), $("#legenda-composicao"), ultimoResultado.composicaoCusto || []);
+    renderizarGraficoBarras($("#grafico-barras"), ultimoResultado.custoProducao, ultimoResultado.precoVenda, ultimoResultado.lucroEstimado);
+    renderizarMedidorMargem($("#grafico-margem"), ultimoResultado.margemReal || 0);
+  }
+
+  /* ============================================================
+     DESENHO DOS GRÁFICOS (SVG puro, sem bibliotecas externas)
+     ============================================================ */
+
+  function renderizarGraficoDonut(containerSvg, listaLegenda, fatias) {
+    const total = fatias.reduce((s, f) => s + f.valor, 0);
+    const raio = 52;
+    const espessura = 22;
+    const circunferencia = 2 * Math.PI * raio;
+
+    if (total <= 0 || fatias.length === 0) {
+      containerSvg.innerHTML = '<p class="estado-vazio" style="padding:8px;">Sem dados suficientes ainda.</p>';
+      listaLegenda.innerHTML = "";
+      return;
+    }
+
+    let acumulado = 0;
+    let circulos = "";
+    fatias.forEach((f) => {
+      const fracao = f.valor / total;
+      const comprimento = fracao * circunferencia;
+      const offset = -acumulado * circunferencia;
+      circulos += `<circle cx="60" cy="60" r="${raio}" fill="none" stroke="${f.cor}" stroke-width="${espessura}"
+        stroke-dasharray="${comprimento} ${circunferencia - comprimento}" stroke-dashoffset="${offset}"
+        transform="rotate(-90 60 60)"></circle>`;
+      acumulado += fracao;
+    });
+
+    containerSvg.innerHTML = `
+      <svg viewBox="0 0 120 120" width="220" height="220" role="img" aria-label="Composição do custo">
+        <circle cx="60" cy="60" r="${raio}" fill="none" stroke="#eee" stroke-width="${espessura}"></circle>
+        ${circulos}
+        <text x="60" y="56" text-anchor="middle" font-size="12" font-weight="700" fill="#1f4d3b">${formatarMoeda(total)}</text>
+        <text x="60" y="70" text-anchor="middle" font-size="7.5" fill="#6b665d">custo total</text>
+      </svg>`;
+
+    listaLegenda.innerHTML = fatias.map((f) => {
+      const pct = ((f.valor / total) * 100).toFixed(0);
+      return `<li><span class="bolinha" style="background:${f.cor}"></span>${escapeHtml(f.rotulo)} (${pct}%)
+        <span class="legenda-valor">${formatarMoeda(f.valor)}</span></li>`;
+    }).join("");
+  }
+
+  function renderizarGraficoBarras(container, custo, preco, lucro) {
+    const dados = [
+      { rotulo: "Custo", valor: Math.max(custo, 0), cor: "#6b665d" },
+      { rotulo: "Preço", valor: Math.max(preco, 0), cor: "#c9a04d" },
+      { rotulo: "Lucro", valor: Math.max(lucro, 0), cor: "#b23a2e" }
+    ];
+    const maximo = Math.max(...dados.map((d) => d.valor), 0.01);
+    const alturaMax = 110;
+    const larguraBarra = 46;
+    const espacamento = 26;
+    const larguraTotal = dados.length * larguraBarra + (dados.length + 1) * espacamento;
+
+    let barras = "";
+    dados.forEach((d, i) => {
+      const altura = (d.valor / maximo) * alturaMax;
+      const x = espacamento + i * (larguraBarra + espacamento);
+      const y = alturaMax - altura + 18;
+      barras += `
+        <text x="${x + larguraBarra / 2}" y="${y - 6}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2b2b28">${formatarMoeda(d.valor)}</text>
+        <rect x="${x}" y="${y}" width="${larguraBarra}" height="${altura}" rx="6" fill="${d.cor}"></rect>
+        <text x="${x + larguraBarra / 2}" y="${alturaMax + 34}" text-anchor="middle" font-size="11" font-weight="600" fill="#6b665d">${d.rotulo}</text>`;
+    });
+
+    container.innerHTML = `
+      <svg viewBox="0 0 ${larguraTotal} 170" width="260" height="170" role="img" aria-label="Custo, preço e lucro por embalagem">
+        ${barras}
+      </svg>`;
+  }
+
+  function renderizarMedidorMargem(container, margemPercent) {
+    const pct = Math.max(0, Math.min(100, margemPercent));
+    const raio = 52;
+    const espessura = 16;
+    const circunferencia = 2 * Math.PI * raio;
+    const comprimento = (pct / 100) * circunferencia;
+
+    container.innerHTML = `
+      <svg viewBox="0 0 120 120" width="200" height="200" role="img" aria-label="Margem real atingida">
+        <circle cx="60" cy="60" r="${raio}" fill="none" stroke="#eee" stroke-width="${espessura}"></circle>
+        <circle cx="60" cy="60" r="${raio}" fill="none" stroke="#b23a2e" stroke-width="${espessura}"
+          stroke-linecap="round"
+          stroke-dasharray="${comprimento} ${circunferencia - comprimento}"
+          transform="rotate(-90 60 60)"></circle>
+        <text x="60" y="56" text-anchor="middle" font-size="20" font-weight="800" fill="#1f4d3b">${pct.toFixed(0)}%</text>
+        <text x="60" y="72" text-anchor="middle" font-size="8" fill="#6b665d">do preço vira lucro</text>
+      </svg>`;
   }
 
   /* ============================================================
@@ -682,6 +839,7 @@
      ============================================================ */
 
   $("#btn-abrir-privacidade").addEventListener("click", () => abrirModal("#modal-privacidade"));
+  $("#btn-abrir-privacidade-mobile").addEventListener("click", () => abrirModal("#modal-privacidade"));
   $("#btn-fechar-privacidade").addEventListener("click", () => fecharModal("#modal-privacidade"));
 
   $("#btn-exportar-dados").addEventListener("click", function () {
